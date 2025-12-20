@@ -9,7 +9,10 @@ import {
   DialogContent,
   DialogActions,
   Grid,
+  IconButton,
+  Typography,
 } from "@mui/material";
+import CloseIcon from "@mui/icons-material/Close";
 
 const CommonFormModal = ({
   open,
@@ -21,38 +24,29 @@ const CommonFormModal = ({
   onSubmit = () => {},
   submitLabel = "Submit",
 }) => {
-  const handleChange = (field, value) => {
-    onChange({
-      ...formData,
-      [field]: value,
-    });
-  };
 
-  // Group fields into pairs for two-column layout
-  const renderFieldGroup = (fieldGroup, groupIndex) => (
-    <Grid container spacing={2} key={`group-${groupIndex}`}>
-      {fieldGroup.map((field, index) => (
-        <Grid item xs={12} sm={6} key={`${groupIndex}-${index}`}>
-          {renderField(field)}
-        </Grid>
-      ))}
-    </Grid>
-  );
+const handleChange = (field, value) => {
+  onChange((prev) => ({
+    ...prev,
+    [field]: value,
+  }));
+};
+
 
   const renderField = (field) => {
     if (field.type === "select") {
       return (
-        <TextField
-          select
-          label={field.label}
-          value={formData[field.name] || ""}
-          fullWidth
-          size="small"
-          required={field.required}
-          onChange={(e) => handleChange(field.name, e.target.value)}
-          variant="outlined"
-          sx={{ mt: 1 }}
-        >
+      <TextField
+  select
+  label={field.label}
+  value={formData[field.name] ?? ""}
+  fullWidth
+  size="small"
+  required={field.required}
+  disabled={field.disabled || false}   // ✅
+  onChange={(e) => handleChange(field.name, e.target.value)}
+>
+
           {field.options?.map((opt) => (
             <MenuItem key={opt} value={opt}>
               {opt}
@@ -64,60 +58,66 @@ const CommonFormModal = ({
 
     if (field.type === "date") {
       return (
-        <TextField
-          type="date"
-          fullWidth
-          size="small"
-          label={field.label}
-          InputLabelProps={{ shrink: true }}
-          value={formData[field.name] || ""}
-          required={field.required}
-          onChange={(e) => handleChange(field.name, e.target.value)}
-          variant="outlined"
-          sx={{ mt: 1 }}
-        />
+      <TextField
+  type="date"
+  fullWidth
+  size="small"
+  label={field.label}
+  InputLabelProps={{ shrink: true }}
+  value={formData[field.name] ?? ""}
+  required={field.required}
+  disabled={field.disabled || false}   // ✅
+  onChange={(e) => handleChange(field.name, e.target.value)}
+/>
+
       );
     }
 
     if (field.type === "file") {
+      const file = formData[field.name];
+
       return (
-        <Box sx={{ mt: 1 }}>
+        <Box sx={{ width: "100%" }}>
           <Button
             variant="outlined"
             component="label"
             fullWidth
-            sx={{
-              py: 1,
-              borderColor: "grey.400",
-              color: "text.primary",
-              "&:hover": {
-                borderColor: "primary.main",
-              },
-            }}
+            sx={{ height: 40 }}
           >
             {field.label}
             <input
               type="file"
               hidden
-              onChange={(e) => handleChange(field.name, e.target.files[0])}
+              onChange={(e) =>
+                handleChange(field.name, e.target.files[0])
+              }
             />
           </Button>
+
+          {file && (
+            <Typography
+              variant="caption"
+              sx={{ mt: 0.5, display: "block", color: "text.secondary" }}
+            >
+              ✔ {file.name}
+            </Typography>
+          )}
         </Box>
       );
     }
 
     return (
-      <TextField
-        label={field.label}
-        type={field.type || "text"}
-        fullWidth
-        size="small"
-        required={field.required}
-        value={formData[field.name] || ""}
-        onChange={(e) => handleChange(field.name, e.target.value)}
-        variant="outlined"
-        sx={{ mt: 1 }}
-      />
+    <TextField
+  label={field.label}
+  type={field.type || "text"}
+  fullWidth
+  size="small"
+  required={field.required}
+  disabled={field.disabled || false}   // ✅ ADD THIS
+  value={formData[field.name] ?? ""}   // ✅ safer than ||
+  onChange={(e) => handleChange(field.name, e.target.value)}
+/>
+
     );
   };
 
@@ -130,53 +130,45 @@ const CommonFormModal = ({
           py: 2,
           fontSize: "1.2rem",
           fontWeight: 600,
+          textAlign: "center",
+          position: "relative",
         }}
       >
         {title}
+
+        <IconButton
+          onClick={onClose}
+          sx={{
+            position: "absolute",
+            right: 12,
+            top: 12,
+            color: "white",
+          }}
+        >
+          <CloseIcon />
+        </IconButton>
       </DialogTitle>
 
       <DialogContent dividers sx={{ py: 3 }}>
-        <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-          {(() => {
-            const groupedFields = [];
-            for (let i = 0; i < fields.length; i += 2) {
-              groupedFields.push(fields.slice(i, i + 2));
-            }
-            return groupedFields.map((fieldGroup, index) =>
-              renderFieldGroup(fieldGroup, index)
-            );
-          })()}
-        </Box>
+        <Grid container spacing={2}>
+          {fields.map((field, index) => (
+            <Grid item xs={12} sm={6} key={index}>
+              {renderField(field)}
+            </Grid>
+          ))}
+        </Grid>
       </DialogContent>
 
-      <DialogActions sx={{ px: 3, py: 2, backgroundColor: "grey.50" }}>
+      <DialogActions sx={{ px: 3, py: 2 }}>
         <Button
-          onClick={onClose}
-          variant="outlined"
-          sx={{
-            borderColor: "grey.400",
-            color: "text.secondary",
-            "&:hover": {
-              borderColor: "grey.600",
-              backgroundColor: "grey.100",
-            },
-          }}
-        >
-          Cancel
-        </Button>
-        <Button
-          variant="contained"
-          onClick={onSubmit}
-          sx={{
-            backgroundColor: "#1A5276",
-            "&:hover": {
-              backgroundColor: "#154360",
-            },
-            px: 3,
-            py: 0.75,
-            fontWeight: 600,
-          }}
-        >
+ type="button"
+  onClick={onClose}
+  variant="outlined"
+>
+  Cancel
+</Button>
+
+        <Button variant="contained" onClick={onSubmit}>
           {submitLabel}
         </Button>
       </DialogActions>

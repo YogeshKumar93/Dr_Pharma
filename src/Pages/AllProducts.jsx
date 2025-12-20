@@ -11,6 +11,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import { BASE_URL } from "../api/config";
 import CommonTable from "../Common/CommonTable";
 import AddProduct from "./AddProduct"; // ✅ IMPORT
+import EditProduct from "./EditProduct";
 
 const AllProducts = () => {
   const [products, setProducts] = useState([]);
@@ -23,6 +24,9 @@ const AllProducts = () => {
   // Pagination
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
+
+  const [editOpen, setEditOpen] = useState(false);
+// const [selectedProduct, setSelectedProduct] = useState(null);
 
   /* -------------------- API CALL -------------------- */
   const fetchProducts = async () => {
@@ -43,6 +47,12 @@ const AllProducts = () => {
   useEffect(() => {
     fetchProducts();
   }, []);
+
+
+  const handleEdit = (row) => {
+  setSelectedProduct(row);
+  setEditOpen(true);
+};
 
   /* -------------------- PAGINATED DATA -------------------- */
   const paginatedProducts = useMemo(() => {
@@ -100,7 +110,7 @@ const AllProducts = () => {
   const actions = (row) => (
     <Box sx={{ display: "flex", gap: 1 }}>
       <Tooltip title="Edit">
-        <IconButton size="small" color="primary">
+        <IconButton size="small" color="primary" onClick={handleEdit(row)} >
           <EditIcon fontSize="small" />
         </IconButton>
       </Tooltip>
@@ -121,6 +131,7 @@ const AllProducts = () => {
 
         {/* ✅ OPEN MODAL */}
         <Button 
+        
         variant="contained"
          onClick={() => setAddOpen(true)}
            sx={{
@@ -156,6 +167,17 @@ const AllProducts = () => {
         handleClose={() => setAddOpen(false)}
         onFetchRef={fetchProducts}
       />
+
+      <EditProduct
+  open={editOpen}
+   handleClose={() => {
+   setEditOpen(false);
+  setSelectedProduct(null);
+ }}
+  product={selectedProduct}
+  onFetchRef={fetchProducts}
+/>
+
     </Box>
   );
 };
