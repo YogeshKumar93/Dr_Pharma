@@ -9,7 +9,8 @@ import {
   InputAdornment,
   IconButton,
   Alert,
-  CircularProgress
+  CircularProgress,
+  Snackbar
 } from "@mui/material";
 import { 
   Visibility, 
@@ -20,6 +21,7 @@ import {
   Lock
 } from "@mui/icons-material";
 import { apiCall } from "../api/api";
+import { useNavigate } from "react-router-dom";
 
 export default function Register() {
   const [name, setName] = useState("");
@@ -30,9 +32,16 @@ export default function Register() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
 
+  const navigate = useNavigate();
+
+const [openSnackbar, setOpenSnackbar] = useState(false);
+const [snackbarMessage, setSnackbarMessage] = useState("");
+const [snackbarSeverity, setSnackbarSeverity] = useState("success");
+
+
   const handleRegister = async () => {
     setLoading(true);
-    setMessage("");
+    // setMessage("");
     try {
       const data = await apiCall(
         "POST",
@@ -40,14 +49,20 @@ export default function Register() {
         { name, email, password, phone }
       );
 
-      setMessage("Registration successful!");
-      console.log("User created:", data);
+     setSnackbarMessage("Registration successful! Redirecting to login...");
+    setSnackbarSeverity("success");
+    setOpenSnackbar(true);
       
       // Reset form on successful registration
       setName("");
       setEmail("");
       setPassword("");
       setPhone("");
+
+        // ⏳ redirect after 2 seconds
+    setTimeout(() => {
+      navigate("/login");
+    }, 2000);
       
     } catch (err) {
       setMessage(err.message || "Registration failed");
@@ -241,22 +256,22 @@ export default function Register() {
               }}
             />
 
-            {message && (
-              <Alert 
-                severity={message.includes("successful") ? "success" : "error"}
-                sx={{ 
-                  mt: 2,
-                  borderRadius: 2,
-                  animation: message ? "fadeIn 0.5s ease-in" : "none",
-                  "@keyframes fadeIn": {
-                    "0%": { opacity: 0, transform: "translateY(-10px)" },
-                    "100%": { opacity: 1, transform: "translateY(0)" }
-                  }
-                }}
-              >
-                {message}
-              </Alert>
-            )}
+       <Snackbar
+  open={openSnackbar}
+  autoHideDuration={3000}
+  onClose={() => setOpenSnackbar(false)}
+  anchorOrigin={{ vertical: "top", horizontal: "center" }}
+>
+  <Alert
+    onClose={() => setOpenSnackbar(false)}
+    severity={snackbarSeverity}
+    sx={{ width: "100", fontWeight: 600 }}
+    variant="filled"
+  >
+    {snackbarMessage}
+  </Alert>
+</Snackbar>
+
 
             <Button
               type="submit"
