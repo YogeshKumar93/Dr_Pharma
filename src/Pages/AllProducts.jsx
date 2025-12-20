@@ -1,14 +1,22 @@
-import React, { useEffect, useState } from "react";
-import { Box, Button, Chip } from "@mui/material";
-// import CommonTable from "../components/CommonTable"; // adjust path
+import React, { useEffect, useMemo, useState } from "react";
+import {
+  Box,
+  Button,
+  IconButton,
+  Tooltip,
+} from "@mui/material";
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
+
 import { BASE_URL } from "../api/config";
 import CommonTable from "../Common/CommonTable";
 
 const AllProducts = () => {
-  const [rows, setRows] = useState([]);
+  const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState(null);
 
-  // 🔹 Fetch products
+  /* -------------------- API CALL -------------------- */
   const fetchProducts = async () => {
     try {
       setLoading(true);
@@ -16,108 +24,123 @@ const AllProducts = () => {
       const data = await res.json();
 
       const list = data?.data || data?.products || data || [];
-      setRows(Array.isArray(list) ? list : []);
-    } catch (error) {
-      console.error("Fetch products failed", error);
+      setProducts(Array.isArray(list) ? list : []);
+    } catch (err) {
+      console.error("Fetch products failed", err);
     } finally {
       setLoading(false);
     }
   };
 
-  // 🔹 Delete product
-  const handleDelete = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this product?")) return;
+  const deleteProduct = async (row) => {
+    if (!window.confirm("Delete this product?")) return;
 
     try {
-      await fetch(`${BASE_URL}products/${id}`, { method: "DELETE" });
-      setRows((prev) => prev.filter((row) => row.id !== id));
-    } catch (error) {
-      console.error("Delete failed", error);
+      await fetch(`${BASE_URL}products/${row.id}`, {
+        method: "DELETE",
+      });
+      fetchProducts();
+    } catch (err) {
+      console.error("Delete failed", err);
     }
   };
 
-  // 🔹 Edit product
-  const handleEdit = (row) => {
+  const editProduct = (row) => {
+    setSelectedProduct(row);
     console.log("Edit product:", row);
-    // navigate(`/products/edit/${row.id}`)
+    // navigate or open modal
   };
 
   useEffect(() => {
     fetchProducts();
   }, []);
 
-  // 🔹 Table columns
-  const columns = [
-    {
-      field: "id",
-      headerName: "ID",
-      width: "5%",
-    },
-    {
-      field: "title",
-      headerName: "Title",
-      width: "15%",
-    },
-    {
-      field: "description",
-      headerName: "Description",
-      width: "20%",
-      render: (value) => (
-        <Box sx={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-          {value}
-        </Box>
-      ),
-    },
-    {
-      field: "price",
-      headerName: "Price",
-      width: "8%",
-      render: (value) => `₹${value}`,
-    },
-    {
-      field: "image",
-      headerName: "Image",
-      width: "10%",
-      render: (value, row) =>
-        value ? (
-          <img src={value} alt={row.title} width={50} />
-        ) : (
-          "N/A"
+  /* -------------------- COLUMNS -------------------- */
+  const columns = useMemo(
+    () => [
+      {
+        headerName: "ID",
+        field: "id",
+        width: "60px",
+      },
+      {
+        headerName: "Title",
+        field: "title",
+        render: (value) => <strong>{value}</strong>,
+      },
+      {
+        headerName: "Description",
+        field: "description",
+        render: (value) => (
+          <div
+            style={{
+              maxWidth: "220px",
+              whiteSpace: "nowrap",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+            }}
+          >
+            {value}
+          </div>
         ),
-    },
-    {
-      field: "stock",
-      headerName: "Stock",
-      width: "8%",
-    },
-    {
-      field: "status",
-      headerName: "Status",
-      width: "8%",
-      render: (value) => (
-        <Chip
-          label={value ? "Active" : "Inactive"}
-          color={value ? "success" : "error"}
-          size="small"
-        />
-      ),
-    },
-    {
-      field: "created_at",
-      headerName: "Created",
-      width: "10%",
-      render: (value) =>
-        value ? new Date(value).toLocaleDateString() : "-",
-    },
-    {
-      field: "updated_at",
-      headerName: "Updated",
-      width: "10%",
-      render: (value) =>
-        value ? new Date(value).toLocaleDateString() : "-",
-    },
-  ];
+      },
+      {
+        headerName: "Price",
+        field: "price",
+        render: (value) => `₹ ${value}`,
+      },
+      {
+        headerName: "Image",
+        field: "image",
+        render: (value, row) =>
+          value ? (
+            <img src={value} alt={row.title} width={50} />
+          ) : (
+            "N/A"
+          ),
+      },
+      {
+        headerName: "Created",
+        field: "created_at",
+        render: (value) =>
+          value ? new Date(value).toLocaleDateString() : "-",
+      },
+      {
+        headerName: "Updated",
+        field: "updated_at",
+        render: (value) =>
+          value ? new Date(value).toLocaleDateString() : "-",
+      },
+    ],
+    []
+  );
 
+  /* -------------------- ACTIONS -------------------- */
+  const actions = (row) => (
+    <Box sx={{ display: "flex", gap: 1 }}>
+      <Tooltip title="Edit">
+        <IconButton
+          size="small"
+          color="primary"
+          onClick={() => editProduct(row)}
+        >
+          <EditIcon fontSize="small" />
+        </IconButton>
+      </Tooltip>
+
+      <Tooltip title="Delete">
+        <IconButton
+          size="small"
+          color="error"
+          onClick={() => deleteProduct(row)}
+        >
+          <DeleteIcon fontSize="small" />
+        </IconButton>
+      </Tooltip>
+    </Box>
+  );
+
+  /* -------------------- UI -------------------- */
   return (
     <Box sx={{ p: 2 }}>
       <Box
@@ -130,35 +153,16 @@ const AllProducts = () => {
       >
         <h2>All Products</h2>
 
-        <Button variant="contained" color="primary">
+        <Button variant="contained">
           Add Product
         </Button>
       </Box>
 
       <CommonTable
         columns={columns}
-        rows={rows}
+        rows={products}
         loading={loading}
-        actions={(row) => (
-          <>
-            <Button
-              size="small"
-              variant="outlined"
-              onClick={() => handleEdit(row)}
-            >
-              Edit
-            </Button>
-            &nbsp;
-            <Button
-              size="small"
-              variant="outlined"
-              color="error"
-              onClick={() => handleDelete(row.id)}
-            >
-              Delete
-            </Button>
-          </>
-        )}
+        actions={actions}
       />
     </Box>
   );

@@ -177,7 +177,7 @@ const SideNavAndHeader = () => {
         sx={{
           flexGrow: 1,
           p: 1,
-          mt: -30,
+          mt: 5,
           width: { md: desktopOpen ? `calc(100% - ${DRAWER_WIDTH}px)` : '100%' },
           ml: { md: desktopOpen ? `${DRAWER_WIDTH}px` : 0 },
         }}
