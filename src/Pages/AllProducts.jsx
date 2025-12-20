@@ -16,6 +16,10 @@ const AllProducts = () => {
   const [loading, setLoading] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
 
+  // 🔹 Pagination state
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+
   /* -------------------- API CALL -------------------- */
   const fetchProducts = async () => {
     try {
@@ -48,21 +52,23 @@ const AllProducts = () => {
   const editProduct = (row) => {
     setSelectedProduct(row);
     console.log("Edit product:", row);
-    // navigate or open modal
   };
 
   useEffect(() => {
     fetchProducts();
   }, []);
 
+  /* -------------------- PAGINATED DATA -------------------- */
+  const paginatedProducts = useMemo(() => {
+    const start = page * rowsPerPage;
+    const end = start + rowsPerPage;
+    return products.slice(start, end);
+  }, [products, page, rowsPerPage]);
+
   /* -------------------- COLUMNS -------------------- */
   const columns = useMemo(
     () => [
-      {
-        headerName: "ID",
-        field: "id",
-        width: "60px",
-      },
+      { headerName: "ID", field: "id", width: "60px" },
       {
         headerName: "Title",
         field: "title",
@@ -93,11 +99,7 @@ const AllProducts = () => {
         headerName: "Image",
         field: "image",
         render: (value, row) =>
-          value ? (
-            <img src={value} alt={row.title} width={50} />
-          ) : (
-            "N/A"
-          ),
+          value ? <img src={value} alt={row.title} width={50} /> : "N/A",
       },
       {
         headerName: "Created",
@@ -119,21 +121,13 @@ const AllProducts = () => {
   const actions = (row) => (
     <Box sx={{ display: "flex", gap: 1 }}>
       <Tooltip title="Edit">
-        <IconButton
-          size="small"
-          color="primary"
-          onClick={() => editProduct(row)}
-        >
+        <IconButton size="small" color="primary" onClick={() => editProduct(row)}>
           <EditIcon fontSize="small" />
         </IconButton>
       </Tooltip>
 
       <Tooltip title="Delete">
-        <IconButton
-          size="small"
-          color="error"
-          onClick={() => deleteProduct(row)}
-        >
+        <IconButton size="small" color="error" onClick={() => deleteProduct(row)}>
           <DeleteIcon fontSize="small" />
         </IconButton>
       </Tooltip>
@@ -152,17 +146,23 @@ const AllProducts = () => {
         }}
       >
         <h2>All Products</h2>
-
-        <Button variant="contained">
-          Add Product
-        </Button>
+        <Button variant="contained">Add Product</Button>
       </Box>
 
       <CommonTable
         columns={columns}
-        rows={products}
+        rows={paginatedProducts}   // 🔹 paginated data
         loading={loading}
         actions={actions}
+        serverPagination={true}
+        page={page}
+        rowsPerPage={rowsPerPage}
+        totalCount={products.length}
+        onPageChange={(e, newPage) => setPage(newPage)}
+        onRowsPerPageChange={(e) => {
+          setRowsPerPage(parseInt(e.target.value, 10));
+          setPage(0);
+        }}
       />
     </Box>
   );
