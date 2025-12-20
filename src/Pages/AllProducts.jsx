@@ -10,13 +10,17 @@ import DeleteIcon from "@mui/icons-material/Delete";
 
 import { BASE_URL } from "../api/config";
 import CommonTable from "../Common/CommonTable";
+import AddProduct from "./AddProduct"; // ✅ IMPORT
 
 const AllProducts = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
 
-  // 🔹 Pagination state
+  // ✅ Add modal state
+  const [addOpen, setAddOpen] = useState(false);
+
+  // Pagination
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
@@ -34,24 +38,6 @@ const AllProducts = () => {
     } finally {
       setLoading(false);
     }
-  };
-
-  const deleteProduct = async (row) => {
-    if (!window.confirm("Delete this product?")) return;
-
-    try {
-      await fetch(`${BASE_URL}products/${row.id}`, {
-        method: "DELETE",
-      });
-      fetchProducts();
-    } catch (err) {
-      console.error("Delete failed", err);
-    }
-  };
-
-  const editProduct = (row) => {
-    setSelectedProduct(row);
-    console.log("Edit product:", row);
   };
 
   useEffect(() => {
@@ -78,14 +64,7 @@ const AllProducts = () => {
         headerName: "Description",
         field: "description",
         render: (value) => (
-          <div
-            style={{
-              maxWidth: "220px",
-              whiteSpace: "nowrap",
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-            }}
-          >
+          <div style={{ maxWidth: 220, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
             {value}
           </div>
         ),
@@ -105,13 +84,13 @@ const AllProducts = () => {
         headerName: "Created",
         field: "created_at",
         render: (value) =>
-          value ? new Date(value).toLocaleDateString() : "-",
+          value ? new Date(value).toLocaleDateString("en-GB") : "-",
       },
       {
         headerName: "Updated",
         field: "updated_at",
         render: (value) =>
-          value ? new Date(value).toLocaleDateString() : "-",
+          value ? new Date(value).toLocaleDateString("en-GB") : "-",
       },
     ],
     []
@@ -121,13 +100,13 @@ const AllProducts = () => {
   const actions = (row) => (
     <Box sx={{ display: "flex", gap: 1 }}>
       <Tooltip title="Edit">
-        <IconButton size="small" color="primary" onClick={() => editProduct(row)}>
+        <IconButton size="small" color="primary">
           <EditIcon fontSize="small" />
         </IconButton>
       </Tooltip>
 
       <Tooltip title="Delete">
-        <IconButton size="small" color="error" onClick={() => deleteProduct(row)}>
+        <IconButton size="small" color="error">
           <DeleteIcon fontSize="small" />
         </IconButton>
       </Tooltip>
@@ -137,24 +116,30 @@ const AllProducts = () => {
   /* -------------------- UI -------------------- */
   return (
     <Box sx={{ p: 2 }}>
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          mb: 2,
-        }}
-      >
-        <h2>All Products</h2>
-        <Button variant="contained">Add Product</Button>
+      <Box sx={{ display: "flex", justifyContent: "flex-end", mb: 2 }}>
+       
+
+        {/* ✅ OPEN MODAL */}
+        <Button 
+        variant="contained"
+         onClick={() => setAddOpen(true)}
+           sx={{
+              backgroundColor: "#1A5276",
+      "&:hover": {
+        backgroundColor: "#154360",
+      },
+           }} 
+         >
+          Add Product
+        </Button>
       </Box>
 
       <CommonTable
         columns={columns}
-        rows={paginatedProducts}   // 🔹 paginated data
+        rows={paginatedProducts}
         loading={loading}
         actions={actions}
-        serverPagination={true}
+        serverPagination
         page={page}
         rowsPerPage={rowsPerPage}
         totalCount={products.length}
@@ -163,6 +148,13 @@ const AllProducts = () => {
           setRowsPerPage(parseInt(e.target.value, 10));
           setPage(0);
         }}
+      />
+
+      {/* ✅ ADD PRODUCT MODAL */}
+      <AddProduct
+        open={addOpen}
+        handleClose={() => setAddOpen(false)}
+        onFetchRef={fetchProducts}
       />
     </Box>
   );
