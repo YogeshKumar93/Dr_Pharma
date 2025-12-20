@@ -3,6 +3,7 @@ import { useEffect } from "react";
 import LandingPageIntro from "./LandingpageIntro";
 import { Helmet } from "react-helmet-async";
 import { CartProvider } from "../../Contexts/CartContext";
+ 
 // import LandingPageIntro from "./LandingpageIntro";
 
 const LandingPage = () => {
@@ -18,6 +19,7 @@ const LandingPage = () => {
       </Helmet>
  
       <LandingPageIntro />
+  
       
     </>
   );

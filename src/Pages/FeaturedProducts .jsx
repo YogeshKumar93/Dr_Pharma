@@ -32,6 +32,7 @@ const handleAddToCart = (product) => {
     fetchFeaturedProducts();
   }, []);
 
+  
   const fetchFeaturedProducts = async () => {
     try {
       setLoading(true);

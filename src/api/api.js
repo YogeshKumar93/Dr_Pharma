@@ -1,14 +1,5 @@
-import ApiEndpoints from "./ApiEndpoints";
 import { BASE_URL } from "./config";
 
-/**
- * Generic fetch function
- * @param {string} method - HTTP method (GET, POST, PUT, DELETE)
- * @param {string} endpoint - API endpoint path
- * @param {object} payload - request body
- * @param {object} extraHeaders - optional headers
- * @returns {{response: any, error: any}}
- */
 export const apiCall = async (
   method,
   endpoint,
@@ -16,15 +7,20 @@ export const apiCall = async (
   extraHeaders = {}
 ) => {
   try {
-    const response = await fetch(`${BASE_URL}${endpoint}`, {
+    const options = {
       method,
       headers: {
         "Content-Type": "application/json",
         ...extraHeaders,
       },
-      body: payload ? JSON.stringify(payload) : null,
-    });
+    };
 
+    // ⛔ body ONLY for non-GET
+    if (payload && method !== "GET") {
+      options.body = JSON.stringify(payload);
+    }
+
+    const response = await fetch(`${BASE_URL}${endpoint}`, options);
     const data = await response.json();
 
     if (!response.ok) {

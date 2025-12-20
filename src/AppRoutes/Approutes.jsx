@@ -19,6 +19,7 @@ import Prescriptions from "../Pages/Prescriptions";
 import Orders from "../Pages/Orders";
 import LandingPage from "../Components/Landings/Landingpage";
 import { CartProvider } from "../Contexts/CartContext";
+import Cart from "../Pages/Cart";
 
 const AppRoutes = () => {
   return (
@@ -30,11 +31,13 @@ const AppRoutes = () => {
           {/* 🌐 PUBLIC WEBSITE (Landing + common header/footer) */}
           <Route element={<MainLayout />}>
             <Route path="/" element={<LandingPage />} />
+            <Route path="/cart" element={<Cart />} />
           </Route>
 
           {/* 🔓 AUTH PAGES (NO layout) */}
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          
 
           {/* 🔒 DASHBOARD (SIDENAV + HEADER) */}
           <Route
@@ -51,6 +54,7 @@ const AppRoutes = () => {
             <Route path="/settings" element={<Settings />} />
             <Route path="/prescriptions" element={<Prescriptions />} />
             <Route path="/orders" element={<Orders />} />
+            
           </Route>
 
         </Routes>
