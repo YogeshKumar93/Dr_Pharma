@@ -20,6 +20,7 @@ import Orders from "../Pages/Orders";
 import LandingPage from "../Components/Landings/Landingpage";
 import { CartProvider } from "../Contexts/CartContext";
 import Cart from "../Pages/Cart";
+import AllProducts from "../Pages/AllProducts";
 
 const AppRoutes = () => {
   return (
@@ -49,6 +50,7 @@ const AppRoutes = () => {
           >
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/users" element={<Users />} />
+            <Route path="/allproducts" element={<AllProducts />} />
             <Route path="/medicines" element={<Medicines />} />
             <Route path="/payments" element={<Payments />} />
             <Route path="/settings" element={<Settings />} />

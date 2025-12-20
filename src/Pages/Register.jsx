@@ -310,6 +310,7 @@ const [snackbarSeverity, setSnackbarSeverity] = useState("success");
                 Already have an account?{" "}
                 <Button 
                   color="primary" 
+                    onClick={() => navigate("/login")}
                   sx={{ 
                     fontWeight: 600,
                     textTransform: "none",

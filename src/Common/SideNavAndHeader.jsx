@@ -35,6 +35,7 @@ const Sidebar = ({ onItemClick }) => {
   const menuItems = [
     { text: 'Dashboard', icon: <DashboardIcon />, path: '/dashboard' },
     { text: 'Users', icon: <PeopleIcon />, path: '/users' },
+    { text: 'All Products', icon: <PeopleIcon />, path: '/allproducts' },
     { text: 'Medicines', icon: <AssessmentIcon />, path: '/medicines' },
     { text: 'Prescriptions', icon: <AssessmentIcon />, path: '/prescriptions' },
     { text: 'Orders', icon: <AssessmentIcon />, path: '/orders' },
@@ -93,6 +94,7 @@ const SideNavAndHeader = () => {
   const pageTitles = {
     '/dashboard': 'Dashboard',
     '/users': 'Users',
+    '/allproducts': 'All Products',
     '/medicines': 'Medicines',
     '/payments': 'Payments',
     '/prescriptions': 'Prescriptions',
