@@ -7,6 +7,7 @@ const EditProduct = ({ open, handleClose, onFetchRef, product }) => {
     id: null,
     title: "",
     description: "",
+    category:"",
     price: "",
     image: null,
     created_at: "",
@@ -41,6 +42,7 @@ const handleSubmit = async () => {
     payload.append("id", formData.id);
     payload.append("title", formData.title);
     payload.append("description", formData.description);
+    payload.append("category", formData.category);
     payload.append("price", formData.price);
 
     if (formData.image) {
@@ -71,6 +73,7 @@ const handleSubmit = async () => {
          id: product.id,
         title: product.title || "",
         description: product.description || "",
+        category: product.category || "",
         price: product.price || "",
         image: null, // file cannot be prefilled
         created_at: product.created_at
@@ -91,6 +94,13 @@ const handleSubmit = async () => {
 //   },
     { name: "title", label: "Title", required: true },
     { name: "description", label: "Description" },
+    { name: "category", label: "Category", type: "select", options: [
+      { label: "Medicines", value: "medicines" },
+      { label: "Medical Instruments", value: "medical instruments" },
+      { label: "Syrups", value: "syrups" },
+      { label: "Kits", value: "kits" },
+      { label: "Supplements", value: "supplements" },
+    ] },
     { name: "price", label: "Price", type: "number", required: true },
     { name: "image", label: "Image", type: "file" },
     { name: "created_at", label: "Created Date", type: "date" },

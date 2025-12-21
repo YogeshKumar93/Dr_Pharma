@@ -6,11 +6,21 @@ const AddProduct = ({ open, handleClose, onFetchRef }) => {
   const initialFormData = {
     title: "",
     description: "",
+    category:"",
     price: "",
     image: null,
     created_at: "",
     updated_at: "",
   };
+
+  const categoryOptions = [
+  { label: "Medicines", value: "medicines" },
+  { label: "Medical Instruments", value: "medical instruments" },
+  { label: "Syrups", value: "syrups" },
+  { label: "Kits", value: "kits" },
+  { label: "Supplements", value: "supplements" },
+];
+
 
   const [formData, setFormData] = useState(initialFormData);
   const [submitting, setSubmitting] = useState(false);
@@ -66,6 +76,7 @@ const AddProduct = ({ open, handleClose, onFetchRef }) => {
   const fields = [
     { name: "title", label: "Title", required: true },
     { name: "description", label: "Description" },
+    { name: "category", label: "Category", type: "select", options: categoryOptions },
     { name: "price", label: "Price", type: "number", required: true },
     { name: "image", label: "Image", type: "file" },
     { name: "created_at", label: "Created Date", type: "date" },

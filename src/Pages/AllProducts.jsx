@@ -107,6 +107,14 @@ const handleDelete = async (row) => {
         ),
       },
       {
+  headerName: "Category",
+  field: "category",
+  render: (value) => (
+    <strong style={{ textTransform: "capitalize" }}>{value}</strong>
+  ),
+},
+
+      {
         headerName: "Price",
         field: "price",
         render: (value) => `₹ ${value}`,

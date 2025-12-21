@@ -47,11 +47,12 @@ const handleChange = (field, value) => {
   onChange={(e) => handleChange(field.name, e.target.value)}
 >
 
-          {field.options?.map((opt) => (
-            <MenuItem key={opt} value={opt}>
-              {opt}
-            </MenuItem>
-          ))}
+         {field.options.map((option) => (
+  <MenuItem key={option.value} value={option.value}>
+    {option.label}
+  </MenuItem>
+))}
+
         </TextField>
       );
     }
