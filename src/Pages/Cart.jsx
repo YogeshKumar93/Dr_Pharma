@@ -194,8 +194,10 @@ const Cart = () => {
               <button
                 style={styles.proceedButton}
                 onClick={() => {
-                  if (!isLoggedIn) setShowRegister(true);
-                  else alert("Proceeding to payment...");
+                  // if (!isLoggedIn) setShowRegister(true);
+                  // else window.location.href = "/checkout";
+                  window.location.href = "/checkout";
+
                 }}
               >
                 🛒 PROCEED TO PAY

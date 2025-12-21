@@ -21,6 +21,9 @@ import LandingPage from "../Components/Landings/Landingpage";
 import { CartProvider } from "../Contexts/CartContext";
 import Cart from "../Pages/Cart";
 import AllProducts from "../Pages/AllProducts";
+import Checkout from "../Pages/Checkout";
+import MyOrders from "../Pages/MyOrders";
+import AdminOrders from "../Pages/AdminOrders";
 
 const AppRoutes = () => {
   return (
@@ -33,6 +36,7 @@ const AppRoutes = () => {
           <Route element={<MainLayout />}>
             <Route path="/" element={<LandingPage />} />
             <Route path="/cart" element={<Cart />} />
+              <Route path="/checkout" element={<Checkout />} />
           </Route>
 
           {/* 🔓 AUTH PAGES (NO layout) */}
@@ -56,6 +60,9 @@ const AppRoutes = () => {
             <Route path="/settings" element={<Settings />} />
             <Route path="/prescriptions" element={<Prescriptions />} />
             <Route path="/orders" element={<Orders />} />
+          
+            <Route path="/myorders" element={<MyOrders />} />
+            <Route path="/adminorders" element={<AdminOrders />} />
             
           </Route>
 
