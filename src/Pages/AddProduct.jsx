@@ -44,7 +44,7 @@ const AddProduct = ({ open, handleClose, onFetchRef }) => {
         updated_at: formatDate(formData.updated_at),
       }).forEach(([k, v]) => payload.append(k, v));
 
-      await fetch(`${BASE_URL}products`, {
+      await fetch(`${BASE_URL}products/create`, {
         method: "POST",
         body: payload,
       });

@@ -30,23 +30,25 @@ const EditProduct = ({ open, handleClose, onFetchRef, product }) => {
   };
 
 const handleSubmit = async () => {
-  // silently prevent invalid submit
   if (!formData.id) return;
 
   setSubmitting(true);
 
   try {
     const payload = new FormData();
-    Object.entries({
-      ...formData,
-      created_at: formatDate(formData.created_at),
-      updated_at: formatDate(formData.updated_at),
-    }).forEach(([k, v]) => {
-      if (v !== null) payload.append(k, v);
-    });
 
-    await fetch(`${BASE_URL}products/${formData.id}`, {
-      method: "POST", // or PUT
+    // 👇 IMPORTANT: id goes in BODY
+    payload.append("id", formData.id);
+    payload.append("title", formData.title);
+    payload.append("description", formData.description);
+    payload.append("price", formData.price);
+
+    if (formData.image) {
+      payload.append("image", formData.image);
+    }
+
+    await fetch(`${BASE_URL}products/update`, {
+      method: "POST",
       body: payload,
     });
 
@@ -58,6 +60,7 @@ const handleSubmit = async () => {
     setSubmitting(false);
   }
 };
+
 
 
 

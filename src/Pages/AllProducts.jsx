@@ -54,6 +54,33 @@ const AllProducts = () => {
   setEditOpen(true);
 };
 
+const handleDelete = async (row) => {
+  const confirmDelete = window.confirm(
+    `Are you sure you want to delete "${row.title}"?`
+  );
+
+  if (!confirmDelete) return;
+
+  try {
+    await fetch(`${BASE_URL}products/delete`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        id: row.id, // 👈 ID REQUEST BODY ME
+      }),
+    });
+
+    // ✅ Refresh list after delete
+    fetchProducts();
+  } catch (err) {
+    console.error("Delete failed", err);
+    alert("Failed to delete product");
+  }
+};
+
+
   /* -------------------- PAGINATED DATA -------------------- */
   const paginatedProducts = useMemo(() => {
     const start = page * rowsPerPage;
@@ -110,16 +137,21 @@ const AllProducts = () => {
   const actions = (row) => (
     <Box sx={{ display: "flex", gap: 1 }}>
       <Tooltip title="Edit">
-        <IconButton size="small" color="primary" onClick={handleEdit(row)} >
+        <IconButton size="small" color="primary" onClick={()=>handleEdit(row)} >
           <EditIcon fontSize="small" />
         </IconButton>
       </Tooltip>
 
-      <Tooltip title="Delete">
-        <IconButton size="small" color="error">
-          <DeleteIcon fontSize="small" />
-        </IconButton>
-      </Tooltip>
+    <Tooltip title="Delete">
+  <IconButton
+    size="small"
+    color="error"
+    onClick={() => handleDelete(row)}
+  >
+    <DeleteIcon fontSize="small" />
+  </IconButton>
+</Tooltip>
+
     </Box>
   );
 
