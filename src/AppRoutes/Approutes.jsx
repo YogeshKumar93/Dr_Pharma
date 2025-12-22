@@ -24,6 +24,10 @@ import AllProducts from "../Pages/AllProducts";
 import Checkout from "../Pages/Checkout";
 import MyOrders from "../Pages/MyOrders";
 import AdminOrders from "../Pages/AdminOrders";
+import Categories from "../Pages/Categories";
+import Home from "../Components/Landings/Home";
+import Offers from "../Pages/Offers";
+ 
 
 const AppRoutes = () => {
   return (
@@ -36,7 +40,17 @@ const AppRoutes = () => {
           <Route element={<MainLayout />}>
             <Route path="/" element={<LandingPage />} />
             <Route path="/cart" element={<Cart />} />
-              <Route path="/checkout" element={<Checkout />} />
+            <Route path="/categories" element={<Categories />} />
+            <Route path="/home" element={<Home />} />
+            <Route path="/offers" element={<Offers />} />
+               <Route
+    path="/checkout"
+    element={
+      <PrivateRoute>
+        <Checkout />
+      </PrivateRoute>
+    }
+  />
           </Route>
 
           {/* 🔓 AUTH PAGES (NO layout) */}
@@ -60,6 +74,7 @@ const AppRoutes = () => {
             <Route path="/settings" element={<Settings />} />
             <Route path="/prescriptions" element={<Prescriptions />} />
             <Route path="/orders" element={<Orders />} />
+           
           
             <Route path="/myorders" element={<MyOrders />} />
             <Route path="/adminorders" element={<AdminOrders />} />

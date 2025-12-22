@@ -43,15 +43,26 @@ const [snackbarSeverity, setSnackbarSeverity] = useState("success");
     setLoading(true);
     // setMessage("");
     try {
-      const data = await apiCall(
-        "POST",
-        "register",
-        { name, email, password, phone }
-      );
+     const { response, error } = await apiCall(
+  "POST",
+  "register",
+  { name, email, password, phone }
+);
 
-     setSnackbarMessage("Registration successful! Redirecting to login...");
-    setSnackbarSeverity("success");
-    setOpenSnackbar(true);
+if (error) {
+  setSnackbarMessage(error.message || "Registration failed");
+  setSnackbarSeverity("error");
+  setOpenSnackbar(true);
+  return;
+}
+
+// ✅ yaha response mil raha hai
+console.log(response);
+
+setSnackbarMessage(response.message);
+setSnackbarSeverity("success");
+setOpenSnackbar(true);
+
       
       // Reset form on successful registration
       setName("");
@@ -350,3 +361,4 @@ const [snackbarSeverity, setSnackbarSeverity] = useState("success");
     </Box>
   );
 }
+

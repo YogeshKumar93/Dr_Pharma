@@ -2,6 +2,7 @@ const ApiEndpoints = {
   // ---------- AUTH ----------
   REGISTER: "register",
   LOGIN: "login",
+   ME: "me",
 
   // ---------- USERS ----------
   GET_USERS: "users",

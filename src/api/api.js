@@ -7,17 +7,30 @@ export const apiCall = async (
   extraHeaders = {}
 ) => {
   try {
-    const options = {
-      method,
-      headers: {
-        "Content-Type": "application/json",
-        ...extraHeaders,
-      },
+    const token = localStorage.getItem("token");
+
+    const headers = {
+      Accept: "application/json",
+      ...(token && { Authorization: `Bearer ${token}` }),
+      ...extraHeaders,
     };
 
-    // ⛔ body ONLY for non-GET
+    const options = {
+      method,
+      headers,
+    };
+
+    // ✅ HANDLE BODY SAFELY
     if (payload && method !== "GET") {
-      options.body = JSON.stringify(payload);
+      if (payload instanceof FormData) {
+        // 🔥 FILE UPLOAD CASE
+        options.body = payload;
+        // ❌ DO NOT SET Content-Type
+      } else {
+        // 🔥 NORMAL JSON CASE
+        headers["Content-Type"] = "application/json";
+        options.body = JSON.stringify(payload);
+      }
     }
 
     const response = await fetch(`${BASE_URL}${endpoint}`, options);
@@ -29,7 +42,6 @@ export const apiCall = async (
 
     return { response: data, error: null };
   } catch (err) {
-    console.error("API Error:", err);
     return {
       response: null,
       error: { message: "Network error" },

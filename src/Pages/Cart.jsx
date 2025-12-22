@@ -1,12 +1,16 @@
 // Cart.jsx
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { useCart } from "../Contexts/CartContext";
 import RegisterModal from "./RegisterModal";
+import { useNavigate } from "react-router-dom";
+import AuthContext from "../Contexts/AuthContext";
+
 
 const Cart = () => {
   const { cartItems, increaseQty, decreaseQty, removeFromCart } = useCart();
   const [showRegister, setShowRegister] = useState(false);
-  const isLoggedIn = false; // future me auth se aayega
+ const { isLoggedIn } = useContext(AuthContext);
+const navigate = useNavigate();
 
   const calculateItemTotal = (price, qty) => (price * qty).toFixed(2);
 
@@ -191,17 +195,21 @@ const Cart = () => {
                 <strong>Total: ₹{(cartTotal + 5.99).toFixed(2)}</strong>
               </div>
 
-              <button
-                style={styles.proceedButton}
-                onClick={() => {
-                  // if (!isLoggedIn) setShowRegister(true);
-                  // else window.location.href = "/checkout";
-                  window.location.href = "/checkout";
+             <button
+  style={styles.proceedButton}
+  onClick={() => {
+    if (!isLoggedIn) {
+      navigate("/login", {
+        state: { from: "/checkout" },
+      });
+    } else {
+      navigate("/checkout");
+    }
+  }}
+>
+  🛒 PROCEED TO PAY
+</button>
 
-                }}
-              >
-                🛒 PROCEED TO PAY
-              </button>
             </>
           )}
         </div>

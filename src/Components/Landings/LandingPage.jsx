@@ -4,7 +4,8 @@ import LandingPageIntro from "./LandingpageIntro";
 import { Helmet } from "react-helmet-async";
 import { CartProvider } from "../../Contexts/CartContext";
  
-// import LandingPageIntro from "./LandingpageIntro";
+ 
+ 
 
 const LandingPage = () => {
   useEffect(() => {
@@ -19,6 +20,7 @@ const LandingPage = () => {
       </Helmet>
  
       <LandingPageIntro />
+       {/* <Route path="/categories" element={<Categories />} /> */}
   
       
     </>

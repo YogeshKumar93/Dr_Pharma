@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from "react";
 import CommonFormModal from "../Common/CommonFormModal";
-import { BASE_URL } from "../api/config";
+import { apiCall } from "../api/api";
+
 
 const AddProduct = ({ open, handleClose, onFetchRef }) => {
   const initialFormData = {
     title: "",
     description: "",
-    category:"",
+    category: "",
     price: "",
     image: null,
     created_at: "",
@@ -14,13 +15,12 @@ const AddProduct = ({ open, handleClose, onFetchRef }) => {
   };
 
   const categoryOptions = [
-  { label: "Medicines", value: "medicines" },
-  { label: "Medical Instruments", value: "medical instruments" },
-  { label: "Syrups", value: "syrups" },
-  { label: "Kits", value: "kits" },
-  { label: "Supplements", value: "supplements" },
-];
-
+    { label: "Medicines", value: "medicines" },
+    { label: "Medical Instruments", value: "medical instruments" },
+    { label: "Syrups", value: "syrups" },
+    { label: "Kits", value: "kits" },
+    { label: "Supplements", value: "supplements" },
+  ];
 
   const [formData, setFormData] = useState(initialFormData);
   const [submitting, setSubmitting] = useState(false);
@@ -39,8 +39,8 @@ const AddProduct = ({ open, handleClose, onFetchRef }) => {
   };
 
   const handleSubmit = async () => {
-    if (!formData.title || !formData.price) {
-      alert("Title & Price required");
+    if (!formData.title || !formData.price || !formData.category) {
+      alert("Title, Category & Price are required");
       return;
     }
 
@@ -48,22 +48,34 @@ const AddProduct = ({ open, handleClose, onFetchRef }) => {
 
     try {
       const payload = new FormData();
+
       Object.entries({
         ...formData,
         created_at: formatDate(formData.created_at),
         updated_at: formatDate(formData.updated_at),
-      }).forEach(([k, v]) => payload.append(k, v));
-
-      await fetch(`${BASE_URL}products/create`, {
-        method: "POST",
-        body: payload,
+      }).forEach(([key, value]) => {
+        if (value !== null && value !== undefined) {
+          payload.append(key, value);
+        }
       });
+
+      // ✅ USING apiCall (TOKEN WILL BE ATTACHED)
+      const { response, error } = await apiCall(
+        "POST",
+        "products/create",
+        payload
+      );
+
+      if (error) {
+        alert("Failed to add product");
+        return;
+      }
 
       onFetchRef?.();
       handleModalClose();
-    } catch (e) {
-      console.error(e);
-      alert("Failed to add product");
+    } catch (err) {
+      console.error(err);
+      alert("Something went wrong");
     } finally {
       setSubmitting(false);
     }
@@ -76,7 +88,13 @@ const AddProduct = ({ open, handleClose, onFetchRef }) => {
   const fields = [
     { name: "title", label: "Title", required: true },
     { name: "description", label: "Description" },
-    { name: "category", label: "Category", type: "select", options: categoryOptions },
+    {
+      name: "category",
+      label: "Category",
+      type: "select",
+      options: categoryOptions,
+      required: true,
+    },
     { name: "price", label: "Price", type: "number", required: true },
     { name: "image", label: "Image", type: "file" },
     { name: "created_at", label: "Created Date", type: "date" },
