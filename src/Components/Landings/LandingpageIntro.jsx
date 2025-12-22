@@ -17,9 +17,14 @@ import { Box, Typography, Button, Grid, TextField, Card, CardContent, CardMedia,
 } from '@mui/icons-material';
 import React, { useState } from "react";
 
+import FeaturedProducts from "../../Pages/FeaturedProducts ";
+
+
 import { useCart } from "../../Contexts/CartContext";
 import { Snackbar, Alert } from "@mui/material";
-import FeaturedProducts from "../../Pages/FeaturedProducts ";
+ 
+import { apiCall } from "../../api/api";
+ 
 
 
 
@@ -28,14 +33,7 @@ const categories = [
   { title: "Vitamins", image: "/images/vitamins.jpg" },
   { title: "Supplements", image: "/images/supplements.jpg" },
   { title: "Personal Care", image: "/images/personal-care.jpg" },
-];
-
-// const featuredProducts = [
-//   { title: "Paracetamol", price: "$10", image: "/images/paracetamol.jpg" },
-//   { title: "Vitamin C", price: "$15", image: "/images/vitamin-c.jpg" },
-//   { title: "Omega 3", price: "$20", image: "/images/omega3.jpg" },
-//   { title: "Face Cream", price: "$12", image: "/images/face-cream.jpg" },
-// ];
+]; 
 
 const featuredProducts = [
   {
@@ -139,14 +137,65 @@ const featuredProducts = [
 
 const LandingPageIntro = () => {
 
-
   const { addToCart } = useCart();
 const [addedItems, setAddedItems] = useState({});
 const [openSnack, setOpenSnack] = useState(false);
 
+const [searchText, setSearchText] = useState("");
+const [searchResults, setSearchResults] = useState([]);
+const [searchLoading, setSearchLoading] = useState(false);
+const [suggestions, setSuggestions] = useState([]);
+const [showDropdown, setShowDropdown] = useState(false);
+const [searched, setSearched] = useState(false);
+
+ 
+
+const fetchSearchResults = async (text) => {
+  if (!text.trim()) {
+    setSuggestions([]);
+    setShowDropdown(false);
+    setSearched(true);
+    return;
+  }
+
+  setSearchLoading(true);
+
+  try {
+    const { response } = await apiCall("GET", "products");
+
+    const filtered = (response || []).filter((product) =>
+      product.title?.toLowerCase().includes(text.toLowerCase())
+    );
+
+    setSuggestions(filtered.slice(0, 5)); // 👈 max 5 dropdown items
+    setShowDropdown(true);
+  } catch (error) {
+    console.error("Search failed", error);
+  } finally {
+    setSearchLoading(false);
+  }
+};
+
+// debounce helper
+const debounce = (func, delay) => {
+  let timeout;
+  return (...args) => {
+    clearTimeout(timeout);
+    timeout = setTimeout(() => func(...args), delay);
+  };
+};
+
+// debounced function
+const debouncedSearch = React.useMemo(
+  () => debounce(fetchSearchResults, 500),
+  []
+);
+
+
 const handleAddToCart = (product, index) => {
   addToCart(product);            // 1️⃣ GLOBAL CART
-  setAddedItems({ ...addedItems, [index]: true }); // 2️⃣ UI
+ setAddedItems(prev => ({ ...prev, [index]: true }));
+ 
   setOpenSnack(true);            // 3️⃣ BOTTOM MESSAGE
 
   setTimeout(() => {
@@ -192,10 +241,21 @@ const handleAddToCart = (product, index) => {
         </Typography>
 
         {/* Search Bar */}
-        <Box sx={{ mt: 3, display: "flex", justifyContent: "center", flexWrap: "wrap", gap: 2 }}>
+        <Box sx={{ mt: 3, display: "flex", justifyContent: "center", flexWrap: "wrap", gap: 2, position: "relative" }}>
           <TextField
             placeholder="Search for medicines..."
             size="small"
+              value={searchText}
+            onChange={(e) => {
+  const value = e.target.value;
+  setSearchText(value);
+  debouncedSearch(value); // 👈 typing pe API call
+  if (!value.trim()) {
+  setSearchResults([]);
+}
+
+}}
+
             sx={{
               bgcolor: "#fff",
               borderRadius: 2,
@@ -204,11 +264,118 @@ const handleAddToCart = (product, index) => {
 
             }}
           />
-          <Button variant="contained" color="secondary">
-            Search
-          </Button>
-        </Box>
+          {showDropdown && suggestions.length > 0 && (
+  <Box
+    sx={{
+      position: "absolute",
+      mt: 1,
+      width: { xs: "100%", sm: "400px", md: "600px" },
+      bgcolor: "#fff",
+      boxShadow: 3,
+      borderRadius: 1,
+      zIndex: 10,
+    }}
+  >
+    {suggestions.map((item) => (
+      <Box
+        key={item.id}
+        sx={{
+          px: 2,
+          py: 1.5,
+          cursor: "pointer",
+          "&:hover": { bgcolor: "#f1f1f1" },
+        }}
+        onClick={() => {
+          setSearchText(item.title);     // input fill
+          setSearchResults([item]);      // upar result
+          setShowDropdown(false);        // dropdown hide
+          setSearched(true);
+
+        }}
+      >
+        <Typography>{item.title}</Typography>
       </Box>
+    ))}
+  </Box>
+)}
+
+         <Button
+  variant="contained"
+  color="secondary"
+   onClick={async () => {
+  if (!searchText.trim()) return;
+
+  const { response } = await apiCall("GET", "products");
+
+  const filtered = (response || []).filter((product) =>
+    product.title?.toLowerCase().includes(searchText.toLowerCase())
+  );
+
+  setSearchResults(filtered);
+  setShowDropdown(false);
+  setSearched(true);
+
+}}
+
+  disabled={searchLoading}
+>
+  {searchLoading ? "Searching..." : "Search"}
+</Button>
+
+        </Box>
+
+      </Box>
+
+      {searchResults.length > 0 && (
+  <Box sx={{ px: { xs: 2, md: 6 }, py: 4 }}>
+    <Typography variant="h5" sx={{ mb: 3, color: "#1a5276", fontWeight: 600 }}>
+      Search Results
+    </Typography>
+
+    <Grid container spacing={3}>
+      {searchResults.map((product, index) => (
+        <Grid item xs={12} sm={6} md={4} key={product.id}>
+          <Card sx={{ height: "100%", borderRadius: 3 }}>
+            <CardMedia
+              component="img"
+              height="180"
+              image={product.image || "/images/default-product.png"}
+              alt={product.title}
+            />
+
+            <CardContent>
+              <Typography variant="h6" sx={{ fontWeight: 600 }}>
+                {product.title}
+              </Typography>
+
+              <Typography sx={{ color: "#666", fontSize: "0.9rem", my: 1 }}>
+                ₹{product.price}
+              </Typography>
+
+              <Button
+                variant="contained"
+                fullWidth
+                startIcon={<ShoppingCart />}
+                onClick={() => handleAddToCart(product, index)}
+              >
+                Add to Cart
+              </Button>
+            </CardContent>
+          </Card>
+        </Grid>
+      ))}
+    </Grid>
+  </Box>
+)}
+
+{searched && searchResults.length === 0 && (
+  <Box sx={{ py: 6, textAlign: "center" }}>
+    <Typography variant="h6" sx={{ color: "#7f8c8d" }}>
+      No data found
+    </Typography>
+  </Box>
+)}
+
 
       {/* Categories Section */}
  <Box 
@@ -658,7 +825,7 @@ const handleAddToCart = (product, index) => {
       {/* Featured Products / Offers */}
 
 <Box>
-  <FeaturedProducts/ >
+  <FeaturedProducts />
 </Box>
 
 
