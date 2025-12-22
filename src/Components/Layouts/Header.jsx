@@ -9,7 +9,11 @@ import {
   Badge,
   Modal,
   Box,
+  Menu,
+  MenuItem,
+  Divider,
 } from "@mui/material";
+import React from "react";
 
 import MenuIcon from "@mui/icons-material/Menu";
 import { Link, useNavigate } from "react-router-dom";
@@ -23,6 +27,32 @@ import Cart from "../../Pages/Cart";
 const Header = () => {
   const { cartItems, openCart, setOpenCart } = useCart();
   const navigate = useNavigate();
+
+   const [anchorEl, setAnchorEl] = React.useState(null);
+  const open = Boolean(anchorEl);
+
+  const handleMenuOpen = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+  };
+
+ const handleLogout = () => {
+  // 1️⃣ Remove token (JWT expire from frontend)
+  localStorage.removeItem("token");
+
+  // (optional) agar user data store kiya hai
+  localStorage.removeItem("user");
+
+  // 2️⃣ Close menu
+  handleMenuClose();
+
+  // 3️⃣ Redirect to home page "/"
+  navigate("/", { replace: true });
+};
+
 
   return (
     <>
@@ -147,6 +177,7 @@ const Header = () => {
               </IconButton>
 
               <IconButton
+              onClick={handleMenuOpen}
                 sx={{
                   color: "#f3eceaff",
                   "&:hover": { backgroundColor: "#111" },
@@ -154,6 +185,37 @@ const Header = () => {
               >
                 <MenuIcon />
               </IconButton>
+              <Menu
+                anchorEl={anchorEl}
+                open={open}
+                onClose={handleMenuClose}
+                anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+                transformOrigin={{ vertical: "top", horizontal: "right" }}
+              >
+                <MenuItem
+                  onClick={() => {
+                    handleMenuClose();
+                    navigate("/myprofile");
+                  }}
+                >
+                  My Profile
+                </MenuItem>
+
+                <MenuItem
+                  onClick={() => {
+                    handleMenuClose();
+                    navigate("/myorders");
+                  }}
+                >
+                  My Orders
+                </MenuItem>
+
+                <Divider />
+
+                <MenuItem onClick={handleLogout} sx={{ color: "red" }}>
+                  Logout
+                </MenuItem>
+              </Menu>
             </Box>
           </Toolbar>
         </Container>
@@ -162,14 +224,7 @@ const Header = () => {
       {/* HEADER HEIGHT SPACER */}
       <Toolbar />
 
-      {/* ❌ MODAL DISABLED (PAGE BASED CART) */}
-      {/*
-      <Modal open={openCart} onClose={() => setOpenCart(false)}>
-        <Box>
-          <Cart />
-        </Box>
-      </Modal>
-      */}
+      
     </>
   );
 };

@@ -63,6 +63,14 @@ const Checkout = ({ user }) => {
   };
 
   return (
+    <> <style>
+      {`
+        @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+      `}
+    </style>
     <div style={styles.container}>
       <div style={styles.checkoutContainer}>
         <h1 style={styles.title}>Checkout</h1>
@@ -182,44 +190,45 @@ const Checkout = ({ user }) => {
         </div>
       </div>
     </div>
+    </>
   );
 };
 
 const styles = {
   container: {
     backgroundColor: "#f8f9fa",
-    minHeight: "100vh",
-    padding: "20px",
+    minHeight: "70vh",
+    padding: "10px",
     display: "flex",
     justifyContent: "center",
     alignItems: "flex-start",
   },
   checkoutContainer: {
-    maxWidth: "800px",
+    maxWidth: "600px",
     width: "100%",
     backgroundColor: "white",
     borderRadius: "12px",
     boxShadow: "0 2px 20px rgba(0,0,0,0.08)",
-    padding: "32px",
+    padding: "28px",
     margin: "20px 0",
   },
   title: {
     color: "#2d3748",
     fontSize: "28px",
     fontWeight: "600",
-    marginBottom: "32px",
-    paddingBottom: "16px",
+    marginBottom: "3px",
+    paddingBottom: "6px",
     borderBottom: "2px solid #edf2f7",
   },
   section: {
-    marginBottom: "32px",
-    padding: "24px",
-    backgroundColor: "#fafafa",
+    marginBottom: "10px",
+    padding: "15px",
+    backgroundColor: "#d6d0d0ff",
     borderRadius: "10px",
     border: "1px solid #e2e8f0",
   },
   sectionTitle: {
-    color: "#4a5568",
+    color: "#052966ff",
     fontSize: "18px",
     fontWeight: "600",
     marginBottom: "20px",
@@ -428,13 +437,6 @@ const styles = {
   },
 };
 
-// Add CSS animation for spinner
-const styleSheet = document.styleSheets[0];
-styleSheet.insertRule(`
-  @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-  }
-`, styleSheet.cssRules.length);
+ 
 
 export default Checkout;

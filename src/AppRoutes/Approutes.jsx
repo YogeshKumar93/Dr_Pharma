@@ -22,12 +22,13 @@ import { CartProvider } from "../Contexts/CartContext";
 import Cart from "../Pages/Cart";
 import AllProducts from "../Pages/AllProducts";
 import Checkout from "../Pages/Checkout";
-import MyOrders from "../Pages/MyOrders";
+ 
 import AdminOrders from "../Pages/AdminOrders";
 import Categories from "../Pages/Categories";
 import Home from "../Components/Landings/Home";
 import Offers from "../Pages/Offers";
 import AboutUs from "../Pages/AboutUs";
+import MyOrders from "../Pages/MyOrders";
 
 
 const AppRoutes = () => {
@@ -45,6 +46,7 @@ const AppRoutes = () => {
               <Route path="/home" element={<Home />} />
               <Route path="/offers" element={<Offers />} />
               <Route path="/aboutus" element={<AboutUs />} />
+              <Route path="/myorders" element={<MyOrders />} />
               <Route
                 path="/checkout"
                 element={

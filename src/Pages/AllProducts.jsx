@@ -29,6 +29,7 @@ const AllProducts = () => {
 // const [selectedProduct, setSelectedProduct] = useState(null);
 
   /* -------------------- API CALL -------------------- */
+  
   const fetchProducts = async () => {
     try {
       setLoading(true);

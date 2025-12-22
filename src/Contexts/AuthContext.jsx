@@ -27,8 +27,6 @@ export const AuthProvider = ({ children }) => {
 
     apiCall("GET", ApiEndpoints.ME)
       .then(({ response }) => {
-        // Expected backend response:
-        // { status: true, user: {...} }
         if (response?.user) {
           setUser(response.user);
         } else {
@@ -56,7 +54,6 @@ export const AuthProvider = ({ children }) => {
       throw new Error(response?.message || "Invalid credentials");
     }
 
-    // Save token only (JWT rule)
     localStorage.setItem("token", response.token);
     setUser(response.user);
 
@@ -69,9 +66,7 @@ export const AuthProvider = ({ children }) => {
   const logout = async () => {
     try {
       await apiCall("POST", ApiEndpoints.LOGOUT);
-    } catch (e) {
-      // ignore
-    }
+    } catch (e) {}
 
     localStorage.removeItem("token");
     setUser(null);
@@ -81,11 +76,14 @@ export const AuthProvider = ({ children }) => {
   // CONTEXT VALUE
   // ---------------------------------
   const value = {
-    user,                 // logged in user
-    loading,              // auth loading state
-    isLoggedIn: !!user,   // boolean
-    login,                // login(email, password)
-    logout,               // logout()
+    user,
+    loading,
+    isLoggedIn: !!user,
+    login,
+    logout,
+
+    // ✅ ONLY ADDITION (TOKEN EXPOSED)
+    token: localStorage.getItem("token"),
   };
 
   return (
@@ -107,6 +105,6 @@ export const useAuth = () => {
 };
 
 // --------------------
-// DEFAULT EXPORT (VERY IMPORTANT)
+// DEFAULT EXPORT
 // --------------------
 export default AuthContext;
