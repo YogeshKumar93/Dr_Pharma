@@ -90,7 +90,7 @@ const Header = () => {
                 <Button component={Link} to="/offers" sx={navBtn}>
                   Offers
                 </Button>
-                <Button component={Link} to="/about" sx={navBtn}>
+                <Button component={Link} to="/aboutus" sx={navBtn}>
                   About
                 </Button>
               </Box>

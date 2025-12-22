@@ -27,62 +27,64 @@ import AdminOrders from "../Pages/AdminOrders";
 import Categories from "../Pages/Categories";
 import Home from "../Components/Landings/Home";
 import Offers from "../Pages/Offers";
- 
+import AboutUs from "../Pages/AboutUs";
+
 
 const AppRoutes = () => {
   return (
     <AuthProvider>
-       <CartProvider>
-      <BrowserRouter>
-        <Routes>
+      <CartProvider>
+        <BrowserRouter>
+          <Routes>
 
-          {/* 🌐 PUBLIC WEBSITE (Landing + common header/footer) */}
-          <Route element={<MainLayout />}>
-            <Route path="/" element={<LandingPage />} />
-            <Route path="/cart" element={<Cart />} />
-            <Route path="/categories" element={<Categories />} />
-            <Route path="/home" element={<Home />} />
-            <Route path="/offers" element={<Offers />} />
-               <Route
-    path="/checkout"
-    element={
-      <PrivateRoute>
-        <Checkout />
-      </PrivateRoute>
-    }
-  />
-          </Route>
+            {/* 🌐 PUBLIC WEBSITE (Landing + common header/footer) */}
+            <Route element={<MainLayout />}>
+              <Route path="/" element={<LandingPage />} />
+              <Route path="/cart" element={<Cart />} />
+              <Route path="/categories" element={<Categories />} />
+              <Route path="/home" element={<Home />} />
+              <Route path="/offers" element={<Offers />} />
+              <Route path="/aboutus" element={<AboutUs />} />
+              <Route
+                path="/checkout"
+                element={
+                  <PrivateRoute>
+                    <Checkout />
+                  </PrivateRoute>
+                }
+              />
+            </Route>
 
-          {/* 🔓 AUTH PAGES (NO layout) */}
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          
+            {/* 🔓 AUTH PAGES (NO layout) */}
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
 
-          {/* 🔒 DASHBOARD (SIDENAV + HEADER) */}
-          <Route
-            element={
-              <PrivateRoute>
-                <SideNavAndHeader />
-              </PrivateRoute>
-            }
-          >
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/users" element={<Users />} />
-            <Route path="/allproducts" element={<AllProducts />} />
-            <Route path="/medicines" element={<Medicines />} />
-            <Route path="/payments" element={<Payments />} />
-            <Route path="/settings" element={<Settings />} />
-            <Route path="/prescriptions" element={<Prescriptions />} />
-            <Route path="/orders" element={<Orders />} />
-           
-          
-            <Route path="/myorders" element={<MyOrders />} />
-            <Route path="/adminorders" element={<AdminOrders />} />
-            
-          </Route>
 
-        </Routes>
-      </BrowserRouter>
+            {/* 🔒 DASHBOARD (SIDENAV + HEADER) */}
+            <Route
+              element={
+                <PrivateRoute>
+                  <SideNavAndHeader />
+                </PrivateRoute>
+              }
+            >
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/users" element={<Users />} />
+              <Route path="/allproducts" element={<AllProducts />} />
+              <Route path="/medicines" element={<Medicines />} />
+              <Route path="/payments" element={<Payments />} />
+              <Route path="/settings" element={<Settings />} />
+              <Route path="/prescriptions" element={<Prescriptions />} />
+              <Route path="/orders" element={<Orders />} />
+
+
+              <Route path="/myorders" element={<MyOrders />} />
+              <Route path="/adminorders" element={<AdminOrders />} />
+
+            </Route>
+
+          </Routes>
+        </BrowserRouter>
       </CartProvider>
     </AuthProvider>
   );

@@ -195,7 +195,23 @@ const navigate = useNavigate();
                 <strong>Total: ₹{(cartTotal + 5.99).toFixed(2)}</strong>
               </div>
 
-             <button
+             {/* <button
+  style={styles.proceedButton}
+  onClick={() => {
+    if (!isLoggedIn) {
+      navigate("/login", {
+        state: { from: "/checkout" },
+      });
+    } else {
+      navigate("/checkout");
+    }
+  }}
+>
+  🛒 PROCEED TO PAY
+</button> */}
+
+
+         <button
   style={styles.proceedButton}
   onClick={() => {
     if (!isLoggedIn) {
