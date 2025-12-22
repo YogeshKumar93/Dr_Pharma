@@ -22,6 +22,8 @@ import {
 } from "@mui/icons-material";
 import { apiCall } from "../api/api";
 import { useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
+
 
 export default function Register() {
   const [name, setName] = useState("");
@@ -37,6 +39,10 @@ export default function Register() {
 const [openSnackbar, setOpenSnackbar] = useState(false);
 const [snackbarMessage, setSnackbarMessage] = useState("");
 const [snackbarSeverity, setSnackbarSeverity] = useState("success");
+const location = useLocation();
+
+
+const redirectTo = location.state?.redirectTo || "/";
 
 
   const handleRegister = async () => {
@@ -47,6 +53,7 @@ const [snackbarSeverity, setSnackbarSeverity] = useState("success");
   "POST",
   "register",
   { name, email, password, phone }
+  
 );
 
 if (error) {
@@ -55,14 +62,16 @@ if (error) {
   setOpenSnackbar(true);
   return;
 }
-
-// ✅ yaha response mil raha hai
+ 
 console.log(response);
 
 setSnackbarMessage(response.message);
 setSnackbarSeverity("success");
 setOpenSnackbar(true);
 
+  if (response.token) {
+      localStorage.setItem("token", response.token);
+    }
       
       // Reset form on successful registration
       setName("");
@@ -71,14 +80,16 @@ setOpenSnackbar(true);
       setPhone("");
 
         // ⏳ redirect after 2 seconds
-    setTimeout(() => {
-      navigate("/login");
-    }, 2000);
+     setTimeout(() => {
+      navigate(redirectTo, { replace: true });
+    }, 1500);
       
     } catch (err) {
-      setMessage(err.message || "Registration failed");
-    } finally {
-      setLoading(false);
+     setSnackbarMessage("Something went wrong");
+    setSnackbarSeverity("error");
+    setOpenSnackbar(true);
+  } finally {
+    setLoading(false);
     }
   };
 

@@ -76,6 +76,11 @@ export const CartProvider = ({ children }) => {
     );
   };
 
+  const clearCart = () => {
+  setCartItems([]);
+  localStorage.removeItem("cartItems");
+};
+
   return (
     <CartContext.Provider
       value={{
@@ -84,6 +89,7 @@ export const CartProvider = ({ children }) => {
         increaseQty,
         decreaseQty,
         removeFromCart,
+        clearCart,
         openCart,
         setOpenCart, // 🔥 THIS FIXES YOUR ERROR
       }}

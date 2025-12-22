@@ -211,12 +211,12 @@ const navigate = useNavigate();
 </button> */}
 
 
-         <button
+    <button
   style={styles.proceedButton}
   onClick={() => {
     if (!isLoggedIn) {
-      navigate("/login", {
-        state: { from: "/checkout" },
+      navigate("/register", {
+        state: { redirectTo: "/checkout" },
       });
     } else {
       navigate("/checkout");
@@ -225,6 +225,7 @@ const navigate = useNavigate();
 >
   🛒 PROCEED TO PAY
 </button>
+
 
             </>
           )}
