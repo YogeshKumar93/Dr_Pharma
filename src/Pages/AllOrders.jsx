@@ -1,11 +1,28 @@
 import { useEffect, useState } from "react";
-import { Box, Chip, TextField, MenuItem } from "@mui/material";
+import {
+  Box,
+  Chip,
+  TextField,
+  MenuItem,
+  Button,
+  IconButton,
+  Tooltip,
+} from "@mui/material";
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
+
 import { apiCall } from "../api/api";
 import CommonTable from "../Common/CommonTable";
+import EditOrder from "./EditOrder";
+import AddOrder from "./AddOrder";
 
 const AllOrders = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [addOpen, setAddOpen] = useState(false);
+const [editOpen, setEditOpen] = useState(false);
+const [selectedOrder, setSelectedOrder] = useState(null);
+
 
   // 🔹 Fetch all admin orders
   const fetchOrders = () => {
@@ -25,41 +42,50 @@ const AllOrders = () => {
     apiCall("POST", "admin/orders/update-status", {
       order_id,
       order_status: status,
-    }).then(() => {
-      fetchOrders(); // refresh table
-    });
+    }).then(fetchOrders);
   };
 
-  // 🔹 Table columns
+  /* -------------------- ACTION HANDLERS -------------------- */
+
+ const handleEdit = (row) => {
+  setSelectedOrder(row);
+  setEditOpen(true);
+};
+
+  const handleDelete = (row) => {
+    const confirmDelete = window.confirm(
+      `Delete order ${row.order_number}?`
+    );
+
+    if (!confirmDelete) return;
+
+    apiCall("POST", "admin/orders/delete", {
+      order_id: row.id,
+    }).then(fetchOrders);
+  };
+
+  /* -------------------- COLUMNS -------------------- */
   const columns = [
+    { headerName: "Order No", field: "order_number" },
+    { headerName: "User ID", field: "user_id" },
     {
-      headerName: "Order No",
-      field: "order_number",
-    },
-    {
-      headerName: "User ID",
-      field: "user_id",
-    },
-    {
-      headerName: "Total Amount",
+      headerName: "Total",
       field: "total_amount",
-      render: (value) => `₹${value}`,
+      render: (v) => `₹${v}`,
     },
     {
-      headerName: "Payment Method",
+      headerName: "Payment",
       field: "payment_method",
-      render: (value) => (
-        <Chip label={value} size="small" color="info" />
-      ),
+      render: (v) => <Chip label={v} size="small" color="info" />,
     },
     {
-      headerName: "Payment Status",
+      headerName: "Pay Status",
       field: "payment_status",
-      render: (value) => (
+      render: (v) => (
         <Chip
-          label={value}
+          label={v}
           size="small"
-          color={value === "paid" ? "success" : "warning"}
+          color={v === "paid" ? "success" : "warning"}
         />
       ),
     },
@@ -85,20 +111,66 @@ const AllOrders = () => {
       ),
     },
     {
-      headerName: "Created At",
+      headerName: "Created",
       field: "created_at",
-      render: (value) =>
-        new Date(value).toLocaleDateString(),
+      render: (v) => new Date(v).toLocaleDateString(),
     },
   ];
 
+  /* -------------------- ACTION COLUMN -------------------- */
+  const actions = (row) => (
+    <Box sx={{ display: "flex", gap: 1 }}>
+      <Tooltip title="Edit">
+        <IconButton size="small" color="primary" onClick={() => handleEdit(row)}>
+          <EditIcon fontSize="small" />
+        </IconButton>
+      </Tooltip>
+
+      <Tooltip title="Delete">
+        <IconButton size="small" color="error" onClick={() => handleDelete(row)}>
+          <DeleteIcon fontSize="small" />
+        </IconButton>
+      </Tooltip>
+    </Box>
+  );
+
+  /* -------------------- UI -------------------- */
   return (
     <Box p={2}>
+      {/* 🔹 ADD ORDER BUTTON */}
+      <Box sx={{ display: "flex", justifyContent: "flex-end", mb: 2 }}>
+        <Button
+          variant="contained"
+          sx={{
+            backgroundColor: "#1A5276",
+            "&:hover": { backgroundColor: "#154360" },
+          }}
+         onClick={()=>setAddOpen(true)}
+        >
+          Add Order
+        </Button>
+      </Box>
+
       <CommonTable
         columns={columns}
         rows={orders}
         loading={loading}
+        actions={actions}
       />
+
+      <AddOrder
+  open={addOpen}
+  handleClose={() => setAddOpen(false)}
+  onFetchRef={fetchOrders}
+/>
+
+<EditOrder
+  open={editOpen}
+  handleClose={() => setEditOpen(false)}
+  order={selectedOrder}
+  onFetchRef={fetchOrders}
+/>
+
     </Box>
   );
 };

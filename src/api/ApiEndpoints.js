@@ -25,8 +25,14 @@ const ApiEndpoints = {
 
   // ---------- ORDERS (ADMIN) ----------
   ADMIN_ALL_ORDERS: "admin/orders",
+  ADMIN_CREATE_ORDER: "admin/orders/create",
+  ADMIN_UPDATE_ORDER: "admin/orders/update",
   ADMIN_UPDATE_ORDER_STATUS: "admin/orders/update-status",
   ADMIN_UPDATE_PAYMENT_STATUS: "admin/orders/update-payment",
+
+  // ---------- PAYMENTS ----------
+  ADMIN_PAYMENTS: "admin/payments",
+  ADMIN_UPDATE_PAYMENT_STATUS: "admin/payments/update-status",
 };
 
 export default ApiEndpoints;
