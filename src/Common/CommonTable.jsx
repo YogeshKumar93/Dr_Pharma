@@ -16,6 +16,10 @@ import {
   Checkbox,
   Button,
 } from "@mui/material";
+import RefreshIcon from "@mui/icons-material/Refresh";
+import IconButton from "@mui/material/IconButton";
+import Tooltip from "@mui/material/Tooltip";
+
 
 const CommonTable = ({
   columns = [],
@@ -37,7 +41,7 @@ const CommonTable = ({
 
   // Actions
   actions,
-
+onRefresh,
   // Table width
   width = "100%",
 }) => {
@@ -123,32 +127,58 @@ const CommonTable = ({
   return (
     <Box sx={{ width, m: 0, p: 0 }}>
       {/* -------------------- Filters -------------------- */}
+    {/* -------- Top Action Bar (Filters + Refresh) -------- */}
+{(filtersConfig.length > 0 || onRefresh) && (
+  <Box
+    sx={{
+      display: "flex",
+      gap: 2,
+      flexWrap: "wrap",
+      alignItems: "center",
+      mb: 2,
+      p: 2,
+      borderRadius: 2,
+      background: "#fafafa",
+      border: "1px solid #ddd",
+      justifyContent: "space-between",
+    }}
+  >
+    {/* LEFT SIDE – Filters */}
+    <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap" }}>
+      {filtersConfig.map((filter) => renderFilterField(filter))}
+
       {filtersConfig.length > 0 && (
-        <Box
+        <Button
+          variant="outlined"
+          color="secondary"
+          onClick={() => onFiltersChange({})}
+          sx={{ height: 36 }}
+        >
+          Reset
+        </Button>
+      )}
+    </Box>
+
+    {/* RIGHT SIDE – Refresh */}
+    {onRefresh && (
+      <Tooltip title="Refresh Table">
+        <IconButton
+          onClick={onRefresh}
+          disabled={loading}
           sx={{
-            display: "flex",
-            gap: 2,
-            flexWrap: "wrap",
-            alignItems: "center",
-            mb: 2,
-            p: 2,
-            borderRadius: 2,
-            background: "#fafafa",
             border: "1px solid #ddd",
+            borderRadius: 1,
+            height: 36,
+            width: 36,
           }}
         >
-          {filtersConfig.map((filter) => renderFilterField(filter))}
+          <RefreshIcon />
+        </IconButton>
+      </Tooltip>
+    )}
+  </Box>
+)}
 
-          <Button
-            variant="outlined"
-            color="secondary"
-            onClick={() => onFiltersChange({})}
-            sx={{ height: 36 }}
-          >
-            Reset
-          </Button>
-        </Box>
-      )}
 
       {/* -------------------- Table -------------------- */}
       <Paper elevation={3} sx={{ overflow: "hidden", m: 0, p: 0 }}>

@@ -194,6 +194,7 @@ const handleDelete = async (row) => {
         serverPagination
         page={page}
         rowsPerPage={rowsPerPage}
+         onRefresh={fetchProducts} 
         totalCount={products.length}
         onPageChange={(e, newPage) => setPage(newPage)}
         onRowsPerPageChange={(e) => {

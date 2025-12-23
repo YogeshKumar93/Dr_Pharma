@@ -43,6 +43,9 @@ const [addOpen, setAddOpen] = useState(false);
     }
   };
 
+ 
+
+
   useEffect(() => {
     fetchUsers();
   }, []);
@@ -213,6 +216,7 @@ const handleModalClose = () => {
         actions={actions}
         serverPagination
         page={page}
+        onRefresh={fetchUsers} 
         rowsPerPage={rowsPerPage}
         totalCount={users.length}
         onPageChange={(e, newPage) => setPage(newPage)}

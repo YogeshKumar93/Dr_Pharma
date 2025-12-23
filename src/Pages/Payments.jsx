@@ -186,6 +186,7 @@ const Payments = () => {
         serverPagination
         page={page}
         rowsPerPage={rowsPerPage}
+        onRefresh={fetchPayments}
         totalCount={payments.length}
         onPageChange={(e, newPage) => setPage(newPage)}
         onRowsPerPageChange={(e) => {

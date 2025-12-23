@@ -156,6 +156,7 @@ const [selectedOrder, setSelectedOrder] = useState(null);
         rows={orders}
         loading={loading}
         actions={actions}
+        onRefresh={fetchOrders} 
       />
 
       <AddOrder
