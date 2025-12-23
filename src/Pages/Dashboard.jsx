@@ -12,11 +12,13 @@ import {
   Chip,
   Button,
   IconButton,
-  Menu,
-  MenuItem,
-  Divider,
   Tooltip,
-  Fab
+  Fab,
+  Paper,
+  Stack,
+  Divider,
+  Avatar,
+  Badge
 } from "@mui/material";
 import { apiCall } from "../api/api";
 import {
@@ -28,14 +30,23 @@ import {
   CheckCircle as PaidIcon,
   TrendingUp,
   TrendingDown,
-  MoreVert,
   Refresh,
   CalendarToday,
   ViewWeek,
   BarChart,
   PieChart,
   Timeline,
-  ArrowForward
+  ArrowForward,
+  LocalPharmacy,
+  MedicalServices,
+  Medication,
+  Receipt,
+  Inventory2,
+  AttachMoney,
+  HealthAndSafety,
+  Coronavirus,
+  Vaccines,
+  CheckCircle
 } from "@mui/icons-material";
 import {
   LineChart,
@@ -52,17 +63,26 @@ import {
   Legend,
   ResponsiveContainer,
   AreaChart,
-  Area
+  Area,
+  RadarChart,
+  Radar,
+  PolarGrid,
+  PolarAngleAxis,
+  PolarRadiusAxis,
+  ScatterChart,
+  Scatter,
+  ZAxis
 } from 'recharts';
+import PeopleIcon from "@mui/icons-material/People";
+
 
 const Dashboard = () => {
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [viewMode, setViewMode] = useState('overview'); // 'overview' or 'today'
-  const [timeRange, setTimeRange] = useState('weekly'); // 'daily', 'weekly', 'monthly'
+  const [viewMode, setViewMode] = useState('overview');
+  const [timeRange, setTimeRange] = useState('weekly');
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-  const [anchorEl, setAnchorEl] = useState(null);
 
   useEffect(() => {
     fetchData();
@@ -80,34 +100,49 @@ const Dashboard = () => {
       });
   };
 
-  // Generate sample data for charts (in real app, this would come from API)
-  const generateChartData = () => {
+  // Generate pharmacy-specific data for charts
+  const generatePharmacyChartData = () => {
     const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-    return days.map((day, index) => ({
+    return days.map((day) => ({
       name: day,
-      users: Math.floor(Math.random() * 50) + 20,
-      orders: Math.floor(Math.random() * 100) + 30,
-      revenue: Math.floor(Math.random() * 5000) + 2000,
-      growth: Math.floor(Math.random() * 30) - 5,
+      prescriptions: Math.floor(Math.random() * 80) + 40,
+      medicines: Math.floor(Math.random() * 150) + 50,
+      revenue: Math.floor(Math.random() * 8000) + 3000,
+      consultations: Math.floor(Math.random() * 30) + 10,
+      growth: Math.floor(Math.random() * 25) + 5,
     }));
   };
 
-  const generatePieData = (stats) => {
+  const generateMedicineDistribution = (stats) => {
     return [
-      { name: 'Active', value: stats?.users ? Math.floor(stats.users * 0.7) : 70, color: '#1A5276' },
-      { name: 'Inactive', value: stats?.users ? Math.floor(stats.users * 0.2) : 20, color: '#3498DB' },
-      { name: 'New', value: stats?.users ? Math.floor(stats.users * 0.1) : 10, color: '#2ECC71' },
+      { name: 'Pain Relief', value: Math.floor((stats?.products || 100) * 0.35), color: '#1A5276' },
+      { name: 'Antibiotics', value: Math.floor((stats?.products || 100) * 0.25), color: '#3498DB' },
+      { name: 'Vitamins', value: Math.floor((stats?.products || 100) * 0.20), color: '#27AE60' },
+      { name: 'First Aid', value: Math.floor((stats?.products || 100) * 0.15), color: '#F39C12' },
+      { name: 'Others', value: Math.floor((stats?.products || 100) * 0.05), color: '#9B59B6' },
     ];
   };
 
   const generateTodayData = (stats) => {
     return {
-      users_today: Math.floor((stats?.users || 0) * 0.1),
-      products_today: Math.floor((stats?.products || 0) * 0.05),
-      orders_today: Math.floor((stats?.orders || 0) * 0.15),
-      payments_today: Math.floor((stats?.payments || 0) * 0.12),
-      revenue_today: Math.floor((stats?.orders || 0) * 2500 * 0.15),
+      prescriptions_today: Math.floor((stats?.orders || 0) * 0.2),
+      medicines_sold: Math.floor((stats?.products || 0) * 0.1),
+      consultations_today: Math.floor((stats?.users || 0) * 0.15),
+      revenue_today: Math.floor((stats?.orders || 0) * 1800 * 0.15),
+      emergency_orders: Math.floor((stats?.pending_orders || 0) * 0.3),
     };
+  };
+
+  const generateStockData = () => {
+    const categories = [
+      { name: 'Analgesics', value: 85, color: '#1A5276' },
+      { name: 'Antibiotics', value: 65, color: '#3498DB' },
+      { name: 'Cardiac', value: 45, color: '#E74C3C' },
+      { name: 'Diabetic', value: 75, color: '#27AE60' },
+      { name: 'Vitamins', value: 95, color: '#F39C12' },
+      { name: 'Pediatric', value: 55, color: '#9B59B6' },
+    ];
+    return categories;
   };
 
   if (loading) {
@@ -115,138 +150,153 @@ const Dashboard = () => {
   }
 
   if (!stats) {
-    return <ErrorState />;
+    return <ErrorState fetchData={fetchData} />;
   }
 
   const todayData = generateTodayData(stats);
-  const chartData = generateChartData();
-  const pieData = generatePieData(stats);
+  const chartData = generatePharmacyChartData();
+  const pieData = generateMedicineDistribution(stats);
+  const stockData = generateStockData();
 
   const cardData = viewMode === 'overview' ? [
     { 
-      title: "Total Users", 
+      title: "Total Patients", 
       value: stats.users, 
-      icon: <UsersIcon />, 
+      icon: <PeopleIcon />, 
       color: "#1A5276", 
-      bgColor: "rgba(26, 82, 118, 0.1)",
-      trend: 12.5,
-      change: "positive",
-      todayValue: todayData.users_today
-    },
-    { 
-      title: "Total Products", 
-      value: stats.products, 
-      icon: <ProductsIcon />, 
-      color: "#2E86C1", 
-      bgColor: "rgba(46, 134, 193, 0.1)",
-      trend: 8.3,
-      change: "positive",
-      todayValue: todayData.products_today
-    },
-    { 
-      title: "Total Orders", 
-      value: stats.orders, 
-      icon: <OrdersIcon />, 
-      color: "#3498DB", 
-      bgColor: "rgba(52, 152, 219, 0.1)",
+      bgColor: "rgba(26, 82, 118, 0.15)",
       trend: 15.2,
       change: "positive",
-      todayValue: todayData.orders_today
+      todayValue: todayData.consultations_today,
+      prefix: ""
     },
     { 
-      title: "Total Payments", 
-      value: stats.payments, 
-      icon: <PaymentsIcon />, 
-      color: "#5DADE2", 
-      bgColor: "rgba(93, 173, 226, 0.1)",
+      title: "Medicines", 
+      value: stats.products, 
+      icon: <Medication />, 
+      color: "#2E86C1", 
+      bgColor: "rgba(46, 134, 193, 0.15)",
+      trend: 8.3,
+      change: "positive",
+      todayValue: todayData.medicines_sold,
+      prefix: ""
+    },
+    { 
+      title: "Prescriptions", 
+      value: stats.orders, 
+      icon: <Receipt />, 
+      color: "#3498DB", 
+      bgColor: "rgba(52, 152, 219, 0.15)",
       trend: 18.7,
       change: "positive",
-      todayValue: todayData.payments_today
+      todayValue: todayData.prescriptions_today,
+      prefix: ""
+    },
+    { 
+      title: "Total Revenue", 
+      value: stats.orders * 1800, 
+      icon: <AttachMoney />, 
+      color: "#27AE60", 
+      bgColor: "rgba(39, 174, 96, 0.15)",
+      trend: 22.1,
+      change: "positive",
+      todayValue: todayData.revenue_today,
+      prefix: "₹"
     },
     { 
       title: "Pending Orders", 
       value: stats.pending_orders, 
       icon: <PendingIcon />, 
       color: "#E67E22", 
-      bgColor: "rgba(230, 126, 34, 0.1)",
+      bgColor: "rgba(230, 126, 34, 0.15)",
       trend: -3.2,
       change: "negative",
-      todayValue: Math.floor(stats.pending_orders * 0.2)
+      todayValue: todayData.emergency_orders,
+      prefix: ""
     },
     { 
-      title: "Paid Payments", 
+      title: "Completed", 
       value: stats.paid_payments, 
-      icon: <PaidIcon />, 
-      color: "#27AE60", 
-      bgColor: "rgba(39, 174, 96, 0.1)",
-      trend: 22.1,
+      icon: <CheckCircle />, 
+      color: "#9B59B6", 
+      bgColor: "rgba(155, 89, 182, 0.15)",
+      trend: 12.5,
       change: "positive",
-      todayValue: Math.floor(stats.paid_payments * 0.18)
+      todayValue: Math.floor(stats.paid_payments * 0.18),
+      prefix: ""
     },
   ] : [
     { 
-      title: "Users Today", 
-      value: todayData.users_today, 
-      icon: <UsersIcon />, 
+      title: "New Patients", 
+      value: todayData.consultations_today, 
+      icon: <PeopleIcon />, 
       color: "#1A5276", 
-      bgColor: "rgba(26, 82, 118, 0.1)",
+      bgColor: "rgba(26, 82, 118, 0.15)",
       trend: 12.5,
-      change: "positive"
+      change: "positive",
+      prefix: ""
     },
     { 
-      title: "Products Added", 
-      value: todayData.products_today, 
-      icon: <ProductsIcon />, 
+      title: "Medicines Sold", 
+      value: todayData.medicines_sold, 
+      icon: <Medication />, 
       color: "#2E86C1", 
-      bgColor: "rgba(46, 134, 193, 0.1)",
+      bgColor: "rgba(46, 134, 193, 0.15)",
       trend: 8.3,
-      change: "positive"
+      change: "positive",
+      prefix: ""
     },
     { 
-      title: "Orders Today", 
-      value: todayData.orders_today, 
-      icon: <OrdersIcon />, 
+      title: "Prescriptions", 
+      value: todayData.prescriptions_today, 
+      icon: <Receipt />, 
       color: "#3498DB", 
-      bgColor: "rgba(52, 152, 219, 0.1)",
+      bgColor: "rgba(52, 152, 219, 0.15)",
       trend: 15.2,
-      change: "positive"
-    },
-    { 
-      title: "Payments Today", 
-      value: todayData.payments_today, 
-      icon: <PaymentsIcon />, 
-      color: "#5DADE2", 
-      bgColor: "rgba(93, 173, 226, 0.1)",
-      trend: 18.7,
-      change: "positive"
+      change: "positive",
+      prefix: ""
     },
     { 
       title: "Revenue Today", 
       value: todayData.revenue_today, 
-      icon: <PaidIcon />, 
+      icon: <AttachMoney />, 
       color: "#27AE60", 
-      bgColor: "rgba(39, 174, 96, 0.1)",
+      bgColor: "rgba(39, 174, 96, 0.15)",
       trend: 22.1,
       change: "positive",
       prefix: "₹"
     },
     { 
-      title: "Conversion Rate", 
-      value: stats.users ? Math.round((todayData.orders_today / todayData.users_today) * 100) : 0, 
-      icon: <TrendingUp />, 
-      color: "#9B59B6", 
-      bgColor: "rgba(155, 89, 182, 0.1)",
+      title: "Emergency Orders", 
+      value: todayData.emergency_orders, 
+      icon: <HealthAndSafety />, 
+      color: "#E74C3C", 
+      bgColor: "rgba(231, 76, 60, 0.15)",
       trend: 5.4,
       change: "positive",
-      suffix: "%"
+      prefix: ""
+    },
+    { 
+      title: "Stock Alert", 
+      value: Math.floor(stats.products * 0.05), 
+      icon: <Inventory2 />, 
+      color: "#F39C12", 
+      bgColor: "rgba(243, 156, 18, 0.15)",
+      trend: -2.1,
+      change: "negative",
+      prefix: ""
     },
   ];
 
   return (
     <Box sx={{ 
-      p: { xs: 2, sm: 3, md: 4 },
+      width: '100vw',
+      maxWidth: '100%',
       minHeight: '100vh',
-      background: 'linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)'
+      px: { xs: 1, sm: 2, md: 3, lg: 4 },
+      py: { xs: 1, sm: 2, md: 3 },
+      background: 'linear-gradient(135deg, #f0f7ff 0%, #e6f0ff 100%)',
+      overflowX: 'hidden'
     }}>
       {/* Header Section */}
       <Box sx={{ 
@@ -255,19 +305,31 @@ const Dashboard = () => {
         justifyContent: 'space-between', 
         alignItems: isMobile ? 'flex-start' : 'center',
         mb: 4,
-        gap: 2
+        gap: 2,
+        pt: 2
       }}>
-        <Box>
-          <Typography variant="h4" sx={{ 
-            color: "#1A5276",
-            fontWeight: 800,
-            textShadow: '0 2px 4px rgba(0,0,0,0.1)'
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+          <Avatar sx={{ 
+            bgcolor: '#1A5276',
+            width: 56,
+            height: 56,
+            boxShadow: '0 4px 20px rgba(26, 82, 118, 0.3)'
           }}>
-            📊 Analytics Dashboard
-          </Typography>
-          <Typography variant="body1" sx={{ color: 'text.secondary', mt: 0.5 }}>
-            {viewMode === 'overview' ? 'Complete business overview' : 'Today\'s performance metrics'}
-          </Typography>
+            <LocalPharmacy sx={{ fontSize: 32 }} />
+          </Avatar>
+          <Box>
+            <Typography variant="h4" sx={{ 
+              color: "#1A5276",
+              fontWeight: 900,
+              textShadow: '0 2px 4px rgba(0,0,0,0.1)',
+              fontSize: { xs: '1.5rem', sm: '2rem', md: '2.5rem' }
+            }}>
+              PharmaCare Dashboard
+            </Typography>
+            <Typography variant="body1" sx={{ color: '#5D6D7E', mt: 0.5, fontWeight: 500 }}>
+              {viewMode === 'overview' ? 'Complete Pharmacy Management Overview' : 'Today\'s Pharmacy Operations'}
+            </Typography>
+          </Box>
         </Box>
 
         <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
@@ -278,7 +340,11 @@ const Dashboard = () => {
             sx={{
               background: viewMode === 'overview' ? 'linear-gradient(135deg, #1A5276 0%, #2E86C1 100%)' : 'transparent',
               color: viewMode === 'overview' ? 'white' : '#1A5276',
-              borderColor: '#1A5276'
+              borderColor: '#1A5276',
+              borderRadius: 2,
+              fontWeight: 600,
+              px: 3,
+              py: 1
             }}
           >
             Overview
@@ -290,17 +356,25 @@ const Dashboard = () => {
             sx={{
               background: viewMode === 'today' ? 'linear-gradient(135deg, #27AE60 0%, #2ECC71 100%)' : 'transparent',
               color: viewMode === 'today' ? 'white' : '#27AE60',
-              borderColor: '#27AE60'
+              borderColor: '#27AE60',
+              borderRadius: 2,
+              fontWeight: 600,
+              px: 3,
+              py: 1
             }}
           >
             Today's View
           </Button>
-          <Tooltip title="Refresh Data">
+          <Tooltip title="Refresh Dashboard">
             <IconButton 
               onClick={fetchData}
               sx={{ 
                 bgcolor: 'rgba(26, 82, 118, 0.1)',
-                '&:hover': { bgcolor: 'rgba(26, 82, 118, 0.2)' }
+                '&:hover': { 
+                  bgcolor: 'rgba(26, 82, 118, 0.2)',
+                  transform: 'rotate(180deg)',
+                  transition: 'transform 0.5s ease'
+                }
               }}
             >
               <Refresh />
@@ -309,8 +383,8 @@ const Dashboard = () => {
         </Box>
       </Box>
 
-      {/* Stats Cards Grid */}
-      <Grid container spacing={3} sx={{ mb: 4 }}>
+      {/* Stats Cards Grid - Full Width */}
+      <Grid container spacing={3} sx={{ mb: 5 }}>
         {cardData.map((card, index) => (
           <Grid item xs={12} sm={6} md={4} lg={2} key={index}>
             <DashboardCard {...card} viewMode={viewMode} />
@@ -318,208 +392,432 @@ const Dashboard = () => {
         ))}
       </Grid>
 
-      {/* Charts Section */}
-      <Grid container spacing={3} sx={{ mb: 4 }}>
-        {/* Growth Chart */}
+      {/* Main Charts Section - Full Width */}
+      <Grid container spacing={3} sx={{ mb: 5 }}>
+        {/* Revenue & Prescriptions Chart */}
         <Grid item xs={12} lg={8}>
           <Card sx={{ 
             borderRadius: 3,
-            boxShadow: '0 8px 32px rgba(26, 82, 118, 0.1)',
-            height: '100%'
+            boxShadow: '0 12px 40px rgba(26, 82, 118, 0.15)',
+            height: '100%',
+            border: 'none',
+            overflow: 'hidden'
           }}>
-            <CardContent>
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-                <Typography variant="h6" sx={{ fontWeight: 700, color: '#1A5276' }}>
-                  <Timeline sx={{ verticalAlign: 'middle', mr: 1 }} />
-                  Growth Analytics
-                </Typography>
-                <Chip 
-                  label={timeRange === 'weekly' ? 'Weekly' : timeRange === 'daily' ? 'Daily' : 'Monthly'} 
-                  variant="outlined" 
-                  sx={{ borderColor: '#1A5276', color: '#1A5276' }}
-                />
+            <CardContent sx={{ p: 0, height: '100%' }}>
+              <Box sx={{ p: 3, pb: 0 }}>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+                  <Box>
+                    <Typography variant="h5" sx={{ fontWeight: 800, color: '#1A5276' }}>
+                      <Timeline sx={{ verticalAlign: 'middle', mr: 2 }} />
+                      Pharmacy Performance Analytics
+                    </Typography>
+                    <Typography variant="body2" sx={{ color: '#5D6D7E', ml: 5 }}>
+                      Weekly trends for prescriptions and revenue
+                    </Typography>
+                  </Box>
+                  <Stack direction="row" spacing={1}>
+                    <Chip 
+                      label="Weekly" 
+                      variant="outlined" 
+                      sx={{ 
+                        borderColor: '#1A5276', 
+                        color: '#1A5276',
+                        fontWeight: 600
+                      }}
+                    />
+                    <Chip 
+                      label="Real-time" 
+                      sx={{ 
+                        bgcolor: 'rgba(39, 174, 96, 0.1)', 
+                        color: '#27AE60',
+                        fontWeight: 600
+                      }}
+                    />
+                  </Stack>
+                </Box>
               </Box>
-              <ResponsiveContainer width="100%" height={300}>
-                <AreaChart data={chartData}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                  <XAxis dataKey="name" />
-                  <YAxis />
-                  <ChartTooltip 
-                    contentStyle={{ 
-                      borderRadius: 8,
-                      border: '1px solid #e0e0e0',
-                      boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
-                    }}
-                  />
-                  <Area 
-                    type="monotone" 
-                    dataKey="orders" 
-                    stackId="1"
-                    stroke="#1A5276" 
-                    fill="url(#colorOrders)" 
-                    fillOpacity={0.6}
-                  />
-                  <Area 
-                    type="monotone" 
-                    dataKey="users" 
-                    stackId="2"
-                    stroke="#3498DB" 
-                    fill="url(#colorUsers)" 
-                    fillOpacity={0.6}
-                  />
-                  <defs>
-                    <linearGradient id="colorOrders" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#1A5276" stopOpacity={0.8}/>
-                      <stop offset="95%" stopColor="#1A5276" stopOpacity={0}/>
-                    </linearGradient>
-                    <linearGradient id="colorUsers" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#3498DB" stopOpacity={0.8}/>
-                      <stop offset="95%" stopColor="#3498DB" stopOpacity={0}/>
-                    </linearGradient>
-                  </defs>
-                </AreaChart>
-              </ResponsiveContainer>
+              <Box sx={{ height: 380, width: '100%', px: 2, pb: 2 }}>
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart data={chartData}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" vertical={false} />
+                    <XAxis 
+                      dataKey="name" 
+                      axisLine={false}
+                      tickLine={false}
+                      tick={{ fill: '#5D6D7E', fontWeight: 600 }}
+                    />
+                    <YAxis 
+                      axisLine={false}
+                      tickLine={false}
+                      tick={{ fill: '#5D6D7E', fontWeight: 600 }}
+                    />
+                    <ChartTooltip 
+                      contentStyle={{ 
+                        borderRadius: 10,
+                        border: '2px solid #e0e0e0',
+                        boxShadow: '0 8px 24px rgba(0,0,0,0.15)',
+                        background: 'rgba(255, 255, 255, 0.95)',
+                        backdropFilter: 'blur(10px)'
+                      }}
+                    />
+                    <Area 
+                      type="monotone" 
+                      dataKey="prescriptions" 
+                      name="Prescriptions"
+                      stroke="#1A5276" 
+                      fill="url(#colorPrescriptions)" 
+                      strokeWidth={3}
+                      fillOpacity={0.8}
+                    />
+                    <Area 
+                      type="monotone" 
+                      dataKey="revenue" 
+                      name="Revenue (₹)"
+                      stroke="#27AE60" 
+                      fill="url(#colorRevenue)" 
+                      strokeWidth={3}
+                      fillOpacity={0.6}
+                    />
+                    <defs>
+                      <linearGradient id="colorPrescriptions" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="#1A5276" stopOpacity={0.9}/>
+                        <stop offset="95%" stopColor="#1A5276" stopOpacity={0.1}/>
+                      </linearGradient>
+                      <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="#27AE60" stopOpacity={0.8}/>
+                        <stop offset="95%" stopColor="#27AE60" stopOpacity={0.1}/>
+                      </linearGradient>
+                    </defs>
+                  </AreaChart>
+                </ResponsiveContainer>
+              </Box>
             </CardContent>
           </Card>
         </Grid>
 
-        {/* Distribution Pie Chart */}
+        {/* Medicine Distribution & Stock */}
         <Grid item xs={12} lg={4}>
           <Card sx={{ 
             borderRadius: 3,
-            boxShadow: '0 8px 32px rgba(26, 82, 118, 0.1)',
-            height: '100%'
+            boxShadow: '0 12px 40px rgba(26, 82, 118, 0.15)',
+            height: '100%',
+            border: 'none',
+            overflow: 'hidden'
           }}>
-            <CardContent>
-              <Typography variant="h6" sx={{ fontWeight: 700, color: '#1A5276', mb: 3 }}>
-                <PieChart sx={{ verticalAlign: 'middle', mr: 1 }} />
-                User Distribution
-              </Typography>
-              <ResponsiveContainer width="100%" height={300}>
-                <RechartsPieChart>
-                  <Pie
-                    data={pieData}
-                    cx="50%"
-                    cy="50%"
-                    labelLine={false}
-                    label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
-                    outerRadius={100}
-                    fill="#8884d8"
-                    dataKey="value"
-                  >
-                    {pieData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.color} />
-                    ))}
-                  </Pie>
-                  <ChartTooltip />
-                  <Legend />
-                </RechartsPieChart>
-              </ResponsiveContainer>
+            <CardContent sx={{ p: 0, height: '100%' }}>
+              <Box sx={{ p: 3 }}>
+                <Typography variant="h5" sx={{ fontWeight: 800, color: '#1A5276', mb: 1 }}>
+                  <PieChart sx={{ verticalAlign: 'middle', mr: 2 }} />
+                  Medicine Category Distribution
+                </Typography>
+                <Typography variant="body2" sx={{ color: '#5D6D7E', mb: 3 }}>
+                  Stock analysis across medicine categories
+                </Typography>
+              </Box>
+              <Box sx={{ height: 320, width: '100%', px: 2 }}>
+                <ResponsiveContainer width="100%" height="100%">
+                  <RechartsPieChart>
+                    <Pie
+                      data={pieData}
+                      cx="50%"
+                      cy="50%"
+                      innerRadius={60}
+                      outerRadius={100}
+                      paddingAngle={5}
+                      dataKey="value"
+                      label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                    >
+                      {pieData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={entry.color} />
+                      ))}
+                    </Pie>
+                    <ChartTooltip 
+                      contentStyle={{ 
+                        borderRadius: 10,
+                        border: '2px solid #e0e0e0',
+                        boxShadow: '0 8px 24px rgba(0,0,0,0.15)'
+                      }}
+                    />
+                  </RechartsPieChart>
+                </ResponsiveContainer>
+              </Box>
+              <Box sx={{ p: 3, pt: 0 }}>
+                <Stack direction="row" spacing={2} justifyContent="center" flexWrap="wrap">
+                  {pieData.slice(0, 3).map((item, index) => (
+                    <Chip
+                      key={index}
+                      label={`${item.name}: ${item.value}`}
+                      sx={{
+                        bgcolor: `${item.color}20`,
+                        color: item.color,
+                        fontWeight: 600,
+                        border: `1px solid ${item.color}40`
+                      }}
+                    />
+                  ))}
+                </Stack>
+              </Box>
             </CardContent>
           </Card>
         </Grid>
       </Grid>
 
-      {/* Additional Metrics */}
-      <Grid container spacing={3}>
+      {/* Secondary Charts Section */}
+      <Grid container spacing={3} sx={{ mb: 5 }}>
+        {/* Stock Level Radar Chart */}
         <Grid item xs={12} md={6}>
-          <Card sx={{ borderRadius: 3, boxShadow: '0 8px 32px rgba(26, 82, 118, 0.1)' }}>
+          <Card sx={{ 
+            borderRadius: 3,
+            boxShadow: '0 12px 40px rgba(26, 82, 118, 0.15)',
+            height: '100%',
+            border: 'none'
+          }}>
             <CardContent>
-              <Typography variant="h6" sx={{ fontWeight: 700, color: '#1A5276', mb: 3 }}>
-                <BarChart sx={{ verticalAlign: 'middle', mr: 1 }} />
-                Performance Metrics
+              <Typography variant="h5" sx={{ fontWeight: 800, color: '#1A5276', mb: 2 }}>
+                <MedicalServices sx={{ verticalAlign: 'middle', mr: 2 }} />
+                Stock Levels by Category
               </Typography>
-              <ResponsiveContainer width="100%" height={250}>
-                <RechartsBarChart data={chartData}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                  <XAxis dataKey="name" />
-                  <YAxis />
-                  <ChartTooltip 
-                    contentStyle={{ 
-                      borderRadius: 8,
-                      border: '1px solid #e0e0e0',
-                      boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
-                    }}
-                  />
-                  <Bar dataKey="revenue" fill="#1A5276" radius={[4, 4, 0, 0]} />
-                  <Bar dataKey="orders" fill="#3498DB" radius={[4, 4, 0, 0]} />
-                </RechartsBarChart>
-              </ResponsiveContainer>
+              <Box sx={{ height: 350, width: '100%' }}>
+                <ResponsiveContainer width="100%" height="100%">
+                  <RadarChart data={stockData}>
+                    <PolarGrid stroke="#e0e0e0" />
+                    <PolarAngleAxis dataKey="name" tick={{ fill: '#5D6D7E', fontWeight: 600 }} />
+                    <PolarRadiusAxis angle={30} domain={[0, 100]} />
+                    <Radar
+                      name="Stock Level %"
+                      dataKey="value"
+                      stroke="#1A5276"
+                      fill="#1A5276"
+                      fillOpacity={0.6}
+                      strokeWidth={2}
+                    />
+                    <ChartTooltip 
+                      contentStyle={{ 
+                        borderRadius: 10,
+                        border: '2px solid #e0e0e0',
+                        boxShadow: '0 8px 24px rgba(0,0,0,0.15)'
+                      }}
+                    />
+                    <Legend />
+                  </RadarChart>
+                </ResponsiveContainer>
+              </Box>
             </CardContent>
           </Card>
         </Grid>
 
+        {/* Performance Metrics & Quick Actions */}
         <Grid item xs={12} md={6}>
           <Card sx={{ 
-            borderRadius: 3, 
-            boxShadow: '0 8px 32px rgba(26, 82, 118, 0.1)',
+            borderRadius: 3,
+            boxShadow: '0 12px 40px rgba(26, 82, 118, 0.15)',
+            height: '100%',
+            border: 'none',
             background: 'linear-gradient(135deg, rgba(26, 82, 118, 0.95) 0%, rgba(46, 134, 193, 0.95) 100%)',
             color: 'white'
           }}>
             <CardContent>
-              <Typography variant="h6" sx={{ fontWeight: 700, mb: 3, color: 'white' }}>
-                📈 Quick Insights
+              <Typography variant="h5" sx={{ fontWeight: 800, mb: 3, color: 'white' }}>
+                📊 Pharmacy Performance Insights
               </Typography>
-              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                <InsightItem 
-                  title="Average Order Value" 
-                  value={`₹${stats.orders ? Math.round((stats.orders * 2500) / stats.orders) : 0}`}
-                  change="+12.8%"
-                  positive
-                />
-                <InsightItem 
-                  title="Conversion Rate" 
-                  value={`${stats.users ? Math.round((stats.orders / stats.users) * 100) : 0}%`}
-                  change="+5.2%"
-                  positive
-                />
-                <InsightItem 
-                  title="Customer Retention" 
-                  value="78.5%"
-                  change="+3.1%"
-                  positive
-                />
-                <InsightItem 
-                  title="Bounce Rate" 
-                  value="22.3%"
-                  change="-4.7%"
-                  positive={false}
-                />
-              </Box>
-              <Button 
-                variant="contained" 
-                endIcon={<ArrowForward />}
-                sx={{ 
-                  mt: 3,
-                  background: 'rgba(255, 255, 255, 0.2)',
-                  backdropFilter: 'blur(10px)',
-                  '&:hover': { background: 'rgba(255, 255, 255, 0.3)' }
-                }}
-              >
-                View Detailed Report
-              </Button>
+              
+              <Grid container spacing={2} sx={{ mb: 3 }}>
+                <Grid item xs={6}>
+                  <Paper sx={{ 
+                    p: 2, 
+                    borderRadius: 2,
+                    background: 'rgba(255, 255, 255, 0.1)',
+                    backdropFilter: 'blur(10px)',
+                    border: '1px solid rgba(255, 255, 255, 0.2)'
+                  }}>
+                    <Typography variant="body2" sx={{ opacity: 0.9 }}>
+                      Avg. Prescription Value
+                    </Typography>
+                    <Typography variant="h4" sx={{ fontWeight: 800, color: '#27AE60' }}>
+                      ₹{stats.orders ? Math.round((stats.orders * 1800) / stats.orders) : 0}
+                    </Typography>
+                    <Box sx={{ display: 'flex', alignItems: 'center', mt: 1 }}>
+                      <TrendingUp sx={{ fontSize: 16, mr: 0.5 }} />
+                      <Typography variant="caption">+12.8%</Typography>
+                    </Box>
+                  </Paper>
+                </Grid>
+                <Grid item xs={6}>
+                  <Paper sx={{ 
+                    p: 2, 
+                    borderRadius: 2,
+                    background: 'rgba(255, 255, 255, 0.1)',
+                    backdropFilter: 'blur(10px)',
+                    border: '1px solid rgba(255, 255, 255, 0.2)'
+                  }}>
+                    <Typography variant="body2" sx={{ opacity: 0.9 }}>
+                      Patient Retention
+                    </Typography>
+                    <Typography variant="h4" sx={{ fontWeight: 800, color: '#3498DB' }}>
+                      {stats.users ? Math.round((stats.orders / stats.users) * 100) : 0}%
+                    </Typography>
+                    <Box sx={{ display: 'flex', alignItems: 'center', mt: 1 }}>
+                      <TrendingUp sx={{ fontSize: 16, mr: 0.5 }} />
+                      <Typography variant="caption">+5.2%</Typography>
+                    </Box>
+                  </Paper>
+                </Grid>
+              </Grid>
+
+              <Divider sx={{ my: 3, borderColor: 'rgba(255, 255, 255, 0.2)' }} />
+
+              <Typography variant="h6" sx={{ fontWeight: 700, mb: 2, color: 'white' }}>
+                Quick Actions
+              </Typography>
+              <Grid container spacing={2}>
+                <Grid item xs={6}>
+                  <Button
+                    fullWidth
+                    variant="contained"
+                    startIcon={<Inventory2 />}
+                    sx={{
+                      background: 'rgba(255, 255, 255, 0.2)',
+                      backdropFilter: 'blur(10px)',
+                      border: '1px solid rgba(255, 255, 255, 0.3)',
+                      '&:hover': { background: 'rgba(255, 255, 255, 0.3)' }
+                    }}
+                  >
+                    Manage Stock
+                  </Button>
+                </Grid>
+                <Grid item xs={6}>
+                  <Button
+                    fullWidth
+                    variant="contained"
+                    startIcon={<Receipt />}
+                    sx={{
+                      background: 'rgba(255, 255, 255, 0.2)',
+                      backdropFilter: 'blur(10px)',
+                      border: '1px solid rgba(255, 255, 255, 0.3)',
+                      '&:hover': { background: 'rgba(255, 255, 255, 0.3)' }
+                    }}
+                  >
+                    View Prescriptions
+                  </Button>
+                </Grid>
+                <Grid item xs={12}>
+                  <Button
+                    fullWidth
+                    variant="contained"
+                    endIcon={<ArrowForward />}
+                    sx={{
+                      mt: 2,
+                      background: 'rgba(255, 255, 255, 0.25)',
+                      backdropFilter: 'blur(10px)',
+                      border: '1px solid rgba(255, 255, 255, 0.4)',
+                      '&:hover': { background: 'rgba(255, 255, 255, 0.35)' }
+                    }}
+                  >
+                    Generate Full Report
+                  </Button>
+                </Grid>
+              </Grid>
+            </CardContent>
+          </Card>
+        </Grid>
+      </Grid>
+
+      {/* Recent Activity & Alerts */}
+      <Grid container spacing={3}>
+        <Grid item xs={12}>
+          <Card sx={{ 
+            borderRadius: 3,
+            boxShadow: '0 12px 40px rgba(26, 82, 118, 0.15)',
+            border: 'none'
+          }}>
+            <CardContent>
+              <Typography variant="h5" sx={{ fontWeight: 800, color: '#1A5276', mb: 3 }}>
+                📋 Recent Pharmacy Activity & Alerts
+              </Typography>
+              <Grid container spacing={3}>
+                <Grid item xs={12} md={4}>
+                  <Box sx={{ p: 2, bgcolor: 'rgba(26, 82, 118, 0.05)', borderRadius: 2 }}>
+                    <Typography variant="subtitle1" sx={{ fontWeight: 700, color: '#1A5276', mb: 1 }}>
+                      🚨 Stock Alerts
+                    </Typography>
+                    <Stack spacing={1}>
+                      {['Paracetamol 500mg', 'Amoxicillin 250mg', 'Vitamin C Tablets'].map((item, index) => (
+                        <Paper key={index} sx={{ 
+                          p: 1.5, 
+                          borderRadius: 1,
+                          border: '1px solid #FFEAA7',
+                          bgcolor: '#FFF9E6'
+                        }}>
+                          <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                            {item} - Low Stock
+                          </Typography>
+                        </Paper>
+                      ))}
+                    </Stack>
+                  </Box>
+                </Grid>
+                <Grid item xs={12} md={4}>
+                  <Box sx={{ p: 2, bgcolor: 'rgba(39, 174, 96, 0.05)', borderRadius: 2 }}>
+                    <Typography variant="subtitle1" sx={{ fontWeight: 700, color: '#27AE60', mb: 1 }}>
+                      ✅ Today's Highlights
+                    </Typography>
+                    <Stack spacing={1}>
+                      <Typography variant="body2">
+                        • {todayData.prescriptions_today} prescriptions processed
+                      </Typography>
+                      <Typography variant="body2">
+                        • ₹{todayData.revenue_today.toLocaleString()} revenue generated
+                      </Typography>
+                      <Typography variant="body2">
+                        • {todayData.consultations_today} patient consultations
+                      </Typography>
+                    </Stack>
+                  </Box>
+                </Grid>
+                <Grid item xs={12} md={4}>
+                  <Box sx={{ p: 2, bgcolor: 'rgba(243, 156, 18, 0.05)', borderRadius: 2 }}>
+                    <Typography variant="subtitle1" sx={{ fontWeight: 700, color: '#F39C12', mb: 1 }}>
+                      📈 Performance Trends
+                    </Typography>
+                    <Stack spacing={1}>
+                      <Typography variant="body2">
+                        • Prescriptions up by 18.7%
+                      </Typography>
+                      <Typography variant="body2">
+                        • Revenue growth: 22.1%
+                      </Typography>
+                      <Typography variant="body2">
+                        • Patient satisfaction: 94.5%
+                      </Typography>
+                    </Stack>
+                  </Box>
+                </Grid>
+              </Grid>
             </CardContent>
           </Card>
         </Grid>
       </Grid>
 
       {/* Floating Action Button */}
-      <Fab
+      {/* <Fab
         color="primary"
         sx={{
           position: 'fixed',
           bottom: 32,
           right: 32,
           background: 'linear-gradient(135deg, #1A5276 0%, #2E86C1 100%)',
-          boxShadow: '0 8px 32px rgba(26, 82, 118, 0.4)',
+          boxShadow: '0 12px 40px rgba(26, 82, 118, 0.4)',
+          width: 60,
+          height: 60,
           '&:hover': {
             background: 'linear-gradient(135deg, #154360 0%, #21618C 100%)',
+            transform: 'scale(1.1)',
           }
         }}
         onClick={fetchData}
       >
-        <Refresh />
-      </Fab>
+        <Refresh sx={{ fontSize: 28 }} />
+      </Fab> */}
     </Box>
   );
 };
@@ -530,133 +828,130 @@ const DashboardCard = ({ title, value, icon, color, bgColor, trend, change, toda
     overflow: 'visible',
     position: 'relative',
     transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-    boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
+    boxShadow: `0 8px 32px ${color}20`,
     background: 'white',
-    border: '1px solid rgba(0,0,0,0.05)',
+    border: 'none',
     height: '100%',
+    minHeight: 180,
     '&:hover': {
-      transform: 'translateY(-4px)',
-      boxShadow: `0 12px 40px ${color}20`,
+      transform: 'translateY(-8px)',
+      boxShadow: `0 16px 48px ${color}30`,
     }
   }}>
-    <CardContent sx={{ p: 2.5 }}>
-      {/* Header with icon and trend */}
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1.5 }}>
-        <Box sx={{
-          width: 48,
-          height: 48,
-          borderRadius: 2,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          background: bgColor,
-          color: color,
-          boxShadow: `0 4px 12px ${color}30`,
-        }}>
-          {icon}
-        </Box>
+    <CardContent sx={{ 
+      p: 3,
+      height: '100%',
+      display: 'flex',
+      flexDirection: 'column',
+      position: 'relative'
+    }}>
+      {/* Floating Icon */}
+      <Box sx={{
+        position: 'absolute',
+        top: -20,
+        right: 20,
+        width: 70,
+        height: 70,
+        borderRadius: '50%',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        background: `linear-gradient(135deg, ${color} 0%, ${color}80 100%)`,
+        color: 'white',
+        transition: 'all 0.3s ease',
+        boxShadow: `0 8px 25px ${color}40`,
+        zIndex: 1,
+        '& .MuiSvgIcon-root': {
+          fontSize: 34,
+        }
+      }}>
+        {icon}
+      </Box>
+
+      {/* Trend Badge */}
+      <Box sx={{ 
+        position: 'absolute',
+        top: 12,
+        left: 12,
+        zIndex: 2
+      }}>
         <Chip
-          label={
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-              {change === 'positive' ? <TrendingUp fontSize="small" /> : <TrendingDown fontSize="small" />}
-              <Typography variant="caption" sx={{ fontWeight: 600 }}>
-                {trend}%
-              </Typography>
-            </Box>
-          }
+          icon={change === 'positive' ? <TrendingUp /> : <TrendingDown />}
+          label={`${trend}%`}
           size="small"
           sx={{
-            bgcolor: change === 'positive' ? 'rgba(39, 174, 96, 0.1)' : 'rgba(231, 76, 60, 0.1)',
+            bgcolor: change === 'positive' ? 'rgba(39, 174, 96, 0.15)' : 'rgba(231, 76, 60, 0.15)',
             color: change === 'positive' ? '#27AE60' : '#E74C3C',
-            border: 'none'
+            border: `1px solid ${change === 'positive' ? '#27AE60' : '#E74C3C'}40`,
+            fontWeight: 700,
+            fontSize: '0.75rem'
           }}
         />
       </Box>
 
-      {/* Title */}
-      <Typography variant="subtitle2" sx={{ 
-        color: '#64748B',
-        fontWeight: 500,
-        mb: 1,
-        fontSize: '0.85rem',
-        textTransform: 'uppercase',
-        letterSpacing: '0.5px'
-      }}>
-        {title}
-      </Typography>
-      
-      {/* Value */}
-      <Typography variant="h3" sx={{ 
-        color: color,
-        fontWeight: 800,
-        mb: 1,
-        fontSize: { xs: '1.75rem', sm: '2rem' },
-        lineHeight: 1.2
-      }}>
-        {prefix}{value !== null && value !== undefined ? value.toLocaleString() : 0}{suffix}
-      </Typography>
-
-      {/* Today's value indicator (only in overview mode) */}
-      {viewMode === 'overview' && todayValue !== undefined && (
-        <Box sx={{ 
-          display: 'flex', 
-          alignItems: 'center',
-          mt: 'auto',
-          pt: 1,
-          borderTop: '1px solid rgba(0,0,0,0.05)'
+      {/* Content */}
+      <Box sx={{ mt: 'auto' }}>
+        <Typography variant="subtitle2" sx={{ 
+          color: '#64748B',
+          fontWeight: 600,
+          mb: 1,
+          fontSize: '0.85rem',
+          textTransform: 'uppercase',
+          letterSpacing: '1px'
         }}>
-          <Typography variant="caption" sx={{ color: '#94A3B8', mr: 1 }}>
-            Today:
-          </Typography>
-          <Typography variant="body2" sx={{ color: color, fontWeight: 600 }}>
-            {todayValue.toLocaleString()}
-          </Typography>
-        </Box>
-      )}
+          {title}
+        </Typography>
+        
+        <Typography variant="h2" sx={{ 
+          color: color,
+          fontWeight: 900,
+          mb: 2,
+          fontSize: { xs: '2.5rem', sm: '3rem' },
+          lineHeight: 1,
+          textShadow: `0 2px 10px ${color}20`
+        }}>
+          {prefix}{value !== null && value !== undefined ? value.toLocaleString() : 0}{suffix}
+        </Typography>
+
+        {/* Today's value indicator */}
+        {viewMode === 'overview' && todayValue !== undefined && (
+          <Box sx={{ 
+            display: 'flex', 
+            alignItems: 'center',
+            mt: 2,
+            pt: 2,
+            borderTop: `2px solid ${color}20`
+          }}>
+            <Box sx={{ 
+              width: 8, 
+              height: 8, 
+              borderRadius: '50%', 
+              bgcolor: color,
+              mr: 1.5,
+              animation: 'pulse 1.5s infinite'
+            }} />
+            <Typography variant="body2" sx={{ color: '#94A3B8', mr: 1 }}>
+              Today:
+            </Typography>
+            <Typography variant="h6" sx={{ color: color, fontWeight: 800 }}>
+              {prefix}{todayValue.toLocaleString()}{suffix}
+            </Typography>
+          </Box>
+        )}
+      </Box>
     </CardContent>
   </Card>
 );
 
-const InsightItem = ({ title, value, change, positive }) => (
-  <Box sx={{ 
-    display: 'flex', 
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    p: 1.5,
-    borderRadius: 2,
-    background: 'rgba(255, 255, 255, 0.1)',
-    backdropFilter: 'blur(10px)'
-  }}>
-    <Typography variant="body2" sx={{ fontWeight: 500 }}>
-      {title}
-    </Typography>
-    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-      <Typography variant="h6" sx={{ fontWeight: 700 }}>
-        {value}
-      </Typography>
-      <Chip
-        label={change}
-        size="small"
-        sx={{
-          bgcolor: positive ? 'rgba(255, 255, 255, 0.2)' : 'rgba(231, 76, 60, 0.2)',
-          color: 'white',
-          fontSize: '0.7rem',
-          height: 20
-        }}
-      />
-    </Box>
-  </Box>
-);
-
 const LoadingSkeleton = ({ isMobile }) => (
   <Box sx={{ p: 3 }}>
-    <Skeleton variant="rounded" width={300} height={40} sx={{ mb: 4, bgcolor: 'rgba(26, 82, 118, 0.1)' }} />
+    <Skeleton variant="rounded" width={400} height={60} sx={{ mb: 4, bgcolor: 'rgba(26, 82, 118, 0.1)', borderRadius: 3 }} />
     <Grid container spacing={3}>
       {[...Array(6)].map((_, index) => (
         <Grid item xs={12} sm={6} md={4} lg={2} key={index}>
           <Skeleton 
             variant="rounded" 
-            height={180} 
+            height={200} 
             sx={{ 
               borderRadius: 3,
               bgcolor: 'rgba(26, 82, 118, 0.1)'
@@ -668,7 +963,7 @@ const LoadingSkeleton = ({ isMobile }) => (
   </Box>
 );
 
-const ErrorState = () => (
+const ErrorState = ({ fetchData }) => (
   <Box sx={{ 
     display: 'flex', 
     flexDirection: 'column', 
@@ -677,39 +972,50 @@ const ErrorState = () => (
     height: '80vh',
     textAlign: 'center',
     p: 3,
-    background: 'linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)'
+    background: 'linear-gradient(135deg, #f0f7ff 0%, #e6f0ff 100%)'
   }}>
     <Box sx={{ 
-      width: 120, 
-      height: 120, 
+      width: 150, 
+      height: 150, 
       borderRadius: '50%', 
       bgcolor: 'rgba(26, 82, 118, 0.1)',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      mb: 3
+      mb: 4,
+      animation: 'pulse 2s infinite'
     }}>
-      <Typography variant="h1" sx={{ color: '#1A5276' }}>!</Typography>
+      <LocalPharmacy sx={{ fontSize: 80, color: '#1A5276' }} />
     </Box>
-    <Typography variant="h5" sx={{ color: "#1A5276", mb: 2, fontWeight: 700 }}>
-      Unable to Load Dashboard
+    <Typography variant="h4" sx={{ color: "#1A5276", mb: 2, fontWeight: 900 }}>
+      Unable to Load Pharmacy Dashboard
     </Typography>
-    <Typography variant="body1" sx={{ color: 'text.secondary', mb: 4, maxWidth: 400 }}>
-      There was an error loading your dashboard data. Please check your connection and try again.
+    <Typography variant="body1" sx={{ color: 'text.secondary', mb: 4, maxWidth: 500 }}>
+      There was an error loading your pharmacy dashboard data. Please check your connection and try again.
     </Typography>
     <Button 
       variant="contained" 
       startIcon={<Refresh />}
+      onClick={fetchData}
       sx={{ 
         background: 'linear-gradient(135deg, #1A5276 0%, #2E86C1 100%)',
+        borderRadius: 2,
+        px: 4,
+        py: 1.5,
+        fontWeight: 700,
+        fontSize: '1.1rem',
         '&:hover': {
           background: 'linear-gradient(135deg, #154360 0%, #21618C 100%)',
+          transform: 'translateY(-2px)',
+          boxShadow: '0 12px 40px rgba(26, 82, 118, 0.3)'
         }
       }}
     >
-      Retry
+      Refresh Dashboard
     </Button>
   </Box>
 );
+
+ 
 
 export default Dashboard;

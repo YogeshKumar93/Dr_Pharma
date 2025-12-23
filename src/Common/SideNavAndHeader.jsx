@@ -109,6 +109,7 @@ const SideNavAndHeader = () => {
     else setDesktopOpen(!desktopOpen);
   };
 
+    
   return (
     <Box sx={{ display: 'flex', justifyContent: 'flex-start' }}>
       <CssBaseline />
@@ -132,6 +133,7 @@ const SideNavAndHeader = () => {
           <Typography variant="h4" sx={{ flexGrow: 1, fontWeight: 'bold' }}>
             {currentTitle}
           </Typography>
+       
         </Toolbar>
       </AppBar>
 
