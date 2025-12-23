@@ -41,28 +41,19 @@ const Header = () => {
   };
 
   const menuItemStyle = {
-    color: "#000",
+    color: "#1A5276",
     "&:hover": {
-      backgroundColor: "#1A5276", // yellow
-      color: "#fff",          // text readable on yellow
+      backgroundColor: "#F1C40F",
+      color: "#1A5276",
     },
   };
 
-
   const handleLogout = () => {
-    // 1️⃣ Remove token (JWT expire from frontend)
     localStorage.removeItem("token");
-
-    // (optional) agar user data store kiya hai
     localStorage.removeItem("user");
-
-    // 2️⃣ Close menu
     handleMenuClose();
-
-    // 3️⃣ Redirect to home page "/"
     navigate("/", { replace: true });
   };
-
 
   return (
     <>
@@ -134,14 +125,6 @@ const Header = () => {
                   About
                 </Button>
               </Box>
-
-              {/* SEARCH (unchanged, commented) */}
-              {/*
-              <Box sx={{ display: "flex", alignItems: "center" }}>
-                <SearchIcon />
-                <TextField />
-              </Box>
-              */}
             </Box>
 
             {/* RIGHT : ACTIONS */}
@@ -173,11 +156,11 @@ const Header = () => {
                 Login / Signup
               </Button>
 
-              {/* 🛒 CART ICON (PAGE OPEN, NOT MODAL) */}
+              {/* 🛒 CART ICON */}
               <IconButton
                 onClick={() => navigate("/cart")}
                 sx={{
-                  color: "#F1C40F",
+                  color: "#fff",
                   "&:hover": { backgroundColor: "#111" },
                 }}
               >
@@ -186,17 +169,28 @@ const Header = () => {
                 </Badge>
               </IconButton>
 
+              {/* MODIFIED PERSON ICON WITH NEW DESIGN */}
               <IconButton
                 onClick={handleMenuOpen}
                 sx={{
-                  color: "#f3eceaff",
-                  "&:hover": { backgroundColor: "#111" },
+                  color: "#fff",
+                  backgroundColor: open ? "rgba(255, 255, 255, 0.2)" : "transparent",
+                  border: "1px solid rgba(255, 255, 255, 0.3)",
+                  width: 40,
+                  height: 40,
+                  borderRadius: "50%",
+                  transition: "all 0.3s ease",
+                  "&:hover": {
+                    backgroundColor: "rgba(255, 255, 255, 0.3)",
+                    transform: "scale(1.05)",
+                    boxShadow: "0 0 0 2px rgba(255, 255, 255, 0.5)",
+                  },
                 }}
               >
-                {/* <MenuIcon /> */}
                 <PersonIcon />
-
               </IconButton>
+
+              {/* MODIFIED MENU DESIGN */}
               <Menu
                 anchorEl={anchorEl}
                 open={open}
@@ -205,47 +199,170 @@ const Header = () => {
                 transformOrigin={{ vertical: "top", horizontal: "right" }}
                 PaperProps={{
                   sx: {
-                    backgroundColor: "#F1C40F",
-                    color: "#000",
-                    borderRadius: 2,
-                    minWidth: 180,
+                    backgroundColor: "#fff",
+                    color: "#1A5276",
+                    borderRadius: 3,
+                    minWidth: 200,
+                    boxShadow: "0 8px 32px rgba(0, 0, 0, 0.15)",
+                    border: "1px solid rgba(26, 82, 118, 0.1)",
+                    overflow: "visible",
+                    "&:before": {
+                      content: '""',
+                      display: "block",
+                      position: "absolute",
+                      top: -8,
+                      right: 20,
+                      width: 16,
+                      height: 16,
+                      backgroundColor: "#fff",
+                      transform: "rotate(45deg)",
+                      borderLeft: "1px solid rgba(26, 82, 118, 0.1)",
+                      borderTop: "1px solid rgba(26, 82, 118, 0.1)",
+                    },
+                  },
+                }}
+                MenuListProps={{
+                  sx: {
+                    padding: "8px 0",
                   },
                 }}
               >
+                <Box
+                  sx={{
+                    px: 2,
+                    py: 1.5,
+                    backgroundColor: "rgba(241, 196, 15, 0.1)",
+                    borderBottom: "1px solid rgba(241, 196, 15, 0.2)",
+                    marginBottom: 1,
+                  }}
+                >
+                  <Typography variant="subtitle2" fontWeight="bold">
+                    My Account
+                  </Typography>
+                  <Typography variant="caption" color="text.secondary">
+                    Manage your profile
+                  </Typography>
+                </Box>
+
                 <MenuItem
-                  sx={menuItemStyle}
+                  sx={{
+                    ...menuItemStyle,
+                    py: 1.5,
+                    px: 2,
+                    marginX: 1,
+                    borderRadius: 1,
+                    transition: "all 0.2s ease",
+                    "&:hover": {
+                      transform: "translateX(4px)",
+                    },
+                  }}
                   onClick={() => {
                     handleMenuClose();
                     navigate("/myprofile");
                   }}
                 >
-                  My Profile
+                  <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
+                    <Box
+                      sx={{
+                        width: 24,
+                        height: 24,
+                        borderRadius: "50%",
+                        backgroundColor: "rgba(26, 82, 118, 0.1)",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                      }}
+                    >
+                      <PersonIcon sx={{ fontSize: 16, color: "#1A5276" }} />
+                    </Box>
+                    My Profile
+                  </Box>
                 </MenuItem>
 
                 <MenuItem
-                  sx={menuItemStyle}
+                  sx={{
+                    ...menuItemStyle,
+                    py: 1.5,
+                    px: 2,
+                    marginX: 1,
+                    borderRadius: 1,
+                    transition: "all 0.2s ease",
+                    "&:hover": {
+                      transform: "translateX(4px)",
+                    },
+                  }}
                   onClick={() => {
                     handleMenuClose();
                     navigate("/myorders");
                   }}
                 >
-                  My Orders
+                  <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
+                    <Box
+                      sx={{
+                        width: 24,
+                        height: 24,
+                        borderRadius: "50%",
+                        backgroundColor: "rgba(26, 82, 118, 0.1)",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                      }}
+                    >
+                      <ShoppingCartIcon sx={{ fontSize: 16, color: "#1A5276" }} />
+                    </Box>
+                    My Orders
+                  </Box>
                 </MenuItem>
 
-                <Divider />
+                <Divider sx={{ my: 1, borderColor: "rgba(26, 82, 118, 0.1)" }} />
 
                 <MenuItem
                   sx={{
-                    ...menuItemStyle,
+                    color: "#d32f2f",
+                    py: 1.5,
+                    px: 2,
+                    marginX: 1,
+                    borderRadius: 1,
+                    transition: "all 0.2s ease",
                     "&:hover": {
-                      backgroundColor: "#E74C3C",
-                      color: "#fff",
+                      backgroundColor: "rgba(211, 47, 47, 0.1)",
+                      transform: "translateX(4px)",
+                      color: "#d32f2f",
                     },
                   }}
                   onClick={handleLogout}
                 >
-                  Logout
+                  <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
+                    <Box
+                      sx={{
+                        width: 24,
+                        height: 24,
+                        borderRadius: "50%",
+                        backgroundColor: "rgba(211, 47, 47, 0.1)",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                      }}
+                    >
+                      <Typography sx={{ fontSize: 16, color: "#d32f2f" }}>↪</Typography>
+                    </Box>
+                    Logout
+                  </Box>
                 </MenuItem>
+
+                <Box
+                  sx={{
+                    px: 2,
+                    py: 1,
+                    mt: 1,
+                    borderTop: "1px solid rgba(26, 82, 118, 0.1)",
+                    backgroundColor: "rgba(26, 82, 118, 0.02)",
+                  }}
+                >
+                  <Typography variant="caption" color="text.secondary">
+                    © 2024 Dr.Pharma
+                  </Typography>
+                </Box>
               </Menu>
             </Box>
           </Toolbar>
@@ -254,8 +371,6 @@ const Header = () => {
 
       {/* HEADER HEIGHT SPACER */}
       <Toolbar />
-
-
     </>
   );
 };
