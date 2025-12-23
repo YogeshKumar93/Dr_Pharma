@@ -386,7 +386,7 @@ const Dashboard = () => {
                   WebkitTextFillColor: 'transparent',
                   backgroundClip: 'text'
                 }}>
-                  PharmaCare Analytics
+                  Dr.Pharma Analytics
                 </Typography>
                 <Typography variant="body1" sx={{ 
                   color: '#5D6D7E', 
@@ -504,7 +504,7 @@ const Dashboard = () => {
           ))}
         </Grid>
 
-        {/* Charts Section with Glass Morphism */}
+        Charts Section with Glass Morphism
         <Grid container spacing={3} sx={{ mb: 6 }}>
           {/* Main Performance Chart */}
           <Grid item xs={12} lg={8}>
@@ -928,7 +928,9 @@ const Dashboard = () => {
               </Box>
             </Paper>
           </Grid>
+
         </Grid>
+
       </Box>
     </Box>
   );
