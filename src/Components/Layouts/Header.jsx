@@ -41,10 +41,10 @@ const Header = () => {
   };
 
   const menuItemStyle = {
-    color: "#fff",
+    color: "#000",
     "&:hover": {
-      backgroundColor: "#F1C40F", // yellow
-      color: "#1A5276",          // text readable on yellow
+      backgroundColor: "#1A5276", // yellow
+      color: "#fff",          // text readable on yellow
     },
   };
 
@@ -177,7 +177,7 @@ const Header = () => {
               <IconButton
                 onClick={() => navigate("/cart")}
                 sx={{
-                  color: "#fff",
+                  color: "#F1C40F",
                   "&:hover": { backgroundColor: "#111" },
                 }}
               >
@@ -205,8 +205,8 @@ const Header = () => {
                 transformOrigin={{ vertical: "top", horizontal: "right" }}
                 PaperProps={{
                   sx: {
-                    backgroundColor: "#1A5276",
-                    color: "#fff",
+                    backgroundColor: "#F1C40F",
+                    color: "#000",
                     borderRadius: 2,
                     minWidth: 180,
                   },
