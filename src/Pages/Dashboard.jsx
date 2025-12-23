@@ -15,7 +15,10 @@ import {
   Paper,
   Stack,
   Divider,
-  Avatar
+  Avatar,
+  Badge,
+  Tabs,
+  Tab
 } from "@mui/material";
 import { apiCall } from "../api/api";
 import {
@@ -41,6 +44,10 @@ import {
   Inventory2,
   AttachMoney,
   HealthAndSafety,
+  Download,
+  MoreVert,
+  FilterList,
+  Dashboard as DashboardIcon,
   CheckCircle
 } from "@mui/icons-material";
 import {
@@ -73,7 +80,6 @@ const Dashboard = () => {
   const [timeRange, setTimeRange] = useState('weekly');
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-  const isTablet = useMediaQuery(theme.breakpoints.down('md'));
 
   useEffect(() => {
     fetchData();
@@ -155,127 +161,139 @@ const Dashboard = () => {
       value: stats.users, 
       icon: <UsersIcon />, 
       color: "#1A5276", 
-      bgColor: "rgba(26, 82, 118, 0.15)",
+      bgColor: "linear-gradient(135deg, rgba(26, 82, 118, 0.2) 0%, rgba(26, 82, 118, 0.05) 100%)",
       trend: 15.2,
       change: "positive",
       todayValue: todayData.consultations_today,
-      prefix: ""
+      prefix: "",
+      chartColor: "#1A5276"
     },
     { 
-      title: "Products", 
+      title: "Total Products", 
       value: stats.products, 
       icon: <Medication />, 
       color: "#2E86C1", 
-      bgColor: "rgba(46, 134, 193, 0.15)",
+      bgColor: "linear-gradient(135deg, rgba(46, 134, 193, 0.2) 0%, rgba(46, 134, 193, 0.05) 100%)",
       trend: 8.3,
       change: "positive",
       todayValue: todayData.medicines_sold,
-      prefix: ""
+      prefix: "",
+      chartColor: "#2E86C1"
     },
     { 
-      title: "Orders", 
+      title: "Total Orders", 
       value: stats.orders, 
       icon: <Receipt />, 
       color: "#3498DB", 
-      bgColor: "rgba(52, 152, 219, 0.15)",
+      bgColor: "linear-gradient(135deg, rgba(52, 152, 219, 0.2) 0%, rgba(52, 152, 219, 0.05) 100%)",
       trend: 18.7,
       change: "positive",
       todayValue: todayData.prescriptions_today,
-      prefix: ""
+      prefix: "",
+      chartColor: "#3498DB"
     },
     { 
       title: "Total Revenue", 
       value: stats.orders * 1800, 
       icon: <AttachMoney />, 
       color: "#27AE60", 
-      bgColor: "rgba(39, 174, 96, 0.15)",
+      bgColor: "linear-gradient(135deg, rgba(39, 174, 96, 0.2) 0%, rgba(39, 174, 96, 0.05) 100%)",
       trend: 22.1,
       change: "positive",
       todayValue: todayData.revenue_today,
-      prefix: "₹"
+      prefix: "₹",
+      chartColor: "#27AE60"
     },
     { 
       title: "Pending Orders", 
       value: stats.pending_orders, 
       icon: <PendingIcon />, 
       color: "#E67E22", 
-      bgColor: "rgba(230, 126, 34, 0.15)",
+      bgColor: "linear-gradient(135deg, rgba(230, 126, 34, 0.2) 0%, rgba(230, 126, 34, 0.05) 100%)",
       trend: -3.2,
       change: "negative",
       todayValue: todayData.emergency_orders,
-      prefix: ""
+      prefix: "",
+      chartColor: "#E67E22"
     },
     { 
-      title: "Payments", 
+      title: "Paid Payments", 
       value: stats.paid_payments, 
       icon: <CheckCircle />, 
       color: "#9B59B6", 
-      bgColor: "rgba(155, 89, 182, 0.15)",
+      bgColor: "linear-gradient(135deg, rgba(155, 89, 182, 0.2) 0%, rgba(155, 89, 182, 0.05) 100%)",
       trend: 12.5,
       change: "positive",
       todayValue: Math.floor(stats.paid_payments * 0.18),
-      prefix: ""
+      prefix: "",
+      chartColor: "#9B59B6"
     },
   ] : [
     { 
-      title: "New Users", 
+      title: "New Users Today", 
       value: todayData.consultations_today, 
       icon: <UsersIcon />, 
       color: "#1A5276", 
-      bgColor: "rgba(26, 82, 118, 0.15)",
+      bgColor: "linear-gradient(135deg, rgba(26, 82, 118, 0.2) 0%, rgba(26, 82, 118, 0.05) 100%)",
       trend: 12.5,
       change: "positive",
-      prefix: ""
+      prefix: "",
+      chartColor: "#1A5276"
     },
     { 
       title: "Products Sold", 
       value: todayData.medicines_sold, 
       icon: <Medication />, 
       color: "#2E86C1", 
-      bgColor: "rgba(46, 134, 193, 0.15)",
+      bgColor: "linear-gradient(135deg, rgba(46, 134, 193, 0.2) 0%, rgba(46, 134, 193, 0.05) 100%)",
       trend: 8.3,
       change: "positive",
-      prefix: ""
+      prefix: "",
+      chartColor: "#2E86C1"
     },
     { 
       title: "Orders Today", 
       value: todayData.prescriptions_today, 
       icon: <Receipt />, 
       color: "#3498DB", 
-      bgColor: "rgba(52, 152, 219, 0.15)",
+      bgColor: "linear-gradient(135deg, rgba(52, 152, 219, 0.2) 0%, rgba(52, 152, 219, 0.05) 100%)",
       trend: 15.2,
       change: "positive",
-      prefix: ""
+      prefix: "",
+      chartColor: "#3498DB"
     },
     { 
       title: "Revenue Today", 
       value: todayData.revenue_today, 
       icon: <AttachMoney />, 
       color: "#27AE60", 
-      bgColor: "rgba(39, 174, 96, 0.15)",
+      bgColor: "linear-gradient(135deg, rgba(39, 174, 96, 0.2) 0%, rgba(39, 174, 96, 0.05) 100%)",
       trend: 22.1,
       change: "positive",
-      prefix: "₹"
+      prefix: "₹",
+      chartColor: "#27AE60"
     },
     { 
       title: "Emergency Orders", 
       value: todayData.emergency_orders, 
       icon: <HealthAndSafety />, 
       color: "#E74C3C", 
-      bgColor: "rgba(231, 76, 60, 0.15)",
+      bgColor: "linear-gradient(135deg, rgba(231, 76, 60, 0.2) 0%, rgba(231, 76, 60, 0.05) 100%)",
       trend: 5.4,
       change: "positive",
-      prefix: ""
+      prefix: "",
+      chartColor: "#E74C3C"
     },
     { 
       title: "Stock Alert", 
       value: Math.floor(stats.products * 0.05), 
       icon: <Inventory2 />, 
       color: "#F39C12", 
-      bgColor: "rgba(243, 156, 18, 0.15)",
+      bgColor: "linear-gradient(135deg, rgba(243, 156, 18, 0.2) 0%, rgba(243, 156, 18, 0.05) 100%)",
       trend: -2.1,
       change: "negative",
-      prefix: ""
+      prefix: "",
+      chartColor: "#F39C12"
     },
   ];
 
@@ -283,776 +301,968 @@ const Dashboard = () => {
     <Box sx={{ 
       width: '100%',
       minHeight: '100vh',
-      px: { xs: 1.5, sm: 2.5, md: 3.5, lg: 4.5 },
-      py: { xs: 2, sm: 3, md: 4 },
-      background: 'linear-gradient(135deg, #f5f9ff 0%, #e8f0fa 100%)',
+      background: 'radial-gradient(circle at top right, #f8fafc 0%, #e8f0fa 50%, #dbeafe 100%)',
       overflowX: 'hidden'
     }}>
-      {/* Header Section */}
-      <Box sx={{ 
-        display: 'flex', 
-        flexDirection: isMobile ? 'column' : 'row',
-        justifyContent: 'space-between', 
-        alignItems: isMobile ? 'flex-start' : 'center',
-        mb: { xs: 3, sm: 4, md: 5 },
-        gap: 2,
-        pt: 1
-      }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-          <Avatar sx={{ 
-            bgcolor: '#1A5276',
-            width: { xs: 48, sm: 56, md: 64 },
-            height: { xs: 48, sm: 56, md: 64 },
-            boxShadow: '0 6px 20px rgba(26, 82, 118, 0.25)'
-          }}>
-            <LocalPharmacy sx={{ fontSize: { xs: 26, sm: 30, md: 34 } }} />
-          </Avatar>
-          <Box>
-            <Typography variant="h4" sx={{ 
-              color: "#1A5276",
-              fontWeight: 800,
-              fontSize: { xs: '1.4rem', sm: '1.8rem', md: '2.2rem', lg: '2.5rem' },
-              lineHeight: 1.2
-            }}>
-              PharmaCare Analytics
-            </Typography>
-            <Typography variant="body2" sx={{ 
-              color: '#5D6D7E', 
-              mt: 0.5, 
-              fontWeight: 500,
-              fontSize: { xs: '0.8rem', sm: '0.9rem', md: '1rem' }
-            }}>
-              {viewMode === 'overview' ? 'Complete Business Overview' : 'Today\'s Performance Metrics'}
-            </Typography>
-          </Box>
-        </Box>
+      {/* Decorative Background Elements */}
+      <Box sx={{
+        position: 'fixed',
+        top: 0,
+        right: 0,
+        width: '40vw',
+        height: '40vh',
+        background: 'radial-gradient(circle at center, rgba(26, 82, 118, 0.1) 0%, rgba(26, 82, 118, 0) 70%)',
+        zIndex: 0
+      }} />
+      <Box sx={{
+        position: 'fixed',
+        bottom: 0,
+        left: 0,
+        width: '30vw',
+        height: '30vh',
+        background: 'radial-gradient(circle at center, rgba(39, 174, 96, 0.1) 0%, rgba(39, 174, 96, 0) 70%)',
+        zIndex: 0
+      }} />
 
-        <Box sx={{ 
-          display: 'flex', 
-          gap: 1.5, 
-          flexWrap: 'wrap',
-          justifyContent: isMobile ? 'flex-start' : 'flex-end'
-        }}>
-          <Button
-            variant={viewMode === 'overview' ? 'contained' : 'outlined'}
-            startIcon={<ViewWeek />}
-            onClick={() => setViewMode('overview')}
-            sx={{
-              background: viewMode === 'overview' ? 'linear-gradient(135deg, #1A5276 0%, #2E86C1 100%)' : 'transparent',
-              color: viewMode === 'overview' ? 'white' : '#1A5276',
-              borderColor: '#1A5276',
-              borderRadius: 2,
-              fontWeight: 600,
-              px: { xs: 2, sm: 3 },
-              py: { xs: 0.8, sm: 1 },
-              fontSize: { xs: '0.75rem', sm: '0.875rem' },
-              minWidth: { xs: 'auto', sm: '120px' }
-            }}
-          >
-            Overview
-          </Button>
-          <Button
-            variant={viewMode === 'today' ? 'contained' : 'outlined'}
-            startIcon={<CalendarToday />}
-            onClick={() => setViewMode('today')}
-            sx={{
-              background: viewMode === 'today' ? 'linear-gradient(135deg, #27AE60 0%, #2ECC71 100%)' : 'transparent',
-              color: viewMode === 'today' ? 'white' : '#27AE60',
-              borderColor: '#27AE60',
-              borderRadius: 2,
-              fontWeight: 600,
-              px: { xs: 2, sm: 3 },
-              py: { xs: 0.8, sm: 1 },
-              fontSize: { xs: '0.75rem', sm: '0.875rem' },
-              minWidth: { xs: 'auto', sm: '120px' }
-            }}
-          >
-            Today
-          </Button>
-          <Tooltip title="Refresh Data">
-            <IconButton 
-              onClick={fetchData}
-              sx={{ 
-                bgcolor: 'rgba(26, 82, 118, 0.1)',
-                width: { xs: 36, sm: 40 },
-                height: { xs: 36, sm: 40 },
-                '&:hover': { 
-                  bgcolor: 'rgba(26, 82, 118, 0.2)',
-                  transform: 'rotate(180deg)',
-                  transition: 'transform 0.5s ease'
+      {/* Main Content */}
+      <Box sx={{ 
+        position: 'relative',
+        zIndex: 1,
+        px: { xs: 2, sm: 3, md: 4, lg: 6 },
+        py: { xs: 2, sm: 3, md: 4 }
+      }}>
+        {/* Header Section with Glass Morphism Effect */}
+        <Paper 
+          elevation={0}
+          sx={{
+            mb: 4,
+            p: { xs: 2, sm: 3 },
+            borderRadius: 4,
+            background: 'rgba(255, 255, 255, 0.85)',
+            backdropFilter: 'blur(20px)',
+            border: '1px solid rgba(255, 255, 255, 0.3)',
+            boxShadow: '0 20px 40px rgba(26, 82, 118, 0.1)',
+            position: 'relative',
+            overflow: 'hidden',
+            '&::before': {
+              content: '""',
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              height: '4px',
+              background: 'linear-gradient(90deg, #1A5276 0%, #3498DB 50%, #27AE60 100%)',
+              borderRadius: '4px 4px 0 0'
+            }
+          }}
+        >
+          <Box sx={{ 
+            display: 'flex', 
+            flexDirection: isMobile ? 'column' : 'row',
+            justifyContent: 'space-between', 
+            alignItems: isMobile ? 'flex-start' : 'center',
+            gap: 3
+          }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+              <Avatar 
+                sx={{ 
+                  bgcolor: 'transparent',
+                  width: 60,
+                  height: 60,
+                  border: '3px solid #1A5276',
+                  background: 'linear-gradient(135deg, rgba(26, 82, 118, 0.1) 0%, rgba(26, 82, 118, 0.05) 100%)',
+                  boxShadow: '0 10px 20px rgba(26, 82, 118, 0.2)'
+                }}
+              >
+                <LocalPharmacy sx={{ fontSize: 32, color: '#1A5276' }} />
+              </Avatar>
+              <Box>
+                <Typography variant="h4" sx={{ 
+                  color: "#1A5276",
+                  fontWeight: 900,
+                  fontSize: { xs: '1.5rem', sm: '1.8rem', md: '2.2rem' },
+                  background: 'linear-gradient(135deg, #1A5276 0%, #2E86C1 100%)',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                  backgroundClip: 'text'
+                }}>
+                  PharmaCare Analytics
+                </Typography>
+                <Typography variant="body1" sx={{ 
+                  color: '#5D6D7E', 
+                  mt: 0.5, 
+                  fontWeight: 500,
+                  fontSize: { xs: '0.8rem', sm: '0.9rem' }
+                }}>
+                  {viewMode === 'overview' ? 'Comprehensive Business Intelligence Dashboard' : 'Real-time Performance Metrics'}
+                </Typography>
+              </Box>
+            </Box>
+
+            <Box sx={{ 
+              display: 'flex', 
+              gap: 2, 
+              flexWrap: 'wrap',
+              justifyContent: isMobile ? 'flex-start' : 'flex-end'
+            }}>
+              <Box sx={{ 
+                display: 'flex',
+                gap: 1,
+                p: 1,
+                borderRadius: 3,
+                background: 'rgba(255, 255, 255, 0.8)',
+                border: '1px solid rgba(26, 82, 118, 0.1)',
+                boxShadow: '0 4px 12px rgba(26, 82, 118, 0.08)'
+              }}>
+                <Button
+                  variant={viewMode === 'overview' ? 'contained' : 'text'}
+                  onClick={() => setViewMode('overview')}
+                  sx={{
+                    background: viewMode === 'overview' ? 'linear-gradient(135deg, #1A5276 0%, #2E86C1 100%)' : 'transparent',
+                    color: viewMode === 'overview' ? 'white' : '#5D6D7E',
+                    borderRadius: 2,
+                    fontWeight: 600,
+                    px: 3,
+                    py: 1,
+                    fontSize: '0.85rem',
+                    minWidth: 'auto',
+                    '&:hover': {
+                      background: viewMode === 'overview' ? 'linear-gradient(135deg, #154360 0%, #21618C 100%)' : 'rgba(26, 82, 118, 0.05)'
+                    }
+                  }}
+                >
+                  <ViewWeek sx={{ mr: 1, fontSize: 18 }} />
+                  Overview
+                </Button>
+                <Button
+                  variant={viewMode === 'today' ? 'contained' : 'text'}
+                  onClick={() => setViewMode('today')}
+                  sx={{
+                    background: viewMode === 'today' ? 'linear-gradient(135deg, #27AE60 0%, #2ECC71 100%)' : 'transparent',
+                    color: viewMode === 'today' ? 'white' : '#5D6D7E',
+                    borderRadius: 2,
+                    fontWeight: 600,
+                    px: 3,
+                    py: 1,
+                    fontSize: '0.85rem',
+                    minWidth: 'auto',
+                    '&:hover': {
+                      background: viewMode === 'today' ? 'linear-gradient(135deg, #229954 0%, #27AE60 100%)' : 'rgba(39, 174, 96, 0.05)'
+                    }
+                  }}
+                >
+                  <CalendarToday sx={{ mr: 1, fontSize: 18 }} />
+                  Today
+                </Button>
+              </Box>
+              
+              <Box sx={{ display: 'flex', gap: 1 }}>
+                <Tooltip title="Refresh Dashboard">
+                  <IconButton 
+                    onClick={fetchData}
+                    sx={{ 
+                      bgcolor: 'rgba(26, 82, 118, 0.1)',
+                      width: 40,
+                      height: 40,
+                      border: '1px solid rgba(26, 82, 118, 0.2)',
+                      '&:hover': { 
+                        bgcolor: 'rgba(26, 82, 118, 0.2)',
+                        transform: 'rotate(180deg)',
+                      },
+                      transition: 'all 0.3s ease'
+                    }}
+                  >
+                    <Refresh sx={{ fontSize: 20, color: '#1A5276' }} />
+                  </IconButton>
+                </Tooltip>
+                <Tooltip title="Export Report">
+                  <IconButton 
+                    sx={{ 
+                      bgcolor: 'rgba(39, 174, 96, 0.1)',
+                      width: 40,
+                      height: 40,
+                      border: '1px solid rgba(39, 174, 96, 0.2)',
+                      '&:hover': { 
+                        bgcolor: 'rgba(39, 174, 96, 0.2)',
+                      }
+                    }}
+                  >
+                    <Download sx={{ fontSize: 20, color: '#27AE60' }} />
+                  </IconButton>
+                </Tooltip>
+              </Box>
+            </Box>
+          </Box>
+        </Paper>
+
+        {/* Stats Cards Grid - 3D Effect */}
+        <Grid container spacing={3} sx={{ mb: 6 }}>
+          {cardData.map((card, index) => (
+            <Grid item xs={12} sm={6} md={4} lg={2} key={index}>
+              <DashboardCard {...card} viewMode={viewMode} index={index} />
+            </Grid>
+          ))}
+        </Grid>
+
+        {/* Charts Section with Glass Morphism */}
+        <Grid container spacing={3} sx={{ mb: 6 }}>
+          {/* Main Performance Chart */}
+          <Grid item xs={12} lg={8}>
+            <Paper 
+              elevation={0}
+              sx={{
+                borderRadius: 4,
+                background: 'rgba(255, 255, 255, 0.85)',
+                backdropFilter: 'blur(20px)',
+                border: '1px solid rgba(255, 255, 255, 0.3)',
+                boxShadow: '0 20px 40px rgba(26, 82, 118, 0.1)',
+                overflow: 'hidden',
+                position: 'relative',
+                '&::before': {
+                  content: '""',
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  height: '4px',
+                  background: 'linear-gradient(90deg, #1A5276 0%, #3498DB 50%, #27AE60 100%)',
+                  borderRadius: '4px 4px 0 0'
                 }
               }}
             >
-              <Refresh sx={{ fontSize: { xs: 20, sm: 22 } }} />
-            </IconButton>
-          </Tooltip>
-        </Box>
-      </Box>
-
-      {/* Stats Cards Grid */}
-      <Grid container spacing={2.5} sx={{ mb: { xs: 4, sm: 5, md: 6 } }}>
-        {cardData.map((card, index) => (
-          <Grid item xs={6} sm={4} md={2} key={index} sx={{ display: 'flex' }}>
-            <DashboardCard {...card} viewMode={viewMode} />
+              <Box sx={{ p: { xs: 2, sm: 3 } }}>
+                <Box sx={{ 
+                  display: 'flex', 
+                  flexDirection: isMobile ? 'column' : 'row',
+                  justifyContent: 'space-between', 
+                  alignItems: isMobile ? 'flex-start' : 'center',
+                  mb: 4,
+                  gap: 2
+                }}>
+                  <Box>
+                    <Typography variant="h5" sx={{ 
+                      fontWeight: 700, 
+                      color: '#1A5276',
+                      fontSize: { xs: '1.1rem', sm: '1.3rem', md: '1.5rem' },
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 1.5
+                    }}>
+                      <Box sx={{
+                        width: 8,
+                        height: 8,
+                        borderRadius: '50%',
+                        background: 'linear-gradient(135deg, #1A5276 0%, #3498DB 100%)'
+                      }} />
+                      Performance Analytics
+                    </Typography>
+                    <Typography variant="body2" sx={{ 
+                      color: '#5D6D7E',
+                      fontSize: { xs: '0.75rem', sm: '0.85rem' },
+                      ml: 3.5
+                    }}>
+                      Real-time metrics and trends analysis
+                    </Typography>
+                  </Box>
+                  
+                  <Box sx={{ display: 'flex', gap: 1 }}>
+                    {['Day', 'Week', 'Month', 'Year'].map((item) => (
+                      <Chip
+                        key={item}
+                        label={item}
+                        variant={timeRange === item.toLowerCase() ? 'filled' : 'outlined'}
+                        onClick={() => setTimeRange(item.toLowerCase())}
+                        sx={{
+                          bgcolor: timeRange === item.toLowerCase() ? '#1A5276' : 'transparent',
+                          color: timeRange === item.toLowerCase() ? 'white' : '#5D6D7E',
+                          borderColor: '#1A5276',
+                          fontWeight: 600,
+                          fontSize: '0.75rem',
+                          '&:hover': {
+                            bgcolor: timeRange === item.toLowerCase() ? '#154360' : 'rgba(26, 82, 118, 0.05)'
+                          }
+                        }}
+                      />
+                    ))}
+                  </Box>
+                </Box>
+                
+                <Box sx={{ 
+                  height: { xs: 300, sm: 350, md: 400 },
+                  width: '100%'
+                }}>
+                  <ResponsiveContainer width="100%" height="100%">
+                    <AreaChart data={chartData}>
+                      <defs>
+                        <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="#27AE60" stopOpacity={0.8}/>
+                          <stop offset="95%" stopColor="#27AE60" stopOpacity={0}/>
+                        </linearGradient>
+                        <linearGradient id="colorOrders" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="#1A5276" stopOpacity={0.8}/>
+                          <stop offset="95%" stopColor="#1A5276" stopOpacity={0}/>
+                        </linearGradient>
+                      </defs>
+                      <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.05)" />
+                      <XAxis 
+                        dataKey="name" 
+                        axisLine={false}
+                        tickLine={false}
+                        tick={{ fill: '#5D6D7E', fontWeight: 500 }}
+                      />
+                      <YAxis 
+                        axisLine={false}
+                        tickLine={false}
+                        tick={{ fill: '#5D6D7E', fontWeight: 500 }}
+                      />
+                      <ChartTooltip 
+                        contentStyle={{ 
+                          borderRadius: 10,
+                          background: 'rgba(255, 255, 255, 0.95)',
+                          backdropFilter: 'blur(10px)',
+                          border: '1px solid rgba(26, 82, 118, 0.1)',
+                          boxShadow: '0 10px 30px rgba(26, 82, 118, 0.1)'
+                        }}
+                      />
+                      <Area 
+                        type="monotone" 
+                        dataKey="revenue" 
+                        name="Revenue (₹)"
+                        stroke="#27AE60" 
+                        strokeWidth={3}
+                        fill="url(#colorRevenue)" 
+                        fillOpacity={0.6}
+                      />
+                      <Area 
+                        type="monotone" 
+                        dataKey="prescriptions" 
+                        name="Orders"
+                        stroke="#1A5276" 
+                        strokeWidth={3}
+                        fill="url(#colorOrders)" 
+                        fillOpacity={0.6}
+                      />
+                    </AreaChart>
+                  </ResponsiveContainer>
+                </Box>
+              </Box>
+            </Paper>
           </Grid>
-        ))}
-      </Grid>
 
-      {/* Charts Section */}
-      <Grid container spacing={3} sx={{ mb: { xs: 4, sm: 5, md: 6 } }}>
-        {/* Main Analytics Chart */}
-        <Grid item xs={12} lg={8}>
-          <Card sx={{ 
-            borderRadius: 3,
-            boxShadow: '0 10px 30px rgba(26, 82, 118, 0.12)',
-            height: '100%',
-            width: '100%',
-            border: 'none',
-            overflow: 'hidden'
-          }}>
-            <CardContent sx={{ p: { xs: 2, sm: 3 } }}>
-              <Box sx={{ 
-                display: 'flex', 
-                flexDirection: isMobile ? 'column' : 'row',
-                justifyContent: 'space-between', 
-                alignItems: isMobile ? 'flex-start' : 'center', 
-                mb: 3,
-                gap: 2
-              }}>
-                <Box>
+          {/* Distribution & Quick Stats */}
+          <Grid item xs={12} lg={4}>
+            <Stack spacing={3}>
+              {/* Category Distribution */}
+              <Paper 
+                elevation={0}
+                sx={{
+                  borderRadius: 4,
+                  background: 'rgba(255, 255, 255, 0.85)',
+                  backdropFilter: 'blur(20px)',
+                  border: '1px solid rgba(255, 255, 255, 0.3)',
+                  boxShadow: '0 20px 40px rgba(26, 82, 118, 0.1)',
+                  overflow: 'hidden',
+                  position: 'relative',
+                  '&::before': {
+                    content: '""',
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    height: '4px',
+                    background: 'linear-gradient(90deg, #3498DB 0%, #5DADE2 100%)',
+                    borderRadius: '4px 4px 0 0'
+                  }
+                }}
+              >
+                <Box sx={{ p: { xs: 2, sm: 3 } }}>
                   <Typography variant="h5" sx={{ 
                     fontWeight: 700, 
                     color: '#1A5276',
-                    fontSize: { xs: '1.1rem', sm: '1.3rem', md: '1.5rem' }
+                    fontSize: { xs: '1.1rem', sm: '1.3rem' },
+                    mb: 2
                   }}>
-                    <Timeline sx={{ verticalAlign: 'middle', mr: 1.5 }} />
-                    Performance Analytics
+                    <PieChart sx={{ verticalAlign: 'middle', mr: 1.5 }} />
+                    Category Distribution
                   </Typography>
-                  <Typography variant="body2" sx={{ 
-                    color: '#5D6D7E',
-                    fontSize: { xs: '0.75rem', sm: '0.85rem' },
-                    ml: 4.5
-                  }}>
-                    Weekly trends for orders and revenue
-                  </Typography>
+                  <Box sx={{ height: 200, width: '100%' }}>
+                    <ResponsiveContainer width="100%" height="100%">
+                      <RechartsPieChart>
+                        <Pie
+                          data={pieData}
+                          cx="50%"
+                          cy="50%"
+                          innerRadius={40}
+                          outerRadius={80}
+                          paddingAngle={2}
+                          dataKey="value"
+                        >
+                          {pieData.map((entry, index) => (
+                            <Cell key={`cell-${index}`} fill={entry.color} />
+                          ))}
+                        </Pie>
+                        <ChartTooltip 
+                          contentStyle={{ 
+                            borderRadius: 8,
+                            background: 'rgba(255, 255, 255, 0.95)',
+                            backdropFilter: 'blur(10px)',
+                            border: '1px solid rgba(26, 82, 118, 0.1)'
+                          }}
+                        />
+                      </RechartsPieChart>
+                    </ResponsiveContainer>
+                  </Box>
                 </Box>
-                <Stack direction="row" spacing={1}>
-                  <Chip 
-                    label="Weekly" 
-                    variant="outlined" 
-                    sx={{ 
-                      borderColor: '#1A5276', 
-                      color: '#1A5276',
-                      fontWeight: 600,
-                      fontSize: { xs: '0.7rem', sm: '0.8rem' }
-                    }}
-                  />
-                  <Chip 
-                    label="Live" 
-                    sx={{ 
-                      bgcolor: 'rgba(39, 174, 96, 0.1)', 
-                      color: '#27AE60',
-                      fontWeight: 600,
-                      fontSize: { xs: '0.7rem', sm: '0.8rem' }
-                    }}
-                  />
-                </Stack>
-              </Box>
-              <Box sx={{ 
-                height: { xs: 280, sm: 320, md: 360, lg: 380 },
-                width: '100%'
-              }}>
-                <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart data={chartData}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" vertical={false} />
-                    <XAxis 
-                      dataKey="name" 
-                      axisLine={false}
-                      tickLine={false}
-                      tick={{ fill: '#5D6D7E', fontWeight: 500, fontSize: 12 }}
-                    />
-                    <YAxis 
-                      axisLine={false}
-                      tickLine={false}
-                      tick={{ fill: '#5D6D7E', fontWeight: 500, fontSize: 12 }}
-                    />
-                    <ChartTooltip 
-                      contentStyle={{ 
-                        borderRadius: 8,
-                        border: '1px solid #e0e0e0',
-                        boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-                        background: 'rgba(255, 255, 255, 0.95)',
-                        backdropFilter: 'blur(10px)',
-                        fontSize: 12
-                      }}
-                    />
-                    <Area 
-                      type="monotone" 
-                      dataKey="prescriptions" 
-                      name="Orders"
-                      stroke="#1A5276" 
-                      fill="url(#colorOrders)" 
-                      strokeWidth={2.5}
-                      fillOpacity={0.7}
-                    />
-                    <Area 
-                      type="monotone" 
-                      dataKey="revenue" 
-                      name="Revenue (₹)"
-                      stroke="#27AE60" 
-                      fill="url(#colorRevenue)" 
-                      strokeWidth={2.5}
-                      fillOpacity={0.5}
-                    />
-                    <defs>
-                      <linearGradient id="colorOrders" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#1A5276" stopOpacity={0.8}/>
-                        <stop offset="95%" stopColor="#1A5276" stopOpacity={0.1}/>
-                      </linearGradient>
-                      <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#27AE60" stopOpacity={0.7}/>
-                        <stop offset="95%" stopColor="#27AE60" stopOpacity={0.1}/>
-                      </linearGradient>
-                    </defs>
-                  </AreaChart>
-                </ResponsiveContainer>
-              </Box>
-            </CardContent>
-          </Card>
-        </Grid>
+              </Paper>
 
-        {/* Distribution Chart */}
-        <Grid item xs={12} lg={4}>
-          <Card sx={{ 
-            borderRadius: 3,
-            boxShadow: '0 10px 30px rgba(26, 82, 118, 0.12)',
-            height: '100%',
-            width: '100%',
-            border: 'none',
-            overflow: 'hidden'
-          }}>
-            <CardContent sx={{ p: { xs: 2, sm: 3 } }}>
-              <Typography variant="h5" sx={{ 
-                fontWeight: 700, 
-                color: '#1A5276', 
-                mb: 1,
-                fontSize: { xs: '1.1rem', sm: '1.3rem', md: '1.5rem' }
-              }}>
-                <PieChart sx={{ verticalAlign: 'middle', mr: 1.5 }} />
-                Category Distribution
-              </Typography>
-              <Typography variant="body2" sx={{ 
-                color: '#5D6D7E', 
-                mb: 3,
-                fontSize: { xs: '0.75rem', sm: '0.85rem' }
-              }}>
-                Product distribution across categories
-              </Typography>
-              <Box sx={{ 
-                height: { xs: 240, sm: 280, md: 320, lg: 380 },
-                width: '100%',
-                position: 'relative'
-              }}>
-                <ResponsiveContainer width="100%" height="100%">
-                  <RechartsPieChart>
-                    <Pie
-                      data={pieData}
-                      cx="50%"
-                      cy="50%"
-                      innerRadius={isMobile ? 40 : 60}
-                      outerRadius={isMobile ? 70 : 100}
-                      paddingAngle={3}
-                      dataKey="value"
-                      label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
-                    >
-                      {pieData.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={entry.color} />
-                      ))}
-                    </Pie>
-                    <ChartTooltip 
-                      contentStyle={{ 
-                        borderRadius: 8,
-                        border: '1px solid #e0e0e0',
-                        boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-                        fontSize: 12
-                      }}
-                    />
-                  </RechartsPieChart>
-                </ResponsiveContainer>
-              </Box>
-            </CardContent>
-          </Card>
-        </Grid>
-      </Grid>
-
-      {/* Bottom Section */}
-      <Grid container spacing={3} sx={{ mb: { xs: 4, sm: 5 } }}>
-        {/* Stock Levels */}
-        <Grid item xs={12} md={6}>
-          <Card sx={{ 
-            borderRadius: 3,
-            boxShadow: '0 10px 30px rgba(26, 82, 118, 0.12)',
-            height: '100%',
-            width: '100%',
-            border: 'none'
-          }}>
-            <CardContent sx={{ p: { xs: 2, sm: 3 } }}>
-              <Typography variant="h5" sx={{ 
-                fontWeight: 700, 
-                color: '#1A5276', 
-                mb: 2,
-                fontSize: { xs: '1.1rem', sm: '1.3rem', md: '1.5rem' }
-              }}>
-                <MedicalServices sx={{ verticalAlign: 'middle', mr: 1.5 }} />
-                Stock Analysis
-              </Typography>
-              <Box sx={{ 
-                height: { xs: 280, sm: 320, md: 340 },
-                width: '100%'
-              }}>
-                <ResponsiveContainer width="100%" height="100%">
-                  <RadarChart data={stockData}>
-                    <PolarGrid stroke="#e0e0e0" />
-                    <PolarAngleAxis 
-                      dataKey="name" 
-                      tick={{ fill: '#5D6D7E', fontWeight: 500, fontSize: isMobile ? 10 : 12 }}
-                    />
-                    <PolarRadiusAxis angle={30} domain={[0, 100]} />
-                    <Radar
-                      name="Stock Level %"
-                      dataKey="value"
-                      stroke="#1A5276"
-                      fill="#1A5276"
-                      fillOpacity={0.6}
-                      strokeWidth={1.5}
-                    />
-                    <ChartTooltip 
-                      contentStyle={{ 
-                        borderRadius: 8,
-                        border: '1px solid #e0e0e0',
-                        boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-                        fontSize: 12
-                      }}
-                    />
-                  </RadarChart>
-                </ResponsiveContainer>
-              </Box>
-            </CardContent>
-          </Card>
-        </Grid>
-
-        {/* Insights & Actions */}
-        <Grid item xs={12} md={6}>
-          <Card sx={{ 
-            borderRadius: 3,
-            boxShadow: '0 10px 30px rgba(26, 82, 118, 0.12)',
-            height: '100%',
-            width: '100%',
-            border: 'none',
-            background: 'linear-gradient(135deg, rgba(26, 82, 118, 0.95) 0%, rgba(46, 134, 193, 0.95) 100%)',
-            color: 'white'
-          }}>
-            <CardContent sx={{ p: { xs: 2, sm: 3 } }}>
-              <Typography variant="h5" sx={{ 
-                fontWeight: 700, 
-                mb: 3, 
-                color: 'white',
-                fontSize: { xs: '1.1rem', sm: '1.3rem', md: '1.5rem' }
-              }}>
-                📊 Key Insights
-              </Typography>
-              
-              <Grid container spacing={2} sx={{ mb: 3 }}>
-                <Grid item xs={6}>
-                  <Paper sx={{ 
-                    p: 1.5, 
-                    borderRadius: 2,
-                    background: 'rgba(255, 255, 255, 0.1)',
-                    backdropFilter: 'blur(8px)',
-                    border: '1px solid rgba(255, 255, 255, 0.15)',
-                    height: '100%'
+              {/* Quick Stats Card */}
+              <Paper 
+                elevation={0}
+                sx={{
+                  borderRadius: 4,
+                  background: 'linear-gradient(135deg, rgba(26, 82, 118, 0.95) 0%, rgba(46, 134, 193, 0.95) 100%)',
+                  backdropFilter: 'blur(20px)',
+                  border: '1px solid rgba(255, 255, 255, 0.2)',
+                  boxShadow: '0 20px 40px rgba(26, 82, 118, 0.2)',
+                  color: 'white',
+                  overflow: 'hidden',
+                  position: 'relative'
+                }}
+              >
+                <Box sx={{ p: { xs: 2, sm: 3 } }}>
+                  <Typography variant="h5" sx={{ 
+                    fontWeight: 700, 
+                    mb: 3,
+                    fontSize: { xs: '1.1rem', sm: '1.3rem' }
                   }}>
-                    <Typography variant="body2" sx={{ opacity: 0.9, fontSize: { xs: '0.7rem', sm: '0.8rem' } }}>
-                      Avg. Order Value
-                    </Typography>
-                    <Typography variant="h5" sx={{ fontWeight: 800, color: '#27AE60', mt: 0.5 }}>
-                      ₹{stats.orders ? Math.round((stats.orders * 1800) / stats.orders) : 0}
-                    </Typography>
-                    <Box sx={{ display: 'flex', alignItems: 'center', mt: 1 }}>
-                      <TrendingUp sx={{ fontSize: 14, mr: 0.5 }} />
-                      <Typography variant="caption">+12.8%</Typography>
-                    </Box>
-                  </Paper>
-                </Grid>
-                <Grid item xs={6}>
-                  <Paper sx={{ 
-                    p: 1.5, 
-                    borderRadius: 2,
-                    background: 'rgba(255, 255, 255, 0.1)',
-                    backdropFilter: 'blur(8px)',
-                    border: '1px solid rgba(255, 255, 255, 0.15)',
-                    height: '100%'
-                  }}>
-                    <Typography variant="body2" sx={{ opacity: 0.9, fontSize: { xs: '0.7rem', sm: '0.8rem' } }}>
-                      Conversion Rate
-                    </Typography>
-                    <Typography variant="h5" sx={{ fontWeight: 800, color: '#3498DB', mt: 0.5 }}>
-                      {stats.users ? Math.round((stats.orders / stats.users) * 100) : 0}%
-                    </Typography>
-                    <Box sx={{ display: 'flex', alignItems: 'center', mt: 1 }}>
-                      <TrendingUp sx={{ fontSize: 14, mr: 0.5 }} />
-                      <Typography variant="caption">+5.2%</Typography>
-                    </Box>
-                  </Paper>
-                </Grid>
-              </Grid>
+                    📊 Quick Stats
+                  </Typography>
+                  
+                  <Stack spacing={2}>
+                    <StatItem 
+                      label="Avg. Order Value" 
+                      value={`₹${stats.orders ? Math.round((stats.orders * 1800) / stats.orders) : 0}`}
+                      change="+12.8%"
+                      color="#27AE60"
+                    />
+                    <StatItem 
+                      label="Conversion Rate" 
+                      value={`${stats.users ? Math.round((stats.orders / stats.users) * 100) : 0}%`}
+                      change="+5.2%"
+                      color="#3498DB"
+                    />
+                    <StatItem 
+                      label="User Retention" 
+                      value="94.5%"
+                      change="+3.1%"
+                      color="#9B59B6"
+                    />
+                  </Stack>
 
-              <Divider sx={{ my: 2.5, borderColor: 'rgba(255, 255, 255, 0.2)' }} />
-
-              <Typography variant="h6" sx={{ fontWeight: 600, mb: 2, color: 'white', fontSize: { xs: '0.9rem', sm: '1rem' } }}>
-                Quick Actions
-              </Typography>
-              <Grid container spacing={1.5}>
-                <Grid item xs={6}>
                   <Button
                     fullWidth
                     variant="contained"
-                    startIcon={<Inventory2 sx={{ fontSize: { xs: 16, sm: 18 } }} />}
+                    endIcon={<ArrowForward />}
                     sx={{
-                      background: 'rgba(255, 255, 255, 0.15)',
-                      backdropFilter: 'blur(8px)',
-                      border: '1px solid rgba(255, 255, 255, 0.25)',
-                      '&:hover': { background: 'rgba(255, 255, 255, 0.25)' },
-                      fontSize: { xs: '0.7rem', sm: '0.8rem' },
-                      py: { xs: 0.8, sm: 1 }
-                    }}
-                  >
-                    Manage Stock
-                  </Button>
-                </Grid>
-                <Grid item xs={6}>
-                  <Button
-                    fullWidth
-                    variant="contained"
-                    startIcon={<Receipt sx={{ fontSize: { xs: 16, sm: 18 } }} />}
-                    sx={{
-                      background: 'rgba(255, 255, 255, 0.15)',
-                      backdropFilter: 'blur(8px)',
-                      border: '1px solid rgba(255, 255, 255, 0.25)',
-                      '&:hover': { background: 'rgba(255, 255, 255, 0.25)' },
-                      fontSize: { xs: '0.7rem', sm: '0.8rem' },
-                      py: { xs: 0.8, sm: 1 }
-                    }}
-                  >
-                    View Orders
-                  </Button>
-                </Grid>
-                <Grid item xs={12}>
-                  <Button
-                    fullWidth
-                    variant="contained"
-                    endIcon={<ArrowForward sx={{ fontSize: { xs: 16, sm: 18 } }} />}
-                    sx={{
-                      mt: 2,
+                      mt: 3,
                       background: 'rgba(255, 255, 255, 0.2)',
-                      backdropFilter: 'blur(8px)',
+                      backdropFilter: 'blur(10px)',
                       border: '1px solid rgba(255, 255, 255, 0.3)',
-                      '&:hover': { background: 'rgba(255, 255, 255, 0.3)' },
-                      fontSize: { xs: '0.75rem', sm: '0.85rem' },
-                      py: { xs: 0.8, sm: 1 }
+                      '&:hover': { 
+                        background: 'rgba(255, 255, 255, 0.3)',
+                        transform: 'translateY(-2px)'
+                      },
+                      transition: 'all 0.3s ease',
+                      fontWeight: 600
                     }}
                   >
-                    Generate Report
+                    View Detailed Analytics
                   </Button>
-                </Grid>
-              </Grid>
-            </CardContent>
-          </Card>
-        </Grid>
-      </Grid>
-
-      {/* Recent Activity */}
-      <Card sx={{ 
-        borderRadius: 3,
-        boxShadow: '0 10px 30px rgba(26, 82, 118, 0.12)',
-        border: 'none',
-        mb: 4
-      }}>
-        <CardContent sx={{ p: { xs: 2, sm: 3 } }}>
-          <Typography variant="h5" sx={{ 
-            fontWeight: 700, 
-            color: '#1A5276', 
-            mb: 3,
-            fontSize: { xs: '1.1rem', sm: '1.3rem', md: '1.5rem' }
-          }}>
-            📋 Recent Activity
-          </Typography>
-          <Grid container spacing={2}>
-            <Grid item xs={12} md={4}>
-              <Box sx={{ 
-                p: 2, 
-                bgcolor: 'rgba(26, 82, 118, 0.05)', 
-                borderRadius: 2,
-                height: '100%'
-              }}>
-                <Typography variant="subtitle1" sx={{ 
-                  fontWeight: 700, 
-                  color: '#1A5276', 
-                  mb: 1,
-                  fontSize: { xs: '0.9rem', sm: '1rem' }
-                }}>
-                  🚨 Alerts
-                </Typography>
-                <Stack spacing={1}>
-                  {['Stock running low', 'Pending orders', 'System update'].map((item, index) => (
-                    <Paper key={index} sx={{ 
-                      p: 1.5, 
-                      borderRadius: 1,
-                      border: '1px solid #FFEAA7',
-                      bgcolor: '#FFF9E6'
-                    }}>
-                      <Typography variant="body2" sx={{ fontWeight: 600, fontSize: { xs: '0.75rem', sm: '0.85rem' } }}>
-                        {item}
-                      </Typography>
-                    </Paper>
-                  ))}
-                </Stack>
-              </Box>
-            </Grid>
-            <Grid item xs={12} md={4}>
-              <Box sx={{ 
-                p: 2, 
-                bgcolor: 'rgba(39, 174, 96, 0.05)', 
-                borderRadius: 2,
-                height: '100%'
-              }}>
-                <Typography variant="subtitle1" sx={{ 
-                  fontWeight: 700, 
-                  color: '#27AE60', 
-                  mb: 1,
-                  fontSize: { xs: '0.9rem', sm: '1rem' }
-                }}>
-                  ✅ Today's Summary
-                </Typography>
-                <Stack spacing={1}>
-                  <Typography variant="body2" sx={{ fontSize: { xs: '0.75rem', sm: '0.85rem' } }}>
-                    • {todayData.prescriptions_today} orders processed
-                  </Typography>
-                  <Typography variant="body2" sx={{ fontSize: { xs: '0.75rem', sm: '0.85rem' } }}>
-                    • ₹{todayData.revenue_today.toLocaleString()} revenue
-                  </Typography>
-                  <Typography variant="body2" sx={{ fontSize: { xs: '0.75rem', sm: '0.85rem' } }}>
-                    • {todayData.consultations_today} new users
-                  </Typography>
-                </Stack>
-              </Box>
-            </Grid>
-            <Grid item xs={12} md={4}>
-              <Box sx={{ 
-                p: 2, 
-                bgcolor: 'rgba(243, 156, 18, 0.05)', 
-                borderRadius: 2,
-                height: '100%'
-              }}>
-                <Typography variant="subtitle1" sx={{ 
-                  fontWeight: 700, 
-                  color: '#F39C12', 
-                  mb: 1,
-                  fontSize: { xs: '0.9rem', sm: '1rem' }
-                }}>
-                  📈 Performance
-                </Typography>
-                <Stack spacing={1}>
-                  <Typography variant="body2" sx={{ fontSize: { xs: '0.75rem', sm: '0.85rem' } }}>
-                    • Orders up by 18.7%
-                  </Typography>
-                  <Typography variant="body2" sx={{ fontSize: { xs: '0.75rem', sm: '0.85rem' } }}>
-                    • Revenue growth: 22.1%
-                  </Typography>
-                  <Typography variant="body2" sx={{ fontSize: { xs: '0.75rem', sm: '0.85rem' } }}>
-                    • User satisfaction: 94.5%
-                  </Typography>
-                </Stack>
-              </Box>
-            </Grid>
+                </Box>
+              </Paper>
+            </Stack>
           </Grid>
-        </CardContent>
-      </Card>
+        </Grid>
+
+        {/* Bottom Section: Stock & Activity */}
+        <Grid container spacing={3}>
+          {/* Stock Analysis */}
+          <Grid item xs={12} md={6}>
+            <Paper 
+              elevation={0}
+              sx={{
+                borderRadius: 4,
+                background: 'rgba(255, 255, 255, 0.85)',
+                backdropFilter: 'blur(20px)',
+                border: '1px solid rgba(255, 255, 255, 0.3)',
+                boxShadow: '0 20px 40px rgba(26, 82, 118, 0.1)',
+                overflow: 'hidden',
+                position: 'relative',
+                '&::before': {
+                  content: '""',
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  height: '4px',
+                  background: 'linear-gradient(90deg, #E67E22 0%, #F39C12 100%)',
+                  borderRadius: '4px 4px 0 0'
+                }
+              }}
+            >
+              <Box sx={{ p: { xs: 2, sm: 3 } }}>
+                <Typography variant="h5" sx={{ 
+                  fontWeight: 700, 
+                  color: '#1A5276',
+                  fontSize: { xs: '1.1rem', sm: '1.3rem' },
+                  mb: 3
+                }}>
+                  <MedicalServices sx={{ verticalAlign: 'middle', mr: 1.5 }} />
+                  Stock Analysis
+                </Typography>
+                <Box sx={{ height: 250, width: '100%' }}>
+                  <ResponsiveContainer width="100%" height="100%">
+                    <RadarChart data={stockData}>
+                      <PolarGrid stroke="rgba(0,0,0,0.05)" />
+                      <PolarAngleAxis 
+                        dataKey="name" 
+                        tick={{ fill: '#5D6D7E', fontWeight: 500, fontSize: 12 }}
+                      />
+                      <PolarRadiusAxis angle={30} domain={[0, 100]} />
+                      <Radar
+                        name="Stock Level %"
+                        dataKey="value"
+                        stroke="#E67E22"
+                        fill="#E67E22"
+                        fillOpacity={0.6}
+                        strokeWidth={2}
+                      />
+                      <ChartTooltip 
+                        contentStyle={{ 
+                          borderRadius: 8,
+                          background: 'rgba(255, 255, 255, 0.95)',
+                          backdropFilter: 'blur(10px)',
+                          border: '1px solid rgba(26, 82, 118, 0.1)'
+                        }}
+                      />
+                    </RadarChart>
+                  </ResponsiveContainer>
+                </Box>
+              </Box>
+            </Paper>
+          </Grid>
+
+          {/* Recent Activity */}
+          <Grid item xs={12} md={6}>
+            <Paper 
+              elevation={0}
+              sx={{
+                borderRadius: 4,
+                background: 'rgba(255, 255, 255, 0.85)',
+                backdropFilter: 'blur(20px)',
+                border: '1px solid rgba(255, 255, 255, 0.3)',
+                boxShadow: '0 20px 40px rgba(26, 82, 118, 0.1)',
+                overflow: 'hidden',
+                position: 'relative',
+                '&::before': {
+                  content: '""',
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  height: '4px',
+                  background: 'linear-gradient(90deg, #9B59B6 0%, #8E44AD 100%)',
+                  borderRadius: '4px 4px 0 0'
+                }
+              }}
+            >
+              <Box sx={{ p: { xs: 2, sm: 3 } }}>
+                <Box sx={{ 
+                  display: 'flex', 
+                  justifyContent: 'space-between', 
+                  alignItems: 'center',
+                  mb: 3
+                }}>
+                  <Typography variant="h5" sx={{ 
+                    fontWeight: 700, 
+                    color: '#1A5276',
+                    fontSize: { xs: '1.1rem', sm: '1.3rem' }
+                  }}>
+                    📋 Recent Activity
+                  </Typography>
+                  <IconButton size="small">
+                    <MoreVert />
+                  </IconButton>
+                </Box>
+
+                <Stack spacing={2}>
+                  <ActivityItem 
+                    icon="📦"
+                    title="New Order Received"
+                    description={`Order #${Math.floor(Math.random() * 1000)} for ${todayData.prescriptions_today} items`}
+                    time="2 mins ago"
+                    color="#1A5276"
+                  />
+                  <ActivityItem 
+                    icon="💰"
+                    title="Payment Received"
+                    description={`₹${todayData.revenue_today.toLocaleString()} from Order #${Math.floor(Math.random() * 1000)}`}
+                    time="15 mins ago"
+                    color="#27AE60"
+                  />
+                  <ActivityItem 
+                    icon="👤"
+                    title="New User Registered"
+                    description={`${todayData.consultations_today} new users joined today`}
+                    time="1 hour ago"
+                    color="#3498DB"
+                  />
+                  <ActivityItem 
+                    icon="⚠️"
+                    title="Stock Alert"
+                    description="Paracetamol 500mg stock running low"
+                    time="2 hours ago"
+                    color="#E74C3C"
+                  />
+                </Stack>
+              </Box>
+            </Paper>
+          </Grid>
+        </Grid>
+      </Box>
     </Box>
   );
 };
 
-const DashboardCard = ({ title, value, icon, color, bgColor, trend, change, todayValue, viewMode, prefix = '', suffix = '' }) => (
-  <Card sx={{
-    borderRadius: 2.5,
-    overflow: 'visible',
-    position: 'relative',
-    transition: 'all 0.3s ease',
-    boxShadow: `0 6px 20px ${color}15`,
-    background: 'white',
-    border: 'none',
-    width: '100%',
+const DashboardCard = ({ title, value, icon, color, bgColor, trend, change, todayValue, viewMode, prefix = '', suffix = '', chartColor, index }) => (
+  <Box sx={{
+    perspective: '1000px',
     height: '100%',
-    display: 'flex',
-    flexDirection: 'column',
-    '&:hover': {
-      transform: 'translateY(-5px)',
-      boxShadow: `0 12px 30px ${color}25`,
+    '&:hover .card-inner': {
+      transform: 'rotateY(10deg) rotateX(5deg)',
+      boxShadow: `0 30px 60px ${color}40`,
     }
   }}>
-    <CardContent sx={{ 
-      flexGrow: 1,
-      p: { xs: 2, sm: 2.5 },
-      display: 'flex',
-      flexDirection: 'column',
-      position: 'relative',
-      height: '100%'
-    }}>
-      {/* Floating Icon */}
+    <Box className="card-inner"
+      sx={{
+        position: 'relative',
+        width: '100%',
+        height: '100%',
+        transition: 'transform 0.6s ease, box-shadow 0.6s ease',
+        transformStyle: 'preserve-3d',
+        borderRadius: 3,
+        boxShadow: `0 15px 35px ${color}20`,
+        background: bgColor,
+        border: `1px solid ${color}30`,
+        overflow: 'hidden',
+        '&::before': {
+          content: '""',
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          height: '100%',
+          background: `linear-gradient(135deg, ${color}10 0%, transparent 50%)`,
+          zIndex: 1
+        }
+      }}
+    >
+      {/* Animated Background Pattern */}
       <Box sx={{
         position: 'absolute',
-        top: { xs: -16, sm: -20 },
-        right: { xs: 16, sm: 20 },
-        width: { xs: 56, sm: 64 },
-        height: { xs: 56, sm: 64 },
-        borderRadius: '50%',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        background: `linear-gradient(135deg, ${color} 0%, ${color}80 100%)`,
-        color: 'white',
-        boxShadow: `0 6px 20px ${color}30`,
-        zIndex: 1,
-        '& .MuiSvgIcon-root': {
-          fontSize: { xs: 26, sm: 30 },
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        background: `radial-gradient(circle at 30% 20%, ${color}15 0%, transparent 50%)`,
+        opacity: 0.6,
+        animation: 'pulse 4s infinite',
+        '@keyframes pulse': {
+          '0%, 100%': { opacity: 0.6 },
+          '50%': { opacity: 0.8 }
         }
-      }}>
-        {icon}
-      </Box>
+      }} />
 
-      {/* Trend Badge */}
-      <Box sx={{ 
-        position: 'absolute',
-        top: 12,
-        left: 12,
+      <CardContent sx={{ 
+        p: { xs: 2, sm: 2.5 },
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        position: 'relative',
         zIndex: 2
       }}>
-        <Chip
-          icon={change === 'positive' ? <TrendingUp /> : <TrendingDown />}
-          label={`${trend}%`}
-          size="small"
-          sx={{
-            bgcolor: change === 'positive' ? 'rgba(39, 174, 96, 0.12)' : 'rgba(231, 76, 60, 0.12)',
-            color: change === 'positive' ? '#27AE60' : '#E74C3C',
-            border: `1px solid ${change === 'positive' ? '#27AE60' : '#E74C3C'}30`,
-            fontWeight: 700,
-            fontSize: { xs: '0.7rem', sm: '0.75rem' },
-            height: { xs: 24, sm: 26 }
-          }}
-        />
-      </Box>
-
-      {/* Content */}
-      <Box sx={{ 
-        mt: 'auto',
-        width: '100%'
-      }}>
-        <Typography variant="subtitle2" sx={{ 
-          color: '#64748B',
-          fontWeight: 600,
-          mb: 1,
-          fontSize: { xs: '0.75rem', sm: '0.85rem' },
-          textTransform: 'uppercase',
-          letterSpacing: '0.5px'
+        {/* Header */}
+        <Box sx={{ 
+          display: 'flex', 
+          justifyContent: 'space-between', 
+          alignItems: 'flex-start',
+          mb: 2
         }}>
-          {title}
-        </Typography>
-        
-        <Typography variant="h2" sx={{ 
+          <Typography variant="caption" sx={{ 
+            color: `${color}CC`,
+            fontWeight: 700,
+            fontSize: '0.7rem',
+            textTransform: 'uppercase',
+            letterSpacing: '1px'
+          }}>
+            {title}
+          </Typography>
+          
+          <Box sx={{
+            width: 36,
+            height: 36,
+            borderRadius: '50%',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            background: `linear-gradient(135deg, ${color}30 0%, ${color}10 100%)`,
+            border: `1px solid ${color}40`,
+            boxShadow: `0 4px 12px ${color}20`
+          }}>
+            {icon}
+          </Box>
+        </Box>
+
+        {/* Main Value */}
+        <Typography variant="h3" sx={{ 
           color: color,
-          fontWeight: 800,
-          mb: 2,
-          fontSize: { xs: '2rem', sm: '2.5rem', md: '2.8rem' },
+          fontWeight: 900,
+          mb: 1,
+          fontSize: { xs: '2rem', sm: '2.5rem', md: '3rem' },
           lineHeight: 1,
-          wordBreak: 'break-word'
+          textShadow: `0 2px 10px ${color}20`,
+          background: `linear-gradient(135deg, ${color} 0%, ${color}CC 100%)`,
+          WebkitBackgroundClip: 'text',
+          WebkitTextFillColor: 'transparent',
+          backgroundClip: 'text'
         }}>
           {prefix}{value !== null && value !== undefined ? value.toLocaleString() : 0}{suffix}
         </Typography>
 
-        {/* Today's value indicator */}
-        {viewMode === 'overview' && todayValue !== undefined && (
-          <Box sx={{ 
-            display: 'flex', 
+        {/* Trend Indicator */}
+        <Box sx={{ 
+          display: 'flex', 
+          alignItems: 'center',
+          mb: 2
+        }}>
+          <Box sx={{
+            display: 'flex',
             alignItems: 'center',
-            mt: 2,
-            pt: 2,
-            borderTop: `1.5px solid ${color}20`
+            px: 1.5,
+            py: 0.5,
+            borderRadius: 20,
+            background: change === 'positive' ? 'rgba(39, 174, 96, 0.15)' : 'rgba(231, 76, 60, 0.15)',
+            border: `1px solid ${change === 'positive' ? '#27AE60' : '#E74C3C'}30`
           }}>
-            <Box sx={{ 
-              width: 6, 
-              height: 6, 
-              borderRadius: '50%', 
-              bgcolor: color,
-              mr: 1.5,
-              animation: 'pulse 1.5s infinite'
-            }} />
-            <Typography variant="body2" sx={{ 
-              color: '#94A3B8', 
-              mr: 1,
-              fontSize: { xs: '0.7rem', sm: '0.8rem' }
+            {change === 'positive' ? 
+              <TrendingUp sx={{ fontSize: 14, color: '#27AE60', mr: 0.5 }} /> : 
+              <TrendingDown sx={{ fontSize: 14, color: '#E74C3C', mr: 0.5 }} />
+            }
+            <Typography variant="caption" sx={{ 
+              fontWeight: 700,
+              color: change === 'positive' ? '#27AE60' : '#E74C3C',
+              fontSize: '0.75rem'
             }}>
-              Today:
-            </Typography>
-            <Typography variant="h6" sx={{ 
-              color: color, 
-              fontWeight: 800,
-              fontSize: { xs: '0.9rem', sm: '1.1rem' }
-            }}>
-              {prefix}{todayValue.toLocaleString()}{suffix}
+              {trend}%
             </Typography>
           </Box>
-        )}
-      </Box>
-    </CardContent>
-  </Card>
+        </Box>
+
+        {/* Mini Chart */}
+        <Box sx={{ mt: 'auto', pt: 2 }}>
+          <Box sx={{ 
+            height: 40, 
+            width: '100%',
+            position: 'relative',
+            overflow: 'hidden',
+            borderRadius: 1
+          }}>
+            <Box sx={{
+              position: 'absolute',
+              bottom: 0,
+              left: 0,
+              right: 0,
+              height: '100%',
+              background: `linear-gradient(90deg, ${color}20, ${color}10)`,
+              '&::after': {
+                content: '""',
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                background: `linear-gradient(90deg, transparent, ${color}15, transparent)`,
+                animation: 'shimmer 2s infinite'
+              }
+            }}>
+              {/* Chart Line */}
+              <svg width="100%" height="100%" style={{ overflow: 'visible' }}>
+                <path
+                  d="M0,30 Q25,15 50,25 T100,20"
+                  stroke={color}
+                  strokeWidth="2"
+                  fill="none"
+                  strokeLinecap="round"
+                />
+              </svg>
+            </Box>
+          </Box>
+
+          {/* Today's Value */}
+          {viewMode === 'overview' && todayValue !== undefined && (
+            <Box sx={{ 
+              display: 'flex', 
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              mt: 1
+            }}>
+              <Typography variant="caption" sx={{ 
+                color: `${color}CC`,
+                fontWeight: 600,
+                fontSize: '0.7rem'
+              }}>
+                Today's Activity
+              </Typography>
+              <Typography variant="body2" sx={{ 
+                color: color,
+                fontWeight: 800,
+                fontSize: '0.9rem'
+              }}>
+                {prefix}{todayValue.toLocaleString()}{suffix}
+              </Typography>
+            </Box>
+          )}
+        </Box>
+      </CardContent>
+    </Box>
+  </Box>
+);
+
+const StatItem = ({ label, value, change, color }) => (
+  <Box sx={{ 
+    display: 'flex', 
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    p: 1.5,
+    borderRadius: 2,
+    background: 'rgba(255, 255, 255, 0.1)',
+    backdropFilter: 'blur(10px)',
+    border: '1px solid rgba(255, 255, 255, 0.15)',
+    transition: 'all 0.3s ease',
+    '&:hover': {
+      background: 'rgba(255, 255, 255, 0.15)',
+      transform: 'translateX(5px)'
+    }
+  }}>
+    <Box>
+      <Typography variant="body2" sx={{ fontWeight: 500, opacity: 0.9 }}>
+        {label}
+      </Typography>
+      <Typography variant="h5" sx={{ fontWeight: 800, mt: 0.5, color }}>
+        {value}
+      </Typography>
+    </Box>
+    <Chip
+      label={change}
+      size="small"
+      sx={{
+        bgcolor: 'rgba(255, 255, 255, 0.2)',
+        color: 'white',
+        fontWeight: 600,
+        fontSize: '0.7rem'
+      }}
+    />
+  </Box>
+);
+
+const ActivityItem = ({ icon, title, description, time, color }) => (
+  <Box sx={{ 
+    display: 'flex',
+    alignItems: 'flex-start',
+    gap: 2,
+    p: 1.5,
+    borderRadius: 2,
+    background: 'rgba(255, 255, 255, 0.05)',
+    border: '1px solid rgba(255, 255, 255, 0.1)',
+    transition: 'all 0.3s ease',
+    '&:hover': {
+      background: 'rgba(255, 255, 255, 0.1)',
+      transform: 'translateX(5px)'
+    }
+  }}>
+    <Box sx={{
+      width: 40,
+      height: 40,
+      borderRadius: '50%',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      background: `linear-gradient(135deg, ${color}30 0%, ${color}10 100%)`,
+      border: `1px solid ${color}40`,
+      fontSize: '1.2rem'
+    }}>
+      {icon}
+    </Box>
+    <Box sx={{ flex: 1 }}>
+      <Typography variant="subtitle2" sx={{ fontWeight: 600, color: '#1A5276', mb: 0.5 }}>
+        {title}
+      </Typography>
+      <Typography variant="body2" sx={{ color: '#5D6D7E', fontSize: '0.85rem', mb: 0.5 }}>
+        {description}
+      </Typography>
+      <Typography variant="caption" sx={{ color: '#95A5A6', fontSize: '0.75rem' }}>
+        {time}
+      </Typography>
+    </Box>
+  </Box>
 );
 
 const LoadingSkeleton = ({ isMobile }) => (
   <Box sx={{ 
     p: { xs: 2, sm: 3, md: 4 },
     width: '100%',
-    minHeight: '100vh'
+    minHeight: '100vh',
+    background: 'radial-gradient(circle at top right, #f8fafc 0%, #e8f0fa 50%, #dbeafe 100%)'
   }}>
-    <Skeleton 
-      variant="rounded" 
-      width={isMobile ? '80%' : '40%'} 
-      height={60} 
-      sx={{ 
-        mb: 4, 
-        bgcolor: 'rgba(26, 82, 118, 0.1)', 
-        borderRadius: 2 
-      }} 
-    />
-    <Grid container spacing={2.5} sx={{ mb: 5 }}>
+    {/* Header Skeleton */}
+    <Box sx={{ 
+      mb: 4, 
+      p: 3, 
+      borderRadius: 4,
+      background: 'rgba(255, 255, 255, 0.85)',
+      backdropFilter: 'blur(20px)',
+      border: '1px solid rgba(255, 255, 255, 0.3)'
+    }}>
+      <Skeleton variant="rounded" width={300} height={40} sx={{ mb: 2, bgcolor: 'rgba(26, 82, 118, 0.1)', borderRadius: 2 }} />
+      <Skeleton variant="text" width={200} sx={{ bgcolor: 'rgba(26, 82, 118, 0.1)' }} />
+    </Box>
+
+    {/* Cards Skeleton */}
+    <Grid container spacing={3} sx={{ mb: 6 }}>
       {[...Array(6)].map((_, index) => (
-        <Grid item xs={6} sm={4} md={2} key={index}>
+        <Grid item xs={12} sm={6} md={4} lg={2} key={index}>
           <Skeleton 
             variant="rounded" 
-            height={160} 
+            height={200} 
             sx={{ 
-              borderRadius: 2.5,
+              borderRadius: 3,
               bgcolor: 'rgba(26, 82, 118, 0.1)'
             }} 
           />
         </Grid>
       ))}
     </Grid>
-    <Grid container spacing={3} sx={{ mb: 5 }}>
+
+    {/* Charts Skeleton */}
+    <Grid container spacing={3} sx={{ mb: 6 }}>
       <Grid item xs={12} lg={8}>
-        <Skeleton variant="rounded" height={380} sx={{ borderRadius: 2.5, bgcolor: 'rgba(26, 82, 118, 0.1)' }} />
+        <Skeleton variant="rounded" height={400} sx={{ borderRadius: 4, bgcolor: 'rgba(26, 82, 118, 0.1)' }} />
       </Grid>
       <Grid item xs={12} lg={4}>
-        <Skeleton variant="rounded" height={380} sx={{ borderRadius: 2.5, bgcolor: 'rgba(26, 82, 118, 0.1)' }} />
+        <Stack spacing={3}>
+          <Skeleton variant="rounded" height={200} sx={{ borderRadius: 4, bgcolor: 'rgba(26, 82, 118, 0.1)' }} />
+          <Skeleton variant="rounded" height={200} sx={{ borderRadius: 4, bgcolor: 'rgba(26, 82, 118, 0.1)' }} />
+        </Stack>
       </Grid>
     </Grid>
   </Box>
@@ -1064,34 +1274,40 @@ const ErrorState = ({ fetchData }) => (
     flexDirection: 'column', 
     alignItems: 'center', 
     justifyContent: 'center', 
-    height: '80vh',
+    height: '100vh',
     textAlign: 'center',
     p: { xs: 2, sm: 3, md: 4 },
-    background: 'linear-gradient(135deg, #f5f9ff 0%, #e8f0fa 100%)'
+    background: 'radial-gradient(circle at top right, #f8fafc 0%, #e8f0fa 50%, #dbeafe 100%)'
   }}>
     <Box sx={{ 
       width: { xs: 120, sm: 150 }, 
       height: { xs: 120, sm: 150 }, 
       borderRadius: '50%', 
-      bgcolor: 'rgba(26, 82, 118, 0.1)',
+      background: 'linear-gradient(135deg, rgba(26, 82, 118, 0.1) 0%, rgba(26, 82, 118, 0.05) 100%)',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
       mb: 4,
-      animation: 'pulse 2s infinite'
+      animation: 'pulse 2s infinite',
+      border: '2px solid rgba(26, 82, 118, 0.2)',
+      boxShadow: '0 20px 40px rgba(26, 82, 118, 0.1)'
     }}>
       <LocalPharmacy sx={{ fontSize: { xs: 60, sm: 80 }, color: '#1A5276' }} />
     </Box>
     <Typography variant="h4" sx={{ 
       color: "#1A5276", 
       mb: 2, 
-      fontWeight: 800,
-      fontSize: { xs: '1.5rem', sm: '2rem', md: '2.5rem' }
+      fontWeight: 900,
+      fontSize: { xs: '1.5rem', sm: '2rem', md: '2.5rem' },
+      background: 'linear-gradient(135deg, #1A5276 0%, #2E86C1 100%)',
+      WebkitBackgroundClip: 'text',
+      WebkitTextFillColor: 'transparent',
+      backgroundClip: 'text'
     }}>
       Unable to Load Dashboard
     </Typography>
     <Typography variant="body1" sx={{ 
-      color: 'text.secondary', 
+      color: '#5D6D7E', 
       mb: 4, 
       maxWidth: 500,
       fontSize: { xs: '0.9rem', sm: '1rem' }
@@ -1099,39 +1315,28 @@ const ErrorState = ({ fetchData }) => (
       There was an error loading your dashboard data. Please check your connection and try again.
     </Typography>
     <Button 
-      variant="contained" 
+      variant="contained"
       startIcon={<Refresh />}
       onClick={fetchData}
       sx={{ 
         background: 'linear-gradient(135deg, #1A5276 0%, #2E86C1 100%)',
-        borderRadius: 2,
+        borderRadius: 3,
         px: { xs: 3, sm: 4 },
         py: { xs: 1, sm: 1.5 },
         fontWeight: 700,
         fontSize: { xs: '0.9rem', sm: '1rem' },
+        boxShadow: '0 10px 25px rgba(26, 82, 118, 0.3)',
         '&:hover': {
           background: 'linear-gradient(135deg, #154360 0%, #21618C 100%)',
           transform: 'translateY(-2px)',
-          boxShadow: '0 8px 25px rgba(26, 82, 118, 0.3)'
-        }
+          boxShadow: '0 15px 30px rgba(26, 82, 118, 0.4)'
+        },
+        transition: 'all 0.3s ease'
       }}
     >
       Refresh Dashboard
     </Button>
   </Box>
 );
-
-// Add CSS animation for pulse effect
-if (typeof document !== 'undefined') {
-  const styleSheet = document.createElement('style');
-  styleSheet.textContent = `
-    @keyframes pulse {
-      0% { opacity: 1; }
-      50% { opacity: 0.5; }
-      100% { opacity: 1; }
-    }
-  `;
-  document.head.appendChild(styleSheet);
-}
 
 export default Dashboard;
