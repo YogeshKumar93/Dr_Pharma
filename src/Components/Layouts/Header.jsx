@@ -20,6 +20,7 @@ import { Link, useNavigate } from "react-router-dom";
 import SearchIcon from "@mui/icons-material/Search";
 import DownloadIcon from "@mui/icons-material/Download";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
+import PersonIcon from "@mui/icons-material/Person";
 
 import { useCart } from "../../Contexts/CartContext";
 import Cart from "../../Pages/Cart";
@@ -28,7 +29,7 @@ const Header = () => {
   const { cartItems, openCart, setOpenCart } = useCart();
   const navigate = useNavigate();
 
-   const [anchorEl, setAnchorEl] = React.useState(null);
+  const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
 
   const handleMenuOpen = (event) => {
@@ -39,19 +40,28 @@ const Header = () => {
     setAnchorEl(null);
   };
 
- const handleLogout = () => {
-  // 1️⃣ Remove token (JWT expire from frontend)
-  localStorage.removeItem("token");
+  const menuItemStyle = {
+    color: "#fff",
+    "&:hover": {
+      backgroundColor: "#F1C40F", // yellow
+      color: "#1A5276",          // text readable on yellow
+    },
+  };
 
-  // (optional) agar user data store kiya hai
-  localStorage.removeItem("user");
 
-  // 2️⃣ Close menu
-  handleMenuClose();
+  const handleLogout = () => {
+    // 1️⃣ Remove token (JWT expire from frontend)
+    localStorage.removeItem("token");
 
-  // 3️⃣ Redirect to home page "/"
-  navigate("/", { replace: true });
-};
+    // (optional) agar user data store kiya hai
+    localStorage.removeItem("user");
+
+    // 2️⃣ Close menu
+    handleMenuClose();
+
+    // 3️⃣ Redirect to home page "/"
+    navigate("/", { replace: true });
+  };
 
 
   return (
@@ -111,7 +121,7 @@ const Header = () => {
               }}
             >
               <Box sx={{ display: "flex", gap: 2 }}>
-                <Button component={Link} to="/home" sx={navBtn}>
+                <Button component={Link} to="/" sx={navBtn}>
                   Home
                 </Button>
                 <Button component={Link} to="/categories" sx={navBtn}>
@@ -177,13 +187,15 @@ const Header = () => {
               </IconButton>
 
               <IconButton
-              onClick={handleMenuOpen}
+                onClick={handleMenuOpen}
                 sx={{
                   color: "#f3eceaff",
                   "&:hover": { backgroundColor: "#111" },
                 }}
               >
-                <MenuIcon />
+                {/* <MenuIcon /> */}
+                <PersonIcon />
+
               </IconButton>
               <Menu
                 anchorEl={anchorEl}
@@ -191,8 +203,17 @@ const Header = () => {
                 onClose={handleMenuClose}
                 anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
                 transformOrigin={{ vertical: "top", horizontal: "right" }}
+                PaperProps={{
+                  sx: {
+                    backgroundColor: "#1A5276",
+                    color: "#fff",
+                    borderRadius: 2,
+                    minWidth: 180,
+                  },
+                }}
               >
                 <MenuItem
+                  sx={menuItemStyle}
                   onClick={() => {
                     handleMenuClose();
                     navigate("/myprofile");
@@ -202,6 +223,7 @@ const Header = () => {
                 </MenuItem>
 
                 <MenuItem
+                  sx={menuItemStyle}
                   onClick={() => {
                     handleMenuClose();
                     navigate("/myorders");
@@ -212,7 +234,16 @@ const Header = () => {
 
                 <Divider />
 
-                <MenuItem onClick={handleLogout} sx={{ color: "red" }}>
+                <MenuItem
+                  sx={{
+                    ...menuItemStyle,
+                    "&:hover": {
+                      backgroundColor: "#E74C3C",
+                      color: "#fff",
+                    },
+                  }}
+                  onClick={handleLogout}
+                >
                   Logout
                 </MenuItem>
               </Menu>
@@ -224,7 +255,7 @@ const Header = () => {
       {/* HEADER HEIGHT SPACER */}
       <Toolbar />
 
-      
+
     </>
   );
 };
