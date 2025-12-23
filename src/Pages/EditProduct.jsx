@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import CommonFormModal from "../Common/CommonFormModal";
 import { BASE_URL } from "../api/config";
 
-const EditProduct = ({ open, handleClose, onFetchRef, product }) => {
+const EditProduct = ({ open, onClose, onFetchRef, product }) => {
   const initialFormData = {
     id: null,
     title: "",
@@ -21,7 +21,7 @@ const EditProduct = ({ open, handleClose, onFetchRef, product }) => {
 
   const handleModalClose = () => {
     resetForm();
-    handleClose();
+    onClose();
   };
 
   const formatDate = (date) => {

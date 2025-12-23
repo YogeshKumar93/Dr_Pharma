@@ -12,12 +12,15 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import { BASE_URL } from "../api/config";
 import CommonTable from "../Common/CommonTable";
 import EditUser from "./EditUsers";
+import AddUser from "./AddUser";
 
 const Users = () => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
 const [selectedUser, setSelectedUser] = useState(null);
+const [addOpen, setAddOpen] = useState(false);
+
 
 
   // Pagination
@@ -43,6 +46,12 @@ const [selectedUser, setSelectedUser] = useState(null);
   useEffect(() => {
     fetchUsers();
   }, []);
+
+// ------------------ ADD USER -------------------- */
+  const handleAddClose = () => {
+  setAddOpen(false);
+};
+
 
 // * -------------------- EDIT USER -------------------- */
   const handleEdit = (row) => {
@@ -185,6 +194,7 @@ const handleModalClose = () => {
       <Box sx={{ display: "flex", justifyContent: "flex-end", mb: 2 }}>
         <Button
           variant="contained"
+          onClick={()=> setAddOpen(true)}
           sx={{
             backgroundColor: "#1A5276",
             "&:hover": {
@@ -192,7 +202,7 @@ const handleModalClose = () => {
             },
           }}
         >
-          Users List
+          Add User
         </Button>
       </Box>
 
@@ -217,6 +227,12 @@ const handleModalClose = () => {
         onClose={handleModalClose}
         user={selectedUser}
         onFetchRef={fetchUsers}
+      />
+
+      <AddUser 
+        open={addOpen}
+  onClose={handleAddClose}
+  // onFetchRef={fetchUsers}
       />
     </Box>
   );

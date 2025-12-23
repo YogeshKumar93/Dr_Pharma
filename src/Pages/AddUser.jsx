@@ -1,18 +1,16 @@
 import React, { useEffect, useState } from "react";
 import CommonFormModal from "../Common/CommonFormModal";
-import { BASE_URL } from "../api/config";
+import { apiCall } from "../api/api";
 
-const EditUser = ({ open, onClose, onFetchRef, user }) => {
+const AddUser = ({ open, onClose, onFetchRef }) => {
   const initialFormData = {
-    id: null,
     name: "",
     email: "",
     phone: "",
+    password:"",
     role: "",
-    status: "",
+    status: 1,
     address: "",
-    created_at: "",
-    updated_at: "",
   };
 
   const [formData, setFormData] = useState(initialFormData);
@@ -27,62 +25,46 @@ const EditUser = ({ open, onClose, onFetchRef, user }) => {
 
   /* -------------------- SUBMIT -------------------- */
   const handleSubmit = async () => {
-    if (!formData.id) return;
+    if (!formData.name || !formData.email) {
+      alert("Name & Email are required");
+      return;
+    }
 
     setSubmitting(true);
 
     try {
-      await fetch(`${BASE_URL}users/update`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          id: formData.id,
-          name: formData.name,
-          email: formData.email,
-          phone: formData.phone,
-          role: formData.role,
-          status: formData.status,
-          address: formData.address,
-        }),
-      });
+      // ✅ SAME apiCall METHOD AS AddProduct
+      const { response, error } = await apiCall(
+        "POST",
+        "users/create",
+        formData
+      );
+
+      if (error) {
+        alert("Failed to add user");
+        return;
+      }
 
       onFetchRef?.();
       handleModalClose();
     } catch (err) {
-      console.error("Edit user failed", err);
+      console.error("Add user failed", err);
+      alert("Something went wrong");
     } finally {
       setSubmitting(false);
     }
   };
 
-  /* -------------------- PREFILL DATA -------------------- */
   useEffect(() => {
-    if (open && user) {
-      setFormData({
-        id: user.id,
-        name: user.name || "",
-        email: user.email || "",
-        phone: user.phone || "",
-        role: user.role || "",
-        status: user.status ?? "",
-        address: user.address || "",
-        created_at: user.created_at
-          ? user.created_at.split("/").reverse().join("-")
-          : "",
-        updated_at: user.updated_at
-          ? user.updated_at.split("/").reverse().join("-")
-          : "",
-      });
-    }
-  }, [open, user]);
+    if (open) resetForm();
+  }, [open]);
 
   /* -------------------- FIELDS -------------------- */
   const fields = [
     { name: "name", label: "Name", required: true },
     { name: "email", label: "Email", required: true },
     { name: "phone", label: "Phone" },
+    { name: "password", label: "Password" },
     {
       name: "role",
       label: "Role",
@@ -91,6 +73,7 @@ const EditUser = ({ open, onClose, onFetchRef, user }) => {
         { label: "Admin", value: "admin" },
         { label: "Customer", value: "customer" },
       ],
+      required: true,
     },
     {
       name: "status",
@@ -102,22 +85,20 @@ const EditUser = ({ open, onClose, onFetchRef, user }) => {
       ],
     },
     { name: "address", label: "Address" },
-    { name: "created_at", label: "Created Date", type: "date", disabled: true },
-    { name: "updated_at", label: "Updated Date", type: "date", disabled: true },
   ];
 
   return (
     <CommonFormModal
       open={open}
       onClose={handleModalClose}
-      title="Edit User"
+      title="Add User"
       fields={fields}
       formData={formData}
       onChange={setFormData}
       onSubmit={handleSubmit}
-      submitLabel={submitting ? "Updating..." : "Update"}
+      submitLabel={submitting ? "Saving..." : "Save"}
     />
   );
 };
 
-export default EditUser;
+export default AddUser;
