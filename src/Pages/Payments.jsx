@@ -7,10 +7,13 @@ import {
   Chip,
   Button,
   IconButton,
+  Tooltip,
 } from "@mui/material";
 
 import CommonTable from "../Common/CommonTable";
 import { apiCall } from "../api/api";
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 const Payments = () => {
   const [payments, setPayments] = useState([]);
