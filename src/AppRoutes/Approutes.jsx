@@ -16,19 +16,20 @@ import Medicines from "../Pages/Medicines";
 import Payments from "../Pages/Payments";
 import Settings from "../Pages/Settings";
 import Prescriptions from "../Pages/Prescriptions";
-import Orders from "../Pages/Orders";
+
 import LandingPage from "../Components/Landings/Landingpage";
 import { CartProvider } from "../Contexts/CartContext";
 import Cart from "../Pages/Cart";
 import AllProducts from "../Pages/AllProducts";
 import Checkout from "../Pages/Checkout";
  
-import AdminOrders from "../Pages/AdminOrders";
+
 import Categories from "../Pages/Categories";
 import Home from "../Components/Landings/Home";
 import Offers from "../Pages/Offers";
 import AboutUs from "../Pages/AboutUs";
 import MyOrders from "../Pages/MyOrders";
+import AllOrders from "../Pages/AllOrders";
 
 
 const AppRoutes = () => {
@@ -77,11 +78,8 @@ const AppRoutes = () => {
               <Route path="/payments" element={<Payments />} />
               <Route path="/settings" element={<Settings />} />
               <Route path="/prescriptions" element={<Prescriptions />} />
-              <Route path="/orders" element={<Orders />} />
-
-
               <Route path="/myorders" element={<MyOrders />} />
-              <Route path="/adminorders" element={<AdminOrders />} />
+              <Route path="/allorders" element={<AllOrders />} />
 
             </Route>
 
