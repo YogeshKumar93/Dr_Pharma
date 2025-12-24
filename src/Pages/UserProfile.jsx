@@ -36,11 +36,14 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import PendingIcon from "@mui/icons-material/Pending";
 import InventoryIcon from "@mui/icons-material/Inventory";
 import AssignmentIcon from "@mui/icons-material/Assignment";
+import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
+import MonetizationOnIcon from "@mui/icons-material/MonetizationOn";
+import VerifiedUserIcon from "@mui/icons-material/VerifiedUser";
 import { apiCall } from "../api/api";
 
 const TabPanel = ({ value, index, children }) => {
   if (value !== index) return null;
-  return <Box sx={{ mt: 1 }}>{children}</Box>;
+  return <Box sx={{ mt: 2 }}>{children}</Box>;
 };
 
 const UserProfile = () => {
@@ -120,257 +123,449 @@ const UserProfile = () => {
   }
 
   return (
-    <Box sx={{ width: "100%", p: 1.5 }}>
-      {/* TOP BAR WITH USER INFO */}
-      <Grid container spacing={1.5} sx={{ mb: 1.5 }}>
-        {/* USER PROFILE CARD */}
-        <Grid item xs={12} md={3}>
+    <Box sx={{ 
+      width: "100%", 
+      p: 1.5,
+      maxWidth: { lg: '1600px', xl: '1800px' },
+      mx: 'auto'
+    }}>
+      {/* HEADER SECTION */}
+      <Box sx={{ mb: 3 }}>
+        <Typography variant="h5" fontWeight="700" gutterBottom sx={{ color: '#1a237e' }}>
+          My Account Dashboard
+        </Typography>
+        <Divider sx={{ mb: 1 }} />
+      </Box>
+
+      {/* MAIN LAYOUT */}
+      <Grid container spacing={3}>
+        {/* LEFT SIDEBAR - USER PROFILE */}
+        <Grid item xs={12} lg={3.5}>
           <Paper sx={{ 
-            p: 2, 
-            borderRadius: 1.5,
-            height: '100%',
-            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            p: 3, 
+            borderRadius: 2.5,
+            height: '90%',
+            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 50%, #667eea 100%)',
             color: 'white',
             position: 'relative',
-            overflow: 'hidden'
+            overflow: 'hidden',
+            boxShadow: '0 10px 30px rgba(102, 126, 234, 0.2)'
           }}>
             <Box sx={{ 
               position: 'absolute', 
-              top: -20, 
-              right: -20, 
-              width: 100, 
-              height: 100, 
+              top: -40, 
+              right: -40, 
+              width: 150, 
+              height: 150, 
               borderRadius: '50%',
-              background: 'rgba(255,255,255,0.1)'
+              background: 'radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 70%)'
             }} />
-            <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-              <Avatar
-                src={user.image || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=ffffff&color=667eea&bold=true`}
+            
+            <Box sx={{ position: 'relative', zIndex: 1 }}>
+              {/* USER AVATAR */}
+              <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mb: 3 }}>
+                <Avatar
+                  src={user.image || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=ffffff&color=667eea&bold=true&size=150`}
+                  sx={{ 
+                    width: 100, 
+                    height: 100, 
+                    border: '4px solid rgba(255,255,255,0.3)',
+                    mb: 2,
+                    boxShadow: '0 8px 16px rgba(0,0,0,0.1)'
+                  }}
+                >
+                  {user.name?.charAt(0)}
+                </Avatar>
+                <Typography variant="h6" fontWeight="700" align="center">{user.name}</Typography>
+                <Typography variant="body2" sx={{ opacity: 0.9, textAlign: 'center' }}>{user.email}</Typography>
+              </Box>
+
+              {/* USER STATUS */}
+              <Box sx={{ 
+                bgcolor: 'rgba(255,255,255,0.1)', 
+                p: 2, 
+                borderRadius: 2,
+                mb: 3,
+                backdropFilter: 'blur(10px)'
+              }}>
+                <Stack direction="row" spacing={1} justifyContent="center">
+                  <Chip 
+                    icon={<VerifiedUserIcon />}
+                    label={user.role}
+                    size="small"
+                    sx={{ 
+                      bgcolor: 'rgba(255,255,255,0.2)',
+                      color: 'white',
+                      fontWeight: '600',
+                      '& .MuiChip-icon': { color: 'white' }
+                    }} 
+                  />
+                  <Chip
+                    label={user.status}
+                    size="small"
+                    sx={{
+                      bgcolor: user.status === "active" ? 'rgba(76, 175, 80, 0.3)' : 'rgba(244, 67, 54, 0.3)',
+                      color: 'white',
+                      fontWeight: '600',
+                      border: '1px solid rgba(255,255,255,0.3)'
+                    }}
+                  />
+                </Stack>
+              </Box>
+
+              {/* MEMBER INFO */}
+              <Box sx={{ 
+                bgcolor: 'rgba(255,255,255,0.08)', 
+                p: 2, 
+                borderRadius: 2,
+                border: '1px solid rgba(255,255,255,0.1)'
+              }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1.5 }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                    <CalendarTodayIcon sx={{ fontSize: 18, mr: 1, opacity: 0.8 }} />
+                    <Typography variant="caption" sx={{ opacity: 0.9 }}>Member Since</Typography>
+                  </Box>
+                  <Typography variant="body2" fontWeight="500">
+                    {user.created_at ? new Date(user.created_at).toLocaleDateString('en-IN', { 
+                      day: 'numeric', 
+                      month: 'short', 
+                      year: 'numeric' 
+                    }) : 'N/A'}
+                  </Typography>
+                </Box>
+                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                    <MonetizationOnIcon sx={{ fontSize: 18, mr: 1, opacity: 0.8 }} />
+                    <Typography variant="caption" sx={{ opacity: 0.9 }}>Total Orders</Typography>
+                  </Box>
+                  <Typography variant="body2" fontWeight="500">{orders.length}</Typography>
+                </Box>
+              </Box>
+
+              {/* EDIT PROFILE BUTTON */}
+              <Button
+                fullWidth
+                variant="contained"
+                startIcon={<EditIcon />}
                 sx={{ 
-                  width: 60, 
-                  height: 60, 
-                  border: '3px solid white',
-                  mr: 2
+                  mt: 3, 
+                  bgcolor: 'white', 
+                  color: '#667eea',
+                  '&:hover': {
+                    bgcolor: 'rgba(255,255,255,0.9)',
+                  },
+                  fontWeight: '600',
+                  borderRadius: 2,
+                  py: 1
                 }}
               >
-                {user.name?.charAt(0)}
-              </Avatar>
-              <Box>
-                <Typography variant="h6" fontWeight="600">{user.name}</Typography>
-                <Typography variant="body2" sx={{ opacity: 0.9 }}>{user.email}</Typography>
-              </Box>
-            </Box>
-            <Stack direction="row" spacing={1} sx={{ mb: 1.5 }}>
-              <Chip 
-                label={user.role} 
-                size="small" 
-                sx={{ 
-                  bgcolor: 'rgba(255,255,255,0.2)',
-                  color: 'white',
-                  fontWeight: '500'
-                }} 
-              />
-              <Chip
-                label={user.status}
-                size="small"
-                sx={{
-                  bgcolor: user.status === "active" ? 'rgba(76, 175, 80, 0.2)' : 'rgba(244, 67, 54, 0.2)',
-                  color: 'white',
-                  fontWeight: '500'
-                }}
-              />
-            </Stack>
-            <Divider sx={{ my: 1.5, borderColor: 'rgba(255,255,255,0.2)' }} />
-            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <Box>
-                <Typography variant="caption" sx={{ opacity: 0.8 }}>Member Since</Typography>
-                <Typography variant="body2">
-                  {user.created_at ? new Date(user.created_at).toLocaleDateString('en-IN', { month: 'short', year: 'numeric' }) : 'N/A'}
-                </Typography>
-              </Box>
-              <IconButton size="small" sx={{ color: 'white' }}>
-                <EditIcon fontSize="small" />
-              </IconButton>
+                Edit Profile
+              </Button>
             </Box>
           </Paper>
         </Grid>
 
-        {/* QUICK STATS */}
-        <Grid item xs={12} md={9}>
-          <Grid container spacing={1.5}>
-            <Grid item xs={6} sm={3}>
-              <Paper sx={{ p: 1.5, borderRadius: 1.5, height: '100%' }}>
-                <Typography variant="caption" color="text.secondary">Total Orders</Typography>
-                <Typography variant="h5" fontWeight="600">{orders.length}</Typography>
-              </Paper>
+        {/* RIGHT CONTENT */}
+        <Grid item xs={12} lg={8.5}>
+          {/* STATS CARDS */}
+          <Grid container spacing={5.5} sx={{ mb: 1 }}>
+            <Grid item xs={6} md={3}>
+              <Card sx={{ 
+                p: 2, 
+                borderRadius: 2,
+                borderLeft: '4px solid #2196f3',
+                boxShadow: '0 4px 12px rgba(33, 150, 243, 0.1)'
+              }}>
+                <Typography variant="caption" color="text.secondary" sx={{ fontWeight: '600', mb: 1 }}>
+                  Total Orders
+                </Typography>
+                <Typography variant="h4" fontWeight="700" color="#2196f3">
+                  {orders.length}
+                </Typography>
+              </Card>
             </Grid>
-            <Grid item xs={6} sm={3}>
-              <Paper sx={{ p: 1.5, borderRadius: 1.5, height: '100%' }}>
-                <Typography variant="caption" color="text.secondary">Pending</Typography>
-                <Typography variant="h5" fontWeight="600" color="warning.main">
+            <Grid item xs={6} md={3}>
+              <Card sx={{ 
+                p: 2, 
+                borderRadius: 2,
+                borderLeft: '4px solid #ff9800',
+                boxShadow: '0 4px 12px rgba(255, 152, 0, 0.1)'
+              }}>
+                <Typography variant="caption" color="text.secondary" sx={{ fontWeight: '600', mb: 1 }}>
+                  Pending
+                </Typography>
+                <Typography variant="h4" fontWeight="700" color="#ff9800">
                   {orders.filter(o => o.status === 'processing').length}
                 </Typography>
-              </Paper>
+              </Card>
             </Grid>
-            <Grid item xs={6} sm={3}>
-              <Paper sx={{ p: 1.5, borderRadius: 1.5, height: '100%' }}>
-                <Typography variant="caption" color="text.secondary">Delivered</Typography>
-                <Typography variant="h5" fontWeight="600" color="success.main">
+            <Grid item xs={6} md={3}>
+              <Card sx={{ 
+                p: 2, 
+                borderRadius: 2,
+                borderLeft: '4px solid #4caf50',
+                boxShadow: '0 4px 12px rgba(76, 175, 80, 0.1)'
+              }}>
+                <Typography variant="caption" color="text.secondary" sx={{ fontWeight: '600', mb: 1 }}>
+                  Delivered
+                </Typography>
+                <Typography variant="h4" fontWeight="700" color="#4caf50">
                   {orders.filter(o => o.status === 'delivered').length}
                 </Typography>
-              </Paper>
+              </Card>
             </Grid>
-            <Grid item xs={6} sm={3}>
-              <Paper sx={{ p: 1.5, borderRadius: 1.5, height: '100%' }}>
-                <Typography variant="caption" color="text.secondary">Total Spent</Typography>
-                <Typography variant="h5" fontWeight="600" color="primary.main">
+            <Grid item xs={6} md={3}>
+              <Card sx={{ 
+                p: 2, 
+                borderRadius: 2,
+                borderLeft: '4px solid #9c27b0',
+                boxShadow: '0 4px 12px rgba(156, 39, 176, 0.1)'
+              }}>
+                <Typography variant="caption" color="text.secondary" sx={{ fontWeight: '600', mb: 1 }}>
+                  Total Spent
+                </Typography>
+                <Typography variant="h4" fontWeight="700" color="#9c27b0">
                   ₹{orders.reduce((sum, o) => sum + (parseFloat(o.total_amount) || 0), 0).toLocaleString('en-IN')}
                 </Typography>
-              </Paper>
+              </Card>
             </Grid>
+          </Grid>
 
-            {/* ORDER TRACKING */}
-            {latestOrder && (
-              <Grid item xs={12}>
-                <Paper sx={{ p: 1.5, borderRadius: 1.5 }}>
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
-                    <Typography variant="subtitle2" fontWeight="600">
-                      <LocalShippingIcon sx={{ fontSize: 16, mr: 1, verticalAlign: 'middle' }} />
-                      Track Recent Order
+          {/* ORDER TRACKING */}
+          {latestOrder && (
+            <Card sx={{ 
+              p: 4.5, 
+              mb: 3, 
+              borderRadius: 2,
+              border: '1px solid',
+              borderColor: 'divider',
+              boxShadow: '0 4px 20px rgba(0,0,0,0.05)'
+            }}>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                <Typography variant="subtitle1" fontWeight="600" sx={{ display: 'flex', alignItems: 'center' }}>
+                  <LocalShippingIcon sx={{ mr: 1, color: 'primary.main' }} />
+                  Track Recent Order
+                </Typography>
+                <Chip
+                  icon={getStatusIcon(latestOrder.status)}
+                  label={latestOrder.status}
+                  size="small"
+                  sx={{
+                    fontWeight: '600',
+                    bgcolor: latestOrder.status === "delivered" ? alpha('#4caf50', 0.1) : 
+                             latestOrder.status === "shipped" ? alpha('#2196f3', 0.1) : alpha('#ff9800', 0.1),
+                    color: latestOrder.status === "delivered" ? '#2e7d32' : 
+                           latestOrder.status === "shipped" ? '#1976d2' : '#ed6c02',
+                  }}
+                />
+              </Box>
+              
+              <Box sx={{ mb: 2 }}>
+                <Typography variant="caption" color="text.secondary">
+                  Order #{latestOrder.order_no || latestOrder.id} • 
+                  {latestOrder.created_at ? new Date(latestOrder.created_at).toLocaleDateString('en-IN', {
+                    weekday: 'short',
+                    day: 'numeric',
+                    month: 'short',
+                    year: 'numeric'
+                  }) : 'N/A'}
+                </Typography>
+                <Typography variant="h6" fontWeight="600" sx={{ mt: 0.5 }}>
+                  ₹{latestOrder.total_amount}
+                </Typography>
+              </Box>
+
+              <Box sx={{ mt: 3 }}>
+  {/* Progress Bar */}
+  <LinearProgress
+    variant="determinate"
+    value={getTrackingProgress(latestOrder.status)}
+    sx={{
+      height: 10,
+      borderRadius: 5,
+      width: "100%",
+      mb: 3,
+      bgcolor: alpha("#e0e0e0", 0.6),
+      "& .MuiLinearProgress-bar": {
+        background:
+          latestOrder.status === "delivered"
+            ? "linear-gradient(90deg, #4caf50, #2e7d32)"
+            : latestOrder.status === "shipped"
+            ? "linear-gradient(90deg, #2196f3, #1976d2)"
+            : "linear-gradient(90deg, #ff9800, #f57c00)",
+        borderRadius: 5,
+      },
+    }}
+  />
+
+  {/* Order Steps */}
+  <Grid
+    container
+    justifyContent="space-between"
+    alignItems="center"
+    sx={{ px: 1 }}
+  >
+    {["Ordered", "Processing", "Shipped", "Delivered"].map((step, index) => {
+      const active =
+        getTrackingProgress(latestOrder.status) >= (index + 1) * 25;
+
+      return (
+        <Grid item xs={3} key={step}>
+          <Box sx={{ textAlign: "center" }}>
+            <Box
+              sx={{
+                width: 30,
+                height: 30,
+                borderRadius: "50%",
+                mx: "auto",
+                mb: 1,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                bgcolor: active
+                  ? latestOrder.status === "delivered"
+                    ? "#4caf50"
+                    : latestOrder.status === "shipped" && index <= 2
+                    ? "#2196f3"
+                    : "#ff9800"
+                  : "#e0e0e0",
+                color: "white",
+                fontSize: "0.8rem",
+                fontWeight: 600,
+                transition: "all 0.3s ease",
+              }}
+            >
+              {index + 1}
+            </Box>
+
+            <Typography
+              variant="caption"
+              sx={{
+                fontWeight: active ? 600 : 400,
+                color: active ? "text.primary" : "text.secondary",
+                whiteSpace: "nowrap",
+              }}
+            >
+              {step}
+            </Typography>
+          </Box>
+        </Grid>
+      );
+    })}
+  </Grid>
+</Box>
+
+
+             
+            </Card>
+          )}
+
+          {/* TABS SECTION */}
+          <Paper sx={{ 
+            p: 3, 
+            borderRadius: 2,
+            boxShadow: '0 4px 20px rgba(0,0,0,0.05)'
+          }}>
+            <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 3 }}>
+              <Tabs 
+                value={tab} 
+                onChange={(e, v) => setTab(v)}
+                sx={{
+                  '& .MuiTab-root': {
+                    textTransform: 'none',
+                    fontWeight: '600',
+                    fontSize: '0.95rem',
+                    minHeight: 48,
+                    '&.Mui-selected': {
+                      color: 'primary.main',
+                    }
+                  }
+                }}
+              >
+                <Tab icon={<PersonIcon />} label="Profile Details" />
+                <Tab icon={<ShoppingBagIcon />} label={`Order History (${orders.length})`} />
+                <Tab icon={<SecurityIcon />} label="Security" />
+              </Tabs>
+            </Box>
+
+            {/* PROFILE TAB */}
+            <TabPanel value={tab} index={0}>
+              <Grid container spacing={3}>
+                <Grid item xs={12} md={6}>
+                  <Card sx={{ 
+                    p: 2.5, 
+                    borderRadius: 2,
+                    border: '1px solid',
+                    borderColor: 'divider',
+                    height: '100%'
+                  }}>
+                    <Typography variant="subtitle1" fontWeight="600" gutterBottom sx={{ mb: 2 }}>
+                      Contact Information
                     </Typography>
-                    <Chip
-                      label={latestOrder.status}
-                      size="small"
-                      sx={{
-                        fontSize: '0.7rem',
-                        height: 20,
-                        bgcolor: latestOrder.status === "delivered" ? alpha('#4caf50', 0.1) : alpha('#ff9800', 0.1),
-                        color: latestOrder.status === "delivered" ? '#2e7d32' : '#ed6c02',
-                      }}
-                    />
-                  </Box>
-                  <Typography variant="caption" color="text.secondary">
-                    Order #{latestOrder.order_no || latestOrder.id} • {latestOrder.created_at ? new Date(latestOrder.created_at).toLocaleDateString('en-IN') : 'N/A'}
-                  </Typography>
-                  <Box sx={{ display: 'flex', alignItems: 'center', mt: 1 }}>
-                    <Box sx={{ flexGrow: 1, mr: 2 }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
+                      <EmailIcon sx={{ fontSize: 22, mr: 2, color: 'primary.main' }} />
+                      <Box>
+                        <Typography variant="caption" color="text.secondary">Email Address</Typography>
+                        <Typography variant="body1" fontWeight="500">{user.email}</Typography>
+                      </Box>
+                    </Box>
+                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
+                      <PhoneIcon sx={{ fontSize: 22, mr: 2, color: 'primary.main' }} />
+                      <Box>
+                        <Typography variant="caption" color="text.secondary">Phone Number</Typography>
+                        <Typography variant="body1" fontWeight="500">{user.phone || "Not provided"}</Typography>
+                      </Box>
+                    </Box>
+                    <Box sx={{ display: 'flex', alignItems: 'flex-start' }}>
+                      <LocationOnIcon sx={{ fontSize: 22, mr: 2, mt: 0.5, color: 'primary.main' }} />
+                      <Box sx={{ flexGrow: 1 }}>
+                        <Typography variant="caption" color="text.secondary">Shipping Address</Typography>
+                        <Typography variant="body1" fontWeight="500">{user.address || "No address added"}</Typography>
+                      </Box>
+                    </Box>
+                  </Card>
+                </Grid>
+
+                <Grid item xs={12} md={6}>
+                  <Card sx={{ 
+                    p: 2.5, 
+                    borderRadius: 2,
+                    border: '1px solid',
+                    borderColor: 'divider',
+                    height: '100%',
+                    background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)'
+                  }}>
+                    <Typography variant="subtitle1" fontWeight="600" gutterBottom sx={{ mb: 2 }}>
+                      Account Security
+                    </Typography>
+                    <Box sx={{ mb: 3 }}>
+                      <Typography variant="body2" color="text.secondary" gutterBottom>
+                        Password Strength
+                      </Typography>
                       <LinearProgress 
                         variant="determinate" 
-                        value={getTrackingProgress(latestOrder.status)} 
+                        value={70} 
                         sx={{ 
                           height: 6, 
                           borderRadius: 3,
+                          bgcolor: alpha('#e0e0e0', 0.5),
                           '& .MuiLinearProgress-bar': {
-                            backgroundColor: latestOrder.status === 'delivered' ? '#4caf50' : 
-                                           latestOrder.status === 'shipped' ? '#2196f3' : '#ff9800'
+                            background: 'linear-gradient(90deg, #4caf50, #2e7d32)',
                           }
                         }} 
                       />
-                      <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 0.5 }}>
-                        {['Ordered', 'Processing', 'Shipped', 'Delivered'].map((step, index) => (
-                          <Typography 
-                            key={step} 
-                            variant="caption" 
-                            sx={{ 
-                              color: getTrackingProgress(latestOrder.status) >= (index + 1) * 25 ? 
-                                (latestOrder.status === 'delivered' ? '#4caf50' : 
-                                 latestOrder.status === 'shipped' && index <= 2 ? '#2196f3' : '#ff9800') : 
-                                'text.disabled',
-                              fontWeight: getTrackingProgress(latestOrder.status) >= (index + 1) * 25 ? 600 : 400
-                            }}
-                          >
-                            {step}
-                          </Typography>
-                        ))}
-                      </Box>
                     </Box>
-                    <Typography variant="body2" fontWeight="600">
-                      ₹{latestOrder.total_amount}
-                    </Typography>
-                  </Box>
-                </Paper>
-              </Grid>
-            )}
-          </Grid>
-        </Grid>
-      </Grid>
-
-      {/* MAIN CONTENT AREA */}
-      <Grid container spacing={1.5}>
-        {/* TABS NAVIGATION */}
-        <Grid item xs={12} md={2}>
-          <Paper sx={{ borderRadius: 1.5 }}>
-            <Tabs
-              orientation="vertical"
-              value={tab}
-              onChange={(e, v) => setTab(v)}
-              sx={{
-                '& .MuiTab-root': {
-                  minHeight: 44,
-                  justifyContent: 'flex-start',
-                  fontSize: '0.8rem',
-                  px: 2,
-                  '&.Mui-selected': {
-                    bgcolor: alpha('#1976d2', 0.08),
-                    color: 'primary.main',
-                    fontWeight: 600,
-                    borderLeft: '3px solid',
-                    borderColor: 'primary.main',
-                  }
-                }
-              }}
-            >
-              <Tab icon={<PersonIcon sx={{ fontSize: 18 }} />} label="Profile Details" />
-              <Tab icon={<ShoppingBagIcon sx={{ fontSize: 18 }} />} label="Order History" />
-              <Tab icon={<SecurityIcon sx={{ fontSize: 18 }} />} label="Security" />
-            </Tabs>
-          </Paper>
-        </Grid>
-
-        {/* TAB CONTENT */}
-        <Grid item xs={12} md={10}>
-          <Paper sx={{ p: 2, borderRadius: 1.5 }}>
-            {/* PROFILE TAB */}
-            <TabPanel value={tab} index={0}>
-              <Typography variant="subtitle1" fontWeight="600" gutterBottom>
-                Contact Information
-              </Typography>
-              <Divider sx={{ mb: 2 }} />
-              
-              <Grid container spacing={2}>
-                <Grid item xs={12} sm={6}>
-                  <Card variant="outlined" sx={{ p: 1.5, borderRadius: 1 }}>
-                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                      <EmailIcon sx={{ fontSize: 18, mr: 1.5, color: 'primary.main' }} />
-                      <Box>
-                        <Typography variant="caption" color="text.secondary">Email Address</Typography>
-                        <Typography variant="body2">{user.email}</Typography>
-                      </Box>
-                    </Box>
-                  </Card>
-                </Grid>
-                
-                <Grid item xs={12} sm={6}>
-                  <Card variant="outlined" sx={{ p: 1.5, borderRadius: 1 }}>
-                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                      <PhoneIcon sx={{ fontSize: 18, mr: 1.5, color: 'primary.main' }} />
-                      <Box>
-                        <Typography variant="caption" color="text.secondary">Phone Number</Typography>
-                        <Typography variant="body2">{user.phone || "Not provided"}</Typography>
-                      </Box>
-                    </Box>
-                  </Card>
-                </Grid>
-                
-                <Grid item xs={12}>
-                  <Card variant="outlined" sx={{ p: 1.5, borderRadius: 1 }}>
-                    <Box sx={{ display: 'flex', alignItems: 'flex-start' }}>
-                      <LocationOnIcon sx={{ fontSize: 18, mr: 1.5, mt: 0.25, color: 'primary.main' }} />
-                      <Box sx={{ flexGrow: 1 }}>
-                        <Typography variant="caption" color="text.secondary">Shipping Address</Typography>
-                        <Typography variant="body2">{user.address || "No address added"}</Typography>
-                      </Box>
-                      <Button size="small" startIcon={<EditIcon />}>Edit</Button>
+                    <Box>
+                      <Typography variant="body2" color="text.secondary" gutterBottom>
+                        Last Password Change
+                      </Typography>
+                      <Typography variant="body1" fontWeight="500">
+                        {user.updated_at ? new Date(user.updated_at).toLocaleDateString('en-IN', { 
+                          day: 'numeric', 
+                          month: 'long', 
+                          year: 'numeric' 
+                        }) : 'Not available'}
+                      </Typography>
                     </Box>
                   </Card>
                 </Grid>
@@ -379,57 +574,93 @@ const UserProfile = () => {
 
             {/* ORDERS TAB */}
             <TabPanel value={tab} index={1}>
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-                <Typography variant="subtitle1" fontWeight="600">
-                  All Orders ({orders.length})
-                </Typography>
-                <Button size="small" variant="outlined" startIcon={<AssignmentIcon />}>
-                  Export
-                </Button>
-              </Box>
-              <Divider sx={{ mb: 2 }} />
-              
-              {orders.length === 0 ? (
-                <Alert severity="info" sx={{ py: 1 }}>No orders found</Alert>
-              ) : (
-                <Box sx={{ width: '100%', overflowX: 'auto' }}>
-                  <Table size="small" sx={{ minWidth: 900 }}>
+              <Box sx={{ width: '100%' }}>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+                  <Typography variant="h6" fontWeight="600">
+                    Order History
+                  </Typography>
+                  <Button 
+                    variant="outlined" 
+                    startIcon={<AssignmentIcon />}
+                    sx={{ borderRadius: 2 }}
+                  >
+                    Export Orders
+                  </Button>
+                </Box>
+                
+                {orders.length === 0 ? (
+                  <Box sx={{ textAlign: 'center', py: 4 }}>
+                    <ShoppingBagIcon sx={{ fontSize: 60, color: 'text.disabled', mb: 2 }} />
+                    <Typography variant="h6" color="text.secondary" gutterBottom>
+                      No orders found
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      Start shopping to see your orders here
+                    </Typography>
+                  </Box>
+                ) : (
+                  <Table sx={{ minWidth: 800 }}>
                     <TableHead>
-                      <TableRow sx={{ bgcolor: alpha('#000', 0.02) }}>
-                        <TableCell sx={{ py: 1, fontWeight: 600, fontSize: '0.8rem', width: '15%' }}>Order ID</TableCell>
-                        <TableCell sx={{ py: 1, fontWeight: 600, fontSize: '0.8rem', width: '20%' }}>Date</TableCell>
-                        <TableCell sx={{ py: 1, fontWeight: 600, fontSize: '0.8rem', width: '25%' }}>Items</TableCell>
-                        <TableCell sx={{ py: 1, fontWeight: 600, fontSize: '0.8rem', width: '15%' }}>Amount</TableCell>
-                        <TableCell sx={{ py: 1, fontWeight: 600, fontSize: '0.8rem', width: '15%' }}>Status</TableCell>
-                        <TableCell sx={{ py: 1, fontWeight: 600, fontSize: '0.8rem', width: '10%' }}>Action</TableCell>
+                      <TableRow sx={{ 
+                        bgcolor: alpha('#1976d2', 0.05),
+                        '& th': { 
+                          fontWeight: '600', 
+                          fontSize: '0.9rem',
+                          py: 2,
+                          borderBottom: '2px solid',
+                          borderColor: 'divider'
+                        }
+                      }}>
+                        <TableCell width="15%">Order ID</TableCell>
+                        <TableCell width="20%">Date</TableCell>
+                        <TableCell width="25%">Items</TableCell>
+                        <TableCell width="15%">Amount</TableCell>
+                        <TableCell width="15%">Status</TableCell>
+                        <TableCell width="10%">Action</TableCell>
                       </TableRow>
                     </TableHead>
                     <TableBody>
                       {orders.map((o) => (
-                        <TableRow key={o.id} hover sx={{ '&:hover': { bgcolor: alpha('#1976d2', 0.02) } }}>
-                          <TableCell sx={{ py: 1, fontSize: '0.8rem' }}>
-                            <Typography variant="body2" fontWeight="500">
+                        <TableRow 
+                          key={o.id} 
+                          hover 
+                          sx={{ 
+                            '&:hover': { bgcolor: alpha('#1976d2', 0.02) },
+                            transition: 'background-color 0.2s'
+                          }}
+                        >
+                          <TableCell sx={{ py: 2 }}>
+                            <Typography variant="body2" fontWeight="500" color="primary">
                               #{o.order_no || o.id}
                             </Typography>
                           </TableCell>
-                          <TableCell sx={{ py: 1, fontSize: '0.8rem' }}>
-                            {o.created_at ? new Date(o.created_at).toLocaleDateString('en-IN') : 'N/A'}
+                          <TableCell sx={{ py: 2 }}>
+                            <Typography variant="body2">
+                              {o.created_at ? new Date(o.created_at).toLocaleDateString('en-IN', {
+                                day: '2-digit',
+                                month: 'short',
+                                year: 'numeric'
+                              }) : 'N/A'}
+                            </Typography>
                           </TableCell>
-                          <TableCell sx={{ py: 1, fontSize: '0.8rem' }}>
-                            {o.items?.map(item => item.name).join(', ') || '1 item'}
+                          <TableCell sx={{ py: 2 }}>
+                            <Typography variant="body2">
+                              {o.items?.map(item => item.name).join(', ') || '1 item'}
+                            </Typography>
                           </TableCell>
-                          <TableCell sx={{ py: 1, fontSize: '0.8rem', fontWeight: 500 }}>
-                            ₹{o.total_amount}
+                          <TableCell sx={{ py: 2 }}>
+                            <Typography variant="body1" fontWeight="600">
+                              ₹{o.total_amount}
+                            </Typography>
                           </TableCell>
-                          <TableCell sx={{ py: 1 }}>
+                          <TableCell sx={{ py: 2 }}>
                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                               {getStatusIcon(o.status)}
                               <Chip
                                 label={o.status}
                                 size="small"
                                 sx={{
-                                  fontSize: '0.7rem',
-                                  height: 20,
+                                  fontWeight: '600',
                                   bgcolor: o.status === "delivered" ? alpha('#4caf50', 0.1) : 
                                            o.status === "shipped" ? alpha('#2196f3', 0.1) : alpha('#ff9800', 0.1),
                                   color: o.status === "delivered" ? '#2e7d32' : 
@@ -438,8 +669,12 @@ const UserProfile = () => {
                               />
                             </Box>
                           </TableCell>
-                          <TableCell sx={{ py: 1 }}>
-                            <Button size="small" variant="text" sx={{ fontSize: '0.75rem' }}>
+                          <TableCell sx={{ py: 2 }}>
+                            <Button 
+                              size="small" 
+                              variant="outlined"
+                              sx={{ borderRadius: 1.5 }}
+                            >
                               Track
                             </Button>
                           </TableCell>
@@ -447,42 +682,67 @@ const UserProfile = () => {
                       ))}
                     </TableBody>
                   </Table>
-                </Box>
-              )}
+                )}
+              </Box>
             </TabPanel>
 
             {/* SECURITY TAB */}
             <TabPanel value={tab} index={2}>
-              <Typography variant="subtitle1" fontWeight="600" gutterBottom>
-                Security & Privacy
-              </Typography>
-              <Divider sx={{ mb: 2 }} />
-              
-              <Grid container spacing={2}>
+              <Grid container spacing={3}>
                 <Grid item xs={12} md={6}>
-                  <Card sx={{ p: 2, borderRadius: 1.5 }}>
-                    <Typography variant="body2" fontWeight="600" gutterBottom>
-                      Password Management
-                    </Typography>
-                    <Typography variant="caption" color="text.secondary" paragraph>
+                  <Card sx={{ 
+                    p: 3, 
+                    borderRadius: 2,
+                    border: '1px solid',
+                    borderColor: 'divider',
+                    height: '100%'
+                  }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                      <SecurityIcon sx={{ fontSize: 24, mr: 2, color: 'primary.main' }} />
+                      <Typography variant="subtitle1" fontWeight="600">Password Management</Typography>
+                    </Box>
+                    <Typography variant="body2" color="text.secondary" paragraph sx={{ mb: 3 }}>
                       Last changed: 2 months ago
                     </Typography>
-                    <Button size="small" variant="contained" fullWidth sx={{ borderRadius: 1 }}>
+                    <Button 
+                      variant="contained" 
+                      fullWidth 
+                      sx={{ 
+                        borderRadius: 2,
+                        py: 1.2,
+                        fontWeight: '600'
+                      }}
+                    >
                       Change Password
                     </Button>
                   </Card>
                 </Grid>
                 
                 <Grid item xs={12} md={6}>
-                  <Card sx={{ p: 2, borderRadius: 1.5 }}>
-                    <Typography variant="body2" fontWeight="600" gutterBottom>
-                      Login Activity
+                  <Card sx={{ 
+                    p: 3, 
+                    borderRadius: 2,
+                    border: '1px solid',
+                    borderColor: 'divider',
+                    height: '100%'
+                  }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                      <VerifiedUserIcon sx={{ fontSize: 24, mr: 2, color: 'primary.main' }} />
+                      <Typography variant="subtitle1" fontWeight="600">Two-Factor Authentication</Typography>
+                    </Box>
+                    <Typography variant="body2" color="text.secondary" paragraph sx={{ mb: 3 }}>
+                      Add an extra layer of security to your account
                     </Typography>
-                    <Typography variant="caption" color="text.secondary" paragraph>
-                      Current session: Active
-                    </Typography>
-                    <Button size="small" variant="outlined" fullWidth sx={{ borderRadius: 1 }}>
-                      View Sessions
+                    <Button 
+                      variant="outlined" 
+                      fullWidth 
+                      sx={{ 
+                        borderRadius: 2,
+                        py: 1.2,
+                        fontWeight: '600'
+                      }}
+                    >
+                      Enable 2FA
                     </Button>
                   </Card>
                 </Grid>
