@@ -52,7 +52,7 @@ const Checkout = ({ user }) => {
 
       alert(`Order placed successfully\nOrder No: ${response.order_number}`);
       clearCart();
-      window.location.href = "/";
+      window.location.href = "/myorders";
 
     } catch (err) {
       console.error(err);
