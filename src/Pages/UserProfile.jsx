@@ -99,6 +99,12 @@ const UserProfile = () => {
     return steps[status] || 25;
   };
 
+  const sameTabSize = {
+  width: "100%",
+  minHeight: 550,   // this makes all tabs same height
+};
+
+
   const getLatestOrder = () => {
     if (orders.length === 0) return null;
     return orders.sort((a, b) => new Date(b.created_at) - new Date(a.created_at))[0];
@@ -490,6 +496,7 @@ const UserProfile = () => {
 
             {/* PROFILE TAB */}
             <TabPanel value={tab} index={0}>
+                 <Box sx={sameTabSize}>
               <Grid container spacing={3}>
                 <Grid item xs={12} md={6}>
                   <Card sx={{ 
@@ -570,10 +577,12 @@ const UserProfile = () => {
                   </Card>
                 </Grid>
               </Grid>
+              </Box>
             </TabPanel>
 
             {/* ORDERS TAB */}
             <TabPanel value={tab} index={1}>
+                 <Box sx={sameTabSize}>
               <Box sx={{ width: '100%' }}>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
                   <Typography variant="h6" fontWeight="600">
@@ -684,10 +693,12 @@ const UserProfile = () => {
                   </Table>
                 )}
               </Box>
+              </Box>
             </TabPanel>
 
             {/* SECURITY TAB */}
             <TabPanel value={tab} index={2}>
+                 <Box sx={sameTabSize}>
               <Grid container spacing={3}>
                 <Grid item xs={12} md={6}>
                   <Card sx={{ 
@@ -747,6 +758,7 @@ const UserProfile = () => {
                   </Card>
                 </Grid>
               </Grid>
+              </Box>
             </TabPanel>
           </Paper>
         </Grid>
