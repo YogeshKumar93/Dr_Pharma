@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import { useCart } from "../Contexts/CartContext";
 import { apiCall } from "../api/api";
 import ApiEndpoints from "../api/apiendpoints";
@@ -11,6 +12,8 @@ const Checkout = ({ user }) => {
   const [pincode, setPincode] = useState("");
   const [paymentMethod, setPaymentMethod] = useState("cod");
   const [loading, setLoading] = useState(false);
+
+  const navigate = useNavigate();
 
   const cartTotal = cartItems.reduce(
     (sum, item) => sum + item.price * item.qty,
@@ -52,7 +55,9 @@ const Checkout = ({ user }) => {
 
       alert(`Order placed successfully\nOrder No: ${response.order_number}`);
       clearCart();
-      window.location.href = "/myorders";
+      // window.location.href = "/myorders";
+      navigate("/myorders");
+
 
     } catch (err) {
       console.error(err);

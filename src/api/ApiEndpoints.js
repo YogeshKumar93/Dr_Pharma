@@ -3,6 +3,8 @@ const ApiEndpoints = {
   REGISTER: "register",
   LOGIN: "login",
    ME: "me",
+   FORGOT_PASSWORD: "forgot-password",
+   RESET_PASSWORD: "reset-password",
 
   // ---------- USERS ----------
   GET_USERS: "users",
@@ -20,7 +22,7 @@ const ApiEndpoints = {
 
   // ---------- ORDERS (CUSTOMER) ----------
   PLACE_ORDER: "orders/place",
-  MY_ORDERS: "orders/my",
+  MY_ORDERS: "orders/myorders",
   SHOW_ORDER: "orders/show",
 
   // ---------- ORDERS (ADMIN) ----------

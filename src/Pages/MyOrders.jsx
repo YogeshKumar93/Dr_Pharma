@@ -47,7 +47,7 @@ const MyOrders = () => {
   useEffect(() => {
     const fetchMyOrders = async () => {
       try {
-        const { response, error } = await apiCall("POST", "orders/my");
+        const { response, error } = await apiCall("POST", "orders/myorders");
 
         if (error) {
           setOrders([]);

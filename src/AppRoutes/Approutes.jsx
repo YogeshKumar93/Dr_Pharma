@@ -30,6 +30,9 @@ import Offers from "../Pages/Offers";
 import AboutUs from "../Pages/AboutUs";
 import MyOrders from "../Pages/MyOrders";
 import AllOrders from "../Pages/AllOrders";
+import ResetPassword from "../Pages/ResetPassword";
+import VerifyOtp from "../Pages/VerifyOtp";
+import ForgotPassword from "../Pages/ForgotPassword";
 
 
 const AppRoutes = () => {
@@ -61,6 +64,9 @@ const AppRoutes = () => {
             {/* 🔓 AUTH PAGES (NO layout) */}
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
+            <Route path="/resetpassword" element={<ResetPassword />} />
+            <Route path="/verify-otp" element={<VerifyOtp />} />
+            <Route path="/forgotpassword" element={<ForgotPassword />} />
 
 
             {/* 🔒 DASHBOARD (SIDENAV + HEADER) */}

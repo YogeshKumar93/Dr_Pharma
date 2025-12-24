@@ -22,6 +22,7 @@ import {
 import { useNavigate } from "react-router-dom";
 
 import AuthContext from "../Contexts/AuthContext";
+import ForgotPassword from "./ForgotPassword";
 
 const Login = () => {
   const { login } = useContext(AuthContext);
@@ -32,6 +33,8 @@ const Login = () => {
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [forgotOpen, setForgotOpen] = useState(false);
+
 
   // 🔐 JWT LOGIN
   const handleSubmit = async (e) => {
@@ -139,6 +142,14 @@ const Login = () => {
               }}
             />
 
+        <Typography variant="body2" sx={{ mt: 2, textAlign: "right" }}>
+  <Link sx={{ cursor: "pointer" }} onClick={() => setForgotOpen(true)}>
+    Forgot password?
+  </Link>
+</Typography>
+
+
+
             {error && (
               <Alert severity="error" sx={{ mt: 2 }}>
                 {error}
@@ -170,7 +181,15 @@ const Login = () => {
           </Box>
         </Paper>
       </Container>
+
+      <ForgotPassword
+  open={forgotOpen}
+  onClose={() => setForgotOpen(false)}
+/>
+
     </Box>
+
+    
   );
 };
 

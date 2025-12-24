@@ -4,14 +4,16 @@ export const apiCall = async (
   method,
   endpoint,
   payload = null,
-  extraHeaders = {}
+  extraHeaders = {},
+    skipAuth = false 
 ) => {
   try {
     const token = localStorage.getItem("token");
 
     const headers = {
+       "Content-Type": "application/json",
       Accept: "application/json",
-      ...(token && { Authorization: `Bearer ${token}` }),
+...(token && !skipAuth && { Authorization: `Bearer ${token}` }),
       ...extraHeaders,
     };
 
