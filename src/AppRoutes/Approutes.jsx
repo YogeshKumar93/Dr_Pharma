@@ -33,6 +33,7 @@ import AllOrders from "../Pages/AllOrders";
 import ResetPassword from "../Pages/ResetPassword";
 import VerifyOtp from "../Pages/VerifyOtp";
 import ForgotPassword from "../Pages/ForgotPassword";
+import UserProfile from "../Pages/UserProfile";
 
 
 const AppRoutes = () => {
@@ -51,6 +52,7 @@ const AppRoutes = () => {
               <Route path="/offers" element={<Offers />} />
               <Route path="/aboutus" element={<AboutUs />} />
               <Route path="/myorders" element={<MyOrders />} />
+                <Route path="/userprofile" element={<UserProfile />} />
               <Route
                 path="/checkout"
                 element={
@@ -86,6 +88,7 @@ const AppRoutes = () => {
               <Route path="/prescriptions" element={<Prescriptions />} />
               <Route path="/myorders" element={<MyOrders />} />
               <Route path="/allorders" element={<AllOrders />} />
+            
 
             </Route>
 

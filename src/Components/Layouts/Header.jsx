@@ -55,6 +55,9 @@ const Header = () => {
     navigate("/", { replace: true });
   };
 
+  const isLoggedIn = Boolean(localStorage.getItem("token"));
+
+
   return (
     <>
       <AppBar
@@ -140,21 +143,24 @@ const Header = () => {
                 Download App
               </Button>
 
-              <Button
-                component={Link}
-                to="/login"
-                sx={{
-                  color: "#fff",
-                  border: "1px solid #a2b4a3ff",
-                  borderRadius: "20px",
-                  px: 2,
-                  textTransform: "none",
-                  fontSize: "0.9rem",
-                  "&:hover": { backgroundColor: "#17ed17ff" },
-                }}
-              >
-                Login / Signup
-              </Button>
+              {!isLoggedIn && (
+  <Button
+    component={Link}
+    to="/login"
+    sx={{
+      color: "#fff",
+      border: "1px solid #a2b4a3ff",
+      borderRadius: "20px",
+      px: 2,
+      textTransform: "none",
+      fontSize: "0.9rem",
+      "&:hover": { backgroundColor: "#17ed17ff" },
+    }}
+  >
+    Login / Signup
+  </Button>
+)}
+
 
               {/* 🛒 CART ICON */}
               <IconButton
@@ -170,6 +176,7 @@ const Header = () => {
               </IconButton>
 
               {/* MODIFIED PERSON ICON WITH NEW DESIGN */}
+              {isLoggedIn && (
               <IconButton
                 onClick={handleMenuOpen}
                 sx={{
@@ -189,6 +196,7 @@ const Header = () => {
               >
                 <PersonIcon />
               </IconButton>
+              )}
 
               {/* MODIFIED MENU DESIGN */}
               <Menu
@@ -258,7 +266,7 @@ const Header = () => {
                   }}
                   onClick={() => {
                     handleMenuClose();
-                    navigate("/myprofile");
+                    navigate("/userprofile");
                   }}
                 >
                   <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
