@@ -214,6 +214,7 @@ const handleAddToCart = (product, index) => {
     maxWidth: "1550px",
     mx: "auto",
     overflowX: "hidden",
+    mt:-13
   }}
 >
 
@@ -224,19 +225,25 @@ const handleAddToCart = (product, index) => {
           bgcolor: "#d9e5f5ff",
           color: "#363131ff",
           py: { xs: 4, md: 8 },
-          px: { xs: 2, md: 4 },
+          px: { xs: 2, md: 2 },
           textAlign: "center",
+
+           backgroundImage: "url('src/assets/ChristmasBanner2.png')",
+    backgroundSize: "cover",
+    backgroundPosition: "center",
+    backgroundRepeat: "no-repeat",
+    position: "relative",
           
         }}
       >
-        <Typography variant="h3" gutterBottom>
-          Welcome to Dr. Pharma
+        <Typography variant="h3" gutterBottom sx={{color:"#27285aff"}}>
+          Welcome to Pharma Guru
         </Typography>
         
-        <Typography variant="h6" gutterBottom>
-          Say GoodBye to high medicine prices! save up to 75% on medicines with Dr. Pharma.
+        <Typography variant="h6" gutterBottom sx={{color:"white"}}>
+          Say GoodBye to high medicine prices! save up to 75% on medicines with Pharma Guru.
         </Typography>
-        <Typography  gutterBottom>
+        <Typography  gutterBottom sx={{color:"white"}}>
           Your trusted online pharmacy for all healthcare needs
         </Typography>
 
