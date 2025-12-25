@@ -76,6 +76,7 @@ const Categories = () => {
   return (
     <Box sx={{ 
       p: { xs: 2, md: 4 },
+      mt:-13,
       background: "linear-gradient(135deg, #f5f7fa 0%, #e4edf5 100%)",
       minHeight: "100vh"
     }}>
