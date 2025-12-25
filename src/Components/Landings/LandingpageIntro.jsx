@@ -236,7 +236,7 @@ const handleAddToCart = (product, index) => {
           
         }}
       >
-        <Typography variant="h3" gutterBottom sx={{color:"#27285aff"}}>
+        <Typography variant="h3" gutterBottom sx={{color:"#b54b1bff", fontWeight:"bold"}}>
           Welcome to Pharma Guru
         </Typography>
         
