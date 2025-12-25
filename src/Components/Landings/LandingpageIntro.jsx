@@ -831,13 +831,13 @@ const handleAddToCart = (product, index) => {
 
       {/* Featured Products / Offers */}
 
-<Box>
+<Box sx={{mt:-5, mb:-5, py:8, px:3}}>
   <FeaturedProducts />
 </Box>
 
 
       {/* Why Choose Us / Info Section */}
-<Box sx={{ py: 8, px: 3, backgroundColor: "#f9fafb" }}>
+<Box sx={{ py: 8, px: 3, backgroundColor: "#e7ecf0ff" }}>
   {/* Header */}
   <Box sx={{ textAlign: "center", mb: 6 }}>
     <Typography variant="h4" sx={{ fontWeight: 700, color: "#1a5276", mb: 1 }}>
