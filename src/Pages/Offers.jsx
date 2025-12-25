@@ -9,10 +9,13 @@ import {
   Card,
   CardContent,
   CardMedia,
+  Chip,
 } from "@mui/material";
 import { apiCall } from "../api/api";
- 
 
+/**
+ * CATEGORY LIST
+ */
 const CATEGORIES = [
   { label: "Medicines", value: "medicines" },
   { label: "Medical Instruments", value: "medical instruments" },
@@ -25,41 +28,48 @@ const Offers = () => {
   const [activeCategory, setActiveCategory] = useState("medicines");
   const [allProducts, setAllProducts] = useState([]);
   const [loading, setLoading] = useState(false);
+  const BASE_URL = "http://localhost:8000";
 
   useEffect(() => {
     fetchAllProducts();
   }, []);
 
+  /**
+   * FETCH SPECIAL OFFERS
+   */
   const fetchAllProducts = async () => {
     try {
       setLoading(true);
-      const { response, error } = await apiCall("GET", "products");
+      const { response, error } = await apiCall("GET", "special-offers");
 
       if (error) {
         setAllProducts([]);
         return;
       }
 
+      // API RESPONSE NORMALIZATION
       const products =
         response?.data || response?.products || response || [];
 
       setAllProducts(Array.isArray(products) ? products : []);
     } catch (err) {
-      console.error(err);
+      console.error("Special Offers Error:", err);
       setAllProducts([]);
     } finally {
       setLoading(false);
     }
   };
 
-  // ✅ FILTER PRODUCTS CATEGORY WISE
+  /**
+   * FILTER PRODUCTS CATEGORY WISE
+   */
   const filteredProducts = allProducts.filter(
-    (item) => item.category === activeCategory
+    (item) => item.category === activeCategory && item.is_active === 1
   );
 
   return (
     <Box sx={{ p: 3 }}>
-      {/* CATEGORY BAR */}
+      {/* ================= CATEGORY BAR ================= */}
       <Paper sx={{ display: "flex", mb: 3 }}>
         {CATEGORIES.map((cat) => (
           <ListItemButton
@@ -80,34 +90,80 @@ const Offers = () => {
         ))}
       </Paper>
 
-      {/* PRODUCTS SECTION */}
+      {/* ================= TITLE ================= */}
       <Typography variant="h6" sx={{ mb: 2 }}>
         {CATEGORIES.find((c) => c.value === activeCategory)?.label}
       </Typography>
 
+      {/* ================= CONTENT ================= */}
       {loading ? (
-        <Typography>Loading products...</Typography>
+        <Typography>Loading offers...</Typography>
       ) : filteredProducts.length === 0 ? (
         <Typography color="text.secondary">
-          No products found in this category
+          No offers found in this category
         </Typography>
       ) : (
         <Grid container spacing={2}>
           {filteredProducts.map((product) => (
             <Grid item xs={12} sm={6} md={4} lg={3} key={product.id}>
-              <Card sx={{ height: "100%" }}>
-                <CardMedia
-                  component="img"
-                  height="160"
-                  image={product.image || "/no-image.png"}
-                  alt={product.name}
+              <Card
+                sx={{
+                  height: "100%",
+                  position: "relative",
+                  transition: "0.3s",
+                  "&:hover": { boxShadow: 6 },
+                }}
+              >
+                {/* DISCOUNT BADGE */}
+                <Chip
+                  label={`${product.discount_percent}% OFF`}
+                  color="error"
+                  size="small"
+                  sx={{
+                    position: "absolute",
+                    top: 10,
+                    left: 10,
+                    zIndex: 1,
+                  }}
                 />
+
+                {/* IMAGE */}
+                <CardMedia
+  component="img"
+  height="160"
+  image={
+    product.image
+      ? `${BASE_URL}/${product.image}`
+      : "/no-image.png"
+  }
+  alt={product.title}
+/>
+
+
+                {/* CONTENT */}
                 <CardContent>
-                  <Typography fontSize={14} fontWeight={600}>
-                    {product.name}
+                  <Typography fontSize={14} fontWeight={600} noWrap>
+                    {product.title}
                   </Typography>
-                  <Typography fontSize={13} color="text.secondary">
-                    ₹{product.price}
+
+                  <Typography
+                    fontSize={12}
+                    color="text.secondary"
+                    sx={{ textDecoration: "line-through" }}
+                  >
+                    ₹{product.original_price}
+                  </Typography>
+
+                  <Typography
+                    fontSize={15}
+                    fontWeight={700}
+                    color="success.main"
+                  >
+                    ₹{product.offer_price}
+                  </Typography>
+
+                  <Typography fontSize={12} color="text.secondary">
+                    Stock: {product.stock}
                   </Typography>
                 </CardContent>
               </Card>
