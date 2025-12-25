@@ -16,6 +16,9 @@ import {
   ListItemText,
   Tooltip,
   Divider,
+  Avatar,
+  Menu,
+  MenuItem,
 } from '@mui/material';
 
 import {
@@ -36,7 +39,11 @@ import {
 } from '@mui/icons-material';
 import EmailIcon from '@mui/icons-material/Email';
 import PhoneIcon from '@mui/icons-material/Phone';
-import Logo from "../assets/Logo.png";
+import Logo from "../assets/Logo1.png";
+// import PersonIcon from "@mui/icons-material/Person";
+// import SettingsIcon from "@mui/icons-material/Settings";
+// import LogoutIcon from "@mui/icons-material/Logout";
+
 
 const DRAWER_WIDTH = 240;
 const COLLAPSED_DRAWER_WIDTH = 70;
@@ -45,98 +52,98 @@ const Sidebar = ({ onItemClick, collapsed }) => {
   const location = useLocation();
 
   const menuItems = [
-    { 
-      text: 'Dashboard', 
-      icon: <DashboardIcon />, 
+    {
+      text: 'Dashboard',
+      icon: <DashboardIcon />,
       path: '/dashboard',
       tooltip: 'Dashboard Overview'
     },
-    { 
-      text: 'Users', 
-      icon: <PeopleIcon />, 
+    {
+      text: 'Users',
+      icon: <PeopleIcon />,
       path: '/users',
       tooltip: 'User Management'
     },
-    { 
-      text: 'All Orders', 
-      icon: <ShoppingCartIcon />, 
+    {
+      text: 'All Orders',
+      icon: <ShoppingCartIcon />,
       path: '/allorders',
       tooltip: 'Order Management'
     },
-    { 
-      text: 'All Products', 
-      icon: <InventoryIcon />, 
+    {
+      text: 'All Products',
+      icon: <InventoryIcon />,
       path: '/allproducts',
       tooltip: 'Product Inventory'
-    },    
-    { 
-      text: 'Prescriptions', 
-      icon: <LocalPharmacyIcon />, 
+    },
+    {
+      text: 'Prescriptions',
+      icon: <LocalPharmacyIcon />,
       path: '/prescriptions',
       tooltip: 'Prescription Management'
-    },    
-    { 
-      text: 'Payments', 
-      icon: <PaymentIcon />, 
+    },
+    {
+      text: 'Payments',
+      icon: <PaymentIcon />,
       path: '/payments',
       tooltip: 'Payment Transactions'
-    },     
-    { 
-      text: 'Settings', 
-      icon: <SettingsIcon />, 
+    },
+    {
+      text: 'Settings',
+      icon: <SettingsIcon />,
       path: '/settings',
       tooltip: 'System Settings'
     },
-    { 
-      text: 'Logout', 
-      icon: <LogoutIcon />, 
+    {
+      text: 'Logout',
+      icon: <LogoutIcon />,
       path: '/logout',
       tooltip: 'Logout from System'
     },
   ];
 
   return (
-    <Box sx={{ 
-      height: '100%', 
-      bgcolor: '#f8f9fa', 
+    <Box sx={{
+      height: '100%',
+      bgcolor: '#f8f9fa',
       color: '#333',
       borderRight: '1px solid #e0e0e0',
       display: 'flex',
       flexDirection: 'column',
     }}>
       {/* Logo Section */}
-     <Box
-  sx={{
-    p: 2,
-    textAlign: "center",
-    borderBottom: "1px solid #e0e0e0",
-    minHeight: 64,
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    bgcolor: "white",
-  }}
->
-  <Box
-    component="img"
-    src={Logo}
-    alt="Pharmacy Logo"
-    sx={{
-      height: collapsed ? 36 : 44,
-      width: "auto",
-      transition: "all 0.3s ease",
-      objectFit: "contain",
-    }}
-  />
-</Box>
+      <Box
+        sx={{
+          p: 2,
+          textAlign: "center",
+          borderBottom: "1px solid #e0e0e0",
+          minHeight: 64,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          bgcolor: "white",
+        }}
+      >
+        <Box
+          component="img"
+          src={Logo}
+          alt="Pharmacy Logo"
+          sx={{
+            height: collapsed ? 32 : 44,
+            width: "auto",
+            transition: "all 0.3s ease",
+            objectFit: "contain",
+          }}
+        />
+      </Box>
 
 
       {/* Menu Items */}
       <List sx={{ p: 1, flex: 1 }}>
         {menuItems.map((item) => (
-          <Tooltip 
-            key={item.text} 
-            title={item.tooltip} 
+          <Tooltip
+            key={item.text}
+            title={item.tooltip}
             placement="right"
             disableHoverListener={!collapsed}
           >
@@ -152,15 +159,15 @@ const Sidebar = ({ onItemClick, collapsed }) => {
                 justifyContent: collapsed ? 'center' : 'flex-start',
                 px: collapsed ? 2 : 2.5,
                 backgroundColor: location.pathname === item.path ? '#e8f5e9' : 'transparent',
-                '&:hover': { 
+                '&:hover': {
                   backgroundColor: location.pathname === item.path ? '#e8f5e9' : '#f5f5f5',
                 },
                 borderLeft: location.pathname === item.path ? '4px solid #2e7d32' : '4px solid transparent',
                 transition: 'all 0.2s ease',
               }}
             >
-              <ListItemIcon 
-                sx={{ 
+              <ListItemIcon
+                sx={{
                   color: location.pathname === item.path ? '#2e7d32' : '#666',
                   minWidth: collapsed ? 0 : 40,
                   justifyContent: 'center',
@@ -186,8 +193,8 @@ const Sidebar = ({ onItemClick, collapsed }) => {
 
       {/* Admin Info (only shown when expanded) */}
       {!collapsed && (
-        <Box sx={{ 
-          p: 2, 
+        <Box sx={{
+          p: 2,
           borderTop: '1px solid #e0e0e0',
           bgcolor: 'white',
         }}>
@@ -220,9 +227,26 @@ const SideNavAndHeader = () => {
     '/allproducts': 'Product Management',
     '/medicines': 'Medicines',
     '/payments': 'Payment Management',
-    '/prescriptions': 'Prescription Management', 
+    '/prescriptions': 'Prescription Management',
     '/settings': 'System Settings',
   };
+
+  const [anchorEl, setAnchorEl] = useState(null);
+const open = Boolean(anchorEl);
+
+const handleOpenMenu = (event) => {
+  setAnchorEl(event.currentTarget);
+};
+
+const handleCloseMenu = () => {
+  setAnchorEl(null);
+};
+
+const handleLogout = () => {
+  localStorage.clear(); // or remove token only
+  window.location.href = "/login"; // or use navigate()
+};
+
 
   const currentTitle = pageTitles[location.pathname] || 'Dr. Pharma Admin';
 
@@ -254,28 +278,82 @@ const SideNavAndHeader = () => {
         }}
       >
         <Toolbar>
-          <IconButton 
-            color="inherit" 
-            onClick={handleDrawerToggle} 
-            sx={{ 
-              mr: 2,
-              color: '#666',
-              '&:hover': { bgcolor: '#f5f5f5' }
-            }}
-          >
-            <MenuIcon />
+
+
+          <IconButton sx={{mr:3, ml:-2}} onClick={handleDrawerToggle}>
+            {open ? <ChevronLeftIcon /> : <ChevronRightIcon />}
           </IconButton>
+
 
           <Typography variant="h6" sx={{ flexGrow: 1, fontWeight: 600, color: '#2e7d32' }}>
             {currentTitle}
           </Typography>
 
-          {/* You can add user profile or notifications here */}
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <Typography variant="body2" sx={{ color: '#666', display: { xs: 'none', sm: 'block' } }}>
-              Welcome, Admin
-            </Typography>
-          </Box>
+          {/*__________________________ Admin profile or notifications here ____________________________*/}
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+  <Typography
+    variant="body2"
+    sx={{ color: "#666", display: { xs: "none", sm: "block" } }}
+  >
+    Welcome, Admin
+  </Typography>
+
+  {/* Avatar Button */}
+  <IconButton onClick={handleOpenMenu} size="small">
+    <Avatar
+      sx={{
+        width: 36,
+        height: 36,
+        bgcolor: "primary.main",
+        cursor: "pointer",
+      }}
+    >
+      A
+    </Avatar>
+  </IconButton>
+
+  {/* Profile Menu */}
+  <Menu
+    anchorEl={anchorEl}
+    open={open}
+    onClose={handleCloseMenu}
+    onClick={handleCloseMenu}
+    transformOrigin={{ horizontal: "right", vertical: "top" }}
+    anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
+    PaperProps={{
+      sx: {
+        mt: 1,
+        minWidth: 180,
+        borderRadius: 2,
+        boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
+      },
+    }}
+  >
+    <MenuItem>
+      <ListItemIcon>
+        <PersonIcon fontSize="small" />
+      </ListItemIcon>
+      Profile
+    </MenuItem>
+
+    <MenuItem>
+      <ListItemIcon>
+        <SettingsIcon fontSize="small" />
+      </ListItemIcon>
+      Settings
+    </MenuItem>
+
+    <Divider />
+
+    <MenuItem onClick={handleLogout}>
+      <ListItemIcon>
+        <LogoutIcon fontSize="small" color="error" />
+      </ListItemIcon>
+      Logout
+    </MenuItem>
+  </Menu>
+</Box>
+
         </Toolbar>
       </AppBar>
 
@@ -286,7 +364,7 @@ const SideNavAndHeader = () => {
         sx={{
           width: drawerWidth,
           flexShrink: 0,
-          '& .MuiDrawer-paper': { 
+          '& .MuiDrawer-paper': {
             width: drawerWidth,
             boxSizing: 'border-box',
             borderRight: '1px solid #e0e0e0',
@@ -319,7 +397,7 @@ const SideNavAndHeader = () => {
         }}
         sx={{
           display: { xs: 'block', md: 'none' },
-          '& .MuiDrawer-paper': { 
+          '& .MuiDrawer-paper': {
             width: DRAWER_WIDTH,
             boxSizing: 'border-box',
           },
@@ -334,9 +412,9 @@ const SideNavAndHeader = () => {
         sx={{
           flexGrow: 1,
           p: 3,
-          mt: 8,
+          mt: 5,
           width: { md: `calc(100% - ${drawerWidth}px)` },
-          ml: { md: `${drawerWidth}px` },
+          
           minHeight: 'calc(100vh - 120px)',
           transition: theme.transitions.create(['margin', 'width'], {
             easing: theme.transitions.easing.sharp,
@@ -373,26 +451,26 @@ const SideNavAndHeader = () => {
           }),
         }}
       >
-        <Typography 
-          variant="body2" 
-          sx={{ 
+        <Typography
+          variant="body2"
+          sx={{
             fontWeight: 400,
             color: '#666',
             fontSize: { xs: "0.75rem", sm: "0.875rem" }
           }}
         >
-          © {new Date().getFullYear()} Doctor Pharma | All rights reserved
+          © {new Date().getFullYear()} Pharma Guru | All rights reserved
         </Typography>
-        
-        <Box 
-          sx={{ 
-            display: "flex", 
+
+        <Box
+          sx={{
+            display: "flex",
             flexDirection: { xs: "column", sm: "row" },
             alignItems: "center",
             gap: { xs: 0.5, sm: 1.5 }
           }}
         >
-          <Typography 
+          <Typography
             variant="body2"
             sx={{
               display: "flex",
@@ -403,10 +481,10 @@ const SideNavAndHeader = () => {
             }}
           >
             <EmailIcon sx={{ fontSize: 14, color: '#2e7d32' }} />
-            drpharmaonline@gmail.com
+            pharmaguru@gmail.com
           </Typography>
-          
-          <Typography 
+
+          <Typography
             variant="body2"
             sx={{
               display: "flex",
