@@ -66,6 +66,8 @@ const Header = () => {
           backgroundColor: "#1a5276",
           color: "#fff",
           boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+          height:"60px",
+          mb:2
         }}
       >
         <Container maxWidth="lg">
@@ -76,6 +78,7 @@ const Header = () => {
               alignItems: "center",
               flexWrap: "wrap",
               py: 1,
+              
             }}
           >
             {/* LEFT : LOGO */}
@@ -87,9 +90,10 @@ const Header = () => {
                   fontWeight: "bold",
                   color: "#fff",
                   fontSize: "1.5rem",
+                  ml:-5
                 }}
               >
-                Dr.Pharma
+                Pharma Guru
               </Typography>
               <Typography
                 variant="body2"
@@ -114,7 +118,7 @@ const Header = () => {
                 justifyContent: "center",
               }}
             >
-              <Box sx={{ display: "flex", gap: 2 }}>
+              <Box sx={{ display: "flex", gap: 3 }}>
                 <Button component={Link} to="/" sx={navBtn}>
                   Home
                 </Button>
@@ -167,7 +171,7 @@ const Header = () => {
                 onClick={() => navigate("/cart")}
                 sx={{
                   color: "#fff",
-                  "&:hover": { backgroundColor: "#111" },
+                  "&:hover": { backgroundColor: "#111", color:"yellow" },
                 }}
               >
                 <Badge badgeContent={cartItems.length} color="error">
@@ -368,7 +372,7 @@ const Header = () => {
                   }}
                 >
                   <Typography variant="caption" color="text.secondary">
-                    © 2024 Dr.Pharma
+                    © 2024 Pharma Guru
                   </Typography>
                 </Box>
               </Menu>

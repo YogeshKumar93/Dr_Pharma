@@ -15,7 +15,7 @@ const LandingPage = () => {
   return (
     <>
       <Helmet>
-        <title>Dr. Pharma</title>
+        <title>Pharma Guru</title>
         <meta name="description" content="Pharma - Secure Platform" />
       </Helmet>
  
