@@ -63,23 +63,31 @@ const handleDelete = async (row) => {
   if (!confirmDelete) return;
 
   try {
-    await fetch(`${BASE_URL}products/delete`, {
+    const token = localStorage.getItem("token"); // ✅ token
+
+    const res = await fetch(`${BASE_URL}products/delete`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`, // ✅ REQUIRED
       },
       body: JSON.stringify({
-        id: row.id, // 👈 ID REQUEST BODY ME
+        id: row.id,
       }),
     });
 
-    // ✅ Refresh list after delete
+    if (!res.ok) {
+      throw new Error("Delete failed");
+    }
+
+    // ✅ refresh after delete
     fetchProducts();
   } catch (err) {
     console.error("Delete failed", err);
     alert("Failed to delete product");
   }
 };
+
 
 
   /* -------------------- PAGINATED DATA -------------------- */
@@ -120,6 +128,20 @@ const handleDelete = async (row) => {
         field: "price",
         render: (value) => `₹ ${value}`,
       },
+    {
+  headerName: "Stock",
+  field: "stock",
+  render: (value) => {
+    if (value === 0) {
+      return <span style={{ color: "red", fontWeight: 600, fontSize:12 }}>Out of stock</span>;
+    }
+    if (value <= 5) {
+      return <span style={{ color: "orange" }}>{value} (Low)</span>;
+    }
+    return <span style={{ color: "green" }}>{value}</span>;
+  },
+},
+
       {
         headerName: "Image",
         field: "image",
@@ -212,7 +234,7 @@ const handleDelete = async (row) => {
 
       <EditProduct
   open={editOpen}
-   handleClose={() => {
+   onClose={() => {
    setEditOpen(false);
   setSelectedProduct(null);
  }}

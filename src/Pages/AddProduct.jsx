@@ -9,9 +9,9 @@ const AddProduct = ({ open, handleClose, onFetchRef }) => {
     description: "",
     category: "",
     price: "",
+    stock:"",
     image: null,
-    created_at: "",
-    updated_at: "",
+    
   };
 
   const categoryOptions = [
@@ -38,48 +38,31 @@ const AddProduct = ({ open, handleClose, onFetchRef }) => {
     return `${d}/${m}/${y}`;
   };
 
-  const handleSubmit = async () => {
-    if (!formData.title || !formData.price || !formData.category) {
-      alert("Title, Category & Price are required");
-      return;
-    }
+ const handleSubmit = async () => {
+  if (!formData.title || !formData.price || !formData.category) {
+    alert("Title, Category & Price required");
+    return;
+  }
 
-    setSubmitting(true);
+  const payload = new FormData();
+  payload.append("title", formData.title);
+  payload.append("description", formData.description);
+  payload.append("category", formData.category);
+  payload.append("price", formData.price);
+  payload.append("stock", formData.stock);
+  
+  if (formData.image) {
+    payload.append("image", formData.image);
+  }
 
-    try {
-      const payload = new FormData();
+  const { error } = await apiCall("POST", "products/create", payload);
 
-      Object.entries({
-        ...formData,
-        created_at: formatDate(formData.created_at),
-        updated_at: formatDate(formData.updated_at),
-      }).forEach(([key, value]) => {
-        if (value !== null && value !== undefined) {
-          payload.append(key, value);
-        }
-      });
+  if (!error) {
+    onFetchRef();
+    handleModalClose();
+  }
+};
 
-      // ✅ USING apiCall (TOKEN WILL BE ATTACHED)
-      const { response, error } = await apiCall(
-        "POST",
-        "products/create",
-        payload
-      );
-
-      if (error) {
-        alert("Failed to add product");
-        return;
-      }
-
-      onFetchRef?.();
-      handleModalClose();
-    } catch (err) {
-      console.error(err);
-      alert("Something went wrong");
-    } finally {
-      setSubmitting(false);
-    }
-  };
 
   useEffect(() => {
     if (open) resetForm();
@@ -96,6 +79,7 @@ const AddProduct = ({ open, handleClose, onFetchRef }) => {
       required: true,
     },
     { name: "price", label: "Price", type: "number", required: true },
+    { name: "stock", label: "Stock" },
     { name: "image", label: "Image", type: "file" },
     { name: "created_at", label: "Created Date", type: "date" },
     { name: "updated_at", label: "Updated Date", type: "date" },

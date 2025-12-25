@@ -36,11 +36,11 @@ const Sidebar = ({ onItemClick }) => {
     { text: 'Dashboard', icon: <DashboardIcon />, path: '/dashboard' },
     { text: 'Users', icon: <PeopleIcon />, path: '/users' },
     { text: 'All Orders', icon: <AssessmentIcon />, path: '/allorders' },
-    { text: 'All Products', icon: <PeopleIcon />, path: '/allproducts' },
-    { text: 'Medicines', icon: <AssessmentIcon />, path: '/medicines' },
+    { text: 'All Products', icon: <PeopleIcon />, path: '/allproducts' },    
     { text: 'Prescriptions', icon: <AssessmentIcon />, path: '/prescriptions' },    
     { text: 'Payments', icon: <AssessmentIcon />, path: '/payments' },     
     { text: 'Settings', icon: <SettingsIcon />, path: '/settings' },
+    { text: 'Logout', icon: <AssessmentIcon />, path: '/logout' },
   ];
 
   return (

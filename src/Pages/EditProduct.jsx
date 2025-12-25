@@ -9,9 +9,9 @@ const EditProduct = ({ open, onClose, onFetchRef, product }) => {
     description: "",
     category:"",
     price: "",
+    stock: "",
     image: null,
-    created_at: "",
-    updated_at: "",
+   
   };
 
   const [formData, setFormData] = useState(initialFormData);
@@ -36,34 +36,41 @@ const handleSubmit = async () => {
   setSubmitting(true);
 
   try {
-    const payload = new FormData();
+    const token = localStorage.getItem("token"); 
 
-    // 👇 IMPORTANT: id goes in BODY
+    const payload = new FormData();
     payload.append("id", formData.id);
     payload.append("title", formData.title);
     payload.append("description", formData.description);
     payload.append("category", formData.category);
     payload.append("price", formData.price);
+    payload.append("stock", formData.stock);
 
     if (formData.image) {
       payload.append("image", formData.image);
     }
 
-    await fetch(`${BASE_URL}products/update`, {
+    const res = await fetch(`${BASE_URL}products/update`, {
       method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`, // ✅ REQUIRED
+      },
       body: payload,
     });
+
+    if (!res.ok) {
+      throw new Error("Update failed");
+    }
 
     onFetchRef?.();
     handleModalClose();
   } catch (e) {
     console.error("Edit product failed", e);
+    alert("Product update failed");
   } finally {
     setSubmitting(false);
   }
 };
-
-
 
 
   // 🔹 Prefill data when edit modal opens
@@ -75,13 +82,9 @@ const handleSubmit = async () => {
         description: product.description || "",
         category: product.category || "",
         price: product.price || "",
+        stock: product.stock || "",
         image: null, // file cannot be prefilled
-        created_at: product.created_at
-          ? product.created_at.split("/").reverse().join("-")
-          : "",
-        updated_at: product.updated_at
-          ? product.updated_at.split("/").reverse().join("-")
-          : "",
+        
       });
     }
   }, [open, product]);
@@ -101,10 +104,11 @@ const handleSubmit = async () => {
       { label: "Kits", value: "kits" },
       { label: "Supplements", value: "supplements" },
     ] },
+    {name: "stock", label: "Stock"},
     { name: "price", label: "Price", type: "number", required: true },
     { name: "image", label: "Image", type: "file" },
-    { name: "created_at", label: "Created Date", type: "date" },
-    { name: "updated_at", label: "Updated Date", type: "date" },
+    // { name: "created_at", label: "Created Date", type: "date" },
+    // { name: "updated_at", label: "Updated Date", type: "date" },
   ];
 
   return (

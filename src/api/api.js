@@ -10,10 +10,13 @@ export const apiCall = async (
   try {
     const token = localStorage.getItem("token");
 
+     const isFormData = payload instanceof FormData;
+
     const headers = {
-       "Content-Type": "application/json",
+      //  "Content-Type": "application/json",
       Accept: "application/json",
 ...(token && !skipAuth && { Authorization: `Bearer ${token}` }),
+ ...(!isFormData && { "Content-Type": "application/json" }),
       ...extraHeaders,
     };
 
