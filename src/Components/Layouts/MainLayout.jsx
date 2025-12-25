@@ -5,7 +5,7 @@ import { Box } from "@mui/material";
 
 const MainLayout = () => {
   return (
-    <Box sx={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
+    <Box sx={{ display: "flex", flexDirection: "column", minHeight: "100vh", overflow:"hidden" }}>
       <Header />
 
       <Box component="main" sx={{ flex: 1, width: "100%", p: 2, bgcolor: "#f5f5f5", mt: "80px" }}>

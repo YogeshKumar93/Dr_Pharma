@@ -14,12 +14,14 @@ const Footer = () => {
   return (
     <Box
       component="footer"
+       
       sx={{
-        bgcolor: "#1a5276",
-        color: "#fff",
-        py: 4,
-        mt: 'auto',
-        width: "100%",
+       bgcolor: "#1a5276",
+    color: "#fff",
+    py: 4,
+    mt: "auto",          // 🔥 IMPORTANT
+    width: "100%",
+    overflowX: "hidden",
       }}
     >
       <Container maxWidth="lg">
