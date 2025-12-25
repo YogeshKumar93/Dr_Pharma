@@ -35,6 +35,11 @@ const ApiEndpoints = {
   // ---------- PAYMENTS ----------
   ADMIN_PAYMENTS: "admin/payments",
   ADMIN_UPDATE_PAYMENT_STATUS: "admin/payments/update-status",
+
+  // --------------Special Offers -----------------
+  GET_ALL_OFFERS: "special-offers",
+  ADD_OFFERS: "special-offers/create",
+  DELETE_OFFERS: "special-offers/delete"
 };
 
 export default ApiEndpoints;

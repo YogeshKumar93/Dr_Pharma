@@ -188,25 +188,8 @@ const handleDelete = async (row) => {
 
   /* -------------------- UI -------------------- */
   return (
-    <Box sx={{ p: 2 }}>
-      <Box sx={{ display: "flex", justifyContent: "flex-end", mb: 2 }}>
-       
-
-        {/* ✅ OPEN MODAL */}
-        <Button 
-        
-        variant="contained"
-         onClick={() => setAddOpen(true)}
-           sx={{
-              backgroundColor: "#1A5276",
-      "&:hover": {
-        backgroundColor: "#154360",
-      },
-           }} 
-         >
-          Add Product
-        </Button>
-      </Box>
+    <Box sx={{ p: 1, mb:4 }}>
+     
 
       <CommonTable
         columns={columns}
@@ -223,6 +206,21 @@ const handleDelete = async (row) => {
           setRowsPerPage(parseInt(e.target.value, 10));
           setPage(0);
         }}
+        topActions={
+           <Button 
+        
+        variant="contained"
+         onClick={() => setAddOpen(true)}
+           sx={{
+              backgroundColor: "#1A5276",
+      "&:hover": {
+        backgroundColor: "#154360",
+      },
+           }} 
+         >
+          Add Product
+        </Button>
+        }
       />
 
       {/* ✅ ADD PRODUCT MODAL */}

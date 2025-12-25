@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   Box,
   Chip,
@@ -23,6 +23,9 @@ const AllOrders = () => {
 const [editOpen, setEditOpen] = useState(false);
 const [selectedOrder, setSelectedOrder] = useState(null);
 
+ // Pagination
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
 
   // 🔹 Fetch all admin orders
   const fetchOrders = () => {
@@ -44,6 +47,13 @@ const [selectedOrder, setSelectedOrder] = useState(null);
       order_status: status,
     }).then(fetchOrders);
   };
+
+   /* -------------------- PAGINATED DATA -------------------- */
+    const paginatedOrders = useMemo(() => {
+      const start = page * rowsPerPage;
+      const end = start + rowsPerPage;
+      return orders.slice(start, end);
+    }, [orders, page, rowsPerPage]);
 
   /* -------------------- ACTION HANDLERS -------------------- */
 
@@ -134,20 +144,26 @@ const [selectedOrder, setSelectedOrder] = useState(null);
     </Box>
   );
 
-  /* -------------------- UI -------------------- */
+  /* -------------------- Common Table -------------------- */
   return (
-    <Box p={2}>
-      {/* 🔹 ADD ORDER BUTTON */}
-      {/* <Box sx={{ display: "flex", justifyContent: "flex-end", mb: 2 }}>
-       
-      </Box> */}
+    <Box sx={{p:1, mb:4}}>
+      
 
       <CommonTable
         columns={columns}
-        rows={orders}
+        rows={paginatedOrders}
         loading={loading}
         actions={actions}
         onRefresh={fetchOrders} 
+        serverPagination
+        page={page}
+        rowsPerPage={rowsPerPage}
+          totalCount={orders.length}
+        onPageChange={(e, newPage) => setPage(newPage)}
+        onRowsPerPageChange={(e) => {
+          setRowsPerPage(parseInt(e.target.value, 10));
+          setPage(0);
+        }}
         topActions={
              <Button
           variant="contained"

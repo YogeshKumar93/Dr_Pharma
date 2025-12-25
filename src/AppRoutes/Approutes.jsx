@@ -34,6 +34,7 @@ import ResetPassword from "../Pages/ResetPassword";
 import VerifyOtp from "../Pages/VerifyOtp";
 import ForgotPassword from "../Pages/ForgotPassword";
 import UserProfile from "../Pages/UserProfile";
+import SpecialOffers from "../Pages/SpecialOffers";
 
 
 const AppRoutes = () => {
@@ -49,6 +50,7 @@ const AppRoutes = () => {
               <Route path="/cart" element={<Cart />} />
               <Route path="/categories" element={<Categories />} />
               <Route path="/home" element={<Home />} />
+            
               <Route path="/offers" element={<Offers />} />
               <Route path="/aboutus" element={<AboutUs />} />
               <Route path="/myorders" element={<MyOrders />} />
@@ -88,6 +90,7 @@ const AppRoutes = () => {
               <Route path="/prescriptions" element={<Prescriptions />} />
               <Route path="/myorders" element={<MyOrders />} />
               <Route path="/allorders" element={<AllOrders />} />
+              <Route path="/specialoffers" element={<SpecialOffers />} />
             
 
             </Route>

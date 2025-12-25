@@ -37,6 +37,7 @@ import {
   Receipt as ReceiptIcon,
   Person as PersonIcon,
 } from '@mui/icons-material';
+import LocalOfferIcon from "@mui/icons-material/LocalOffer";
 import EmailIcon from '@mui/icons-material/Email';
 import PhoneIcon from '@mui/icons-material/Phone';
 import Logo from "../assets/Logo1.png";
@@ -87,6 +88,12 @@ const Sidebar = ({ onItemClick, collapsed }) => {
       icon: <PaymentIcon />,
       path: '/payments',
       tooltip: 'Payment Transactions'
+    },
+     {
+      text: 'Special-Offers',
+      icon: <LocalOfferIcon />,
+      path: '/specialoffers',
+      tooltip: 'Special Offers'
     },
     {
       text: 'Settings',
@@ -227,6 +234,7 @@ const SideNavAndHeader = () => {
     '/allproducts': 'Product Management',
     '/medicines': 'Medicines',
     '/payments': 'Payment Management',
+    '/specialoffers': 'Special Offers',
     '/prescriptions': 'Prescription Management',
     '/settings': 'System Settings',
   };
@@ -285,7 +293,7 @@ const handleLogout = () => {
           </IconButton>
 
 
-          <Typography variant="h6" sx={{ flexGrow: 1, fontWeight: 600, color: '#2e7d32' }}>
+          <Typography variant="h5" sx={{ flexGrow: 1, fontWeight: 600, color: '#1A5276' }}>
             {currentTitle}
           </Typography>
 
