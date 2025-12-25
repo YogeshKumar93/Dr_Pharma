@@ -138,8 +138,18 @@ const [selectedOrder, setSelectedOrder] = useState(null);
   return (
     <Box p={2}>
       {/* 🔹 ADD ORDER BUTTON */}
-      <Box sx={{ display: "flex", justifyContent: "flex-end", mb: 2 }}>
-        <Button
+      {/* <Box sx={{ display: "flex", justifyContent: "flex-end", mb: 2 }}>
+       
+      </Box> */}
+
+      <CommonTable
+        columns={columns}
+        rows={orders}
+        loading={loading}
+        actions={actions}
+        onRefresh={fetchOrders} 
+        topActions={
+             <Button
           variant="contained"
           sx={{
             backgroundColor: "#1A5276",
@@ -149,14 +159,7 @@ const [selectedOrder, setSelectedOrder] = useState(null);
         >
           Add Order
         </Button>
-      </Box>
-
-      <CommonTable
-        columns={columns}
-        rows={orders}
-        loading={loading}
-        actions={actions}
-        onRefresh={fetchOrders} 
+        }
       />
 
       <AddOrder

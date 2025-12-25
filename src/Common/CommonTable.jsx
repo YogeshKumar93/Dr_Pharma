@@ -41,6 +41,7 @@ const CommonTable = ({
 
   // Actions
   actions,
+  topActions,
 onRefresh,
   // Table width
   width = "100%",
@@ -128,7 +129,7 @@ onRefresh,
     <Box sx={{ width, m: 0, p: 0 }}>
       {/* -------------------- Filters -------------------- */}
     {/* -------- Top Action Bar (Filters + Refresh) -------- */}
-{(filtersConfig.length > 0 || onRefresh) && (
+{(filtersConfig.length > 0 || onRefresh || topActions) && (
   <Box
     sx={{
       display: "flex",
@@ -144,7 +145,7 @@ onRefresh,
     }}
   >
     {/* LEFT SIDE – Filters */}
-    <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap" }}>
+    <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap", alignItems: "center" }}>
       {filtersConfig.map((filter) => renderFilterField(filter))}
 
       {filtersConfig.length > 0 && (
@@ -159,7 +160,10 @@ onRefresh,
       )}
     </Box>
 
-    {/* RIGHT SIDE – Refresh */}
+    {/* RIGHT – Add Button + Refresh */}
+    <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
+      {topActions}
+
     {onRefresh && (
       <Tooltip title="Refresh Table">
         <IconButton
@@ -176,6 +180,7 @@ onRefresh,
         </IconButton>
       </Tooltip>
     )}
+    </Box>
   </Box>
 )}
 
@@ -185,7 +190,7 @@ onRefresh,
         <TableContainer sx={{ width: "100%", m: 0, p: 0 }}>
           <Table sx={{ width: "100%", m: 0, p: 0, tableLayout: "fixed" }}>
             <TableHead>
-              <TableRow>
+              <TableRow sx={{backgroundColor: "#f5f7fa"}}>
                 {columns.map((col, idx) => (
                   <TableCell
                     key={idx}
@@ -194,13 +199,19 @@ onRefresh,
                       width: col.width || `${100 / columns.length}%`,
                       px: 1,
                       py: 1,
+                        color: "#333",
+          borderBottom: "1px solid #ddd",
                     }}
                   >
                     {col.headerName}
                   </TableCell>
                 ))}
                 {actions && (
-                  <TableCell sx={{ fontWeight: 600, width: "15%", px: 1, py: 1 }}>
+                  <TableCell sx={{ fontWeight: 600,
+                  width: "15%", px: 1, py: 1,
+                   color: "#333",
+          borderBottom: "1px solid #ddd",
+                   }}>
                     Actions
                   </TableCell>
                 )}
