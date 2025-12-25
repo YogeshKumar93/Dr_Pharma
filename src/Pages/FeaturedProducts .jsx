@@ -24,15 +24,24 @@ const FeaturedProducts = ({ limit }) => {
   const { addToCart } = useCart();
 
   const handleAddToCart = (product) => {
-    const id = product._id || product.id;
+  const id = product._id || product.id;
 
-    addToCart(product);
-    setAddedItems((prev) => ({
-      ...prev,
-      [id]: true,
-    }));
-    setOpenSnack(true);
-  };
+  addToCart({
+    id: id,
+    title: product.title,
+    price: product.price,
+    image: product.image,
+    quantity: 1,
+  });
+
+  setAddedItems((prev) => ({
+    ...prev,
+    [id]: true,
+  }));
+
+  setOpenSnack(true);
+};
+
 
   useEffect(() => {
     fetchFeaturedProducts();

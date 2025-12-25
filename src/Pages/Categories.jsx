@@ -9,10 +9,14 @@ import {
   Card,
   CardContent,
   CardMedia,
-  Chip,
   Button,
   LinearProgress,
   Fade,
+  Snackbar,
+  Alert,
+  IconButton,
+  Modal,
+  Chip,
 } from "@mui/material";
 import {
   MedicalInformation,
@@ -20,11 +24,11 @@ import {
   Science,
   MedicalServices,
   Vaccines,
-  FavoriteBorder,
-  AddShoppingCart,
-  Star,
+  ArrowForward,
+  Close,
 } from "@mui/icons-material";
 import { apiCall } from "../api/api";
+import { useCart } from "../Contexts/CartContext";
 
 const CATEGORIES = [
   { label: "Medicines", value: "medicines", icon: <LocalPharmacy /> },
@@ -38,6 +42,12 @@ const Categories = () => {
   const [activeCategory, setActiveCategory] = useState("medicines");
   const [allProducts, setAllProducts] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [modalOpen, setModalOpen] = useState(false);
+
+  const { addToCart } = useCart();
+  const [addedItems, setAddedItems] = useState({});
+  const [openSnack, setOpenSnack] = useState(false);
 
   useEffect(() => {
     fetchAllProducts();
@@ -65,53 +75,67 @@ const Categories = () => {
     }
   };
 
-  // ✅ FILTER PRODUCTS CATEGORY WISE
   const filteredProducts = allProducts.filter(
     (item) => item.category === activeCategory
   );
 
-  // Generate random rating for demo (you can remove this if you have actual ratings)
-  const getRandomRating = () => (Math.random() * 2 + 3).toFixed(1);
+  const handleAddToCart = (product) => {
+    const id = product._id || product.id;
+
+    addToCart({
+      id: id,
+      title: product.title,
+      price: product.price,
+      image: product.image,
+      quantity: 1,
+    });
+
+    setAddedItems((prev) => ({
+      ...prev,
+      [id]: true,
+    }));
+
+    setOpenSnack(true);
+  };
+
+  const handleViewDetails = (product) => {
+    setSelectedProduct(product);
+    setModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setModalOpen(false);
+    setSelectedProduct(null);
+  };
 
   return (
-    <Box sx={{ 
-      p: { xs: 2, md: 4 },
-      mt:-13,
-      background: "linear-gradient(135deg, #f5f7fa 0%, #e4edf5 100%)",
-      minHeight: "100vh"
-    }}>
-      {/* HEADER SECTION */}
+    <Box
+      sx={{
+        p: { xs: 2, md: 4 },
+        mt: -13,
+        background: "linear-gradient(135deg, #f5f7fa 0%, #e4edf5 100%)",
+        minHeight: "100vh",
+      }}
+    >
+      {/* HEADER */}
       <Box sx={{ mb: 4, textAlign: "center" }}>
-        <Typography 
-          variant="h4" 
-          sx={{ 
-            fontWeight: 700,
-            color: "#1a237e",
-            mb: 1,
-            fontSize: { xs: "1.75rem", md: "2.5rem" }
-          }}
-        >
+        <Typography variant="h4" fontWeight={700} color="#1a237e">
           Healthcare Products
         </Typography>
-        <Typography 
-          variant="subtitle1" 
-          sx={{ color: "#5c6bc0", maxWidth: "600px", mx: "auto" }}
-        >
-          Discover high-quality medical products categorized for your convenience
+        <Typography variant="subtitle1" color="#5c6bc0">
+          Discover high-quality medical products
         </Typography>
       </Box>
 
-      {/* CATEGORY BAR - Enhanced Design */}
-      <Paper 
+      {/* CATEGORY BAR */}
+      <Paper
         elevation={3}
-        sx={{ 
-          display: "flex", 
+        sx={{
+          display: "flex",
           mb: 4,
-          borderRadius: "16px",
-          overflow: "hidden",
-          background: "white",
-          border: "1px solid #e0e7ff",
-          p: 1
+          borderRadius: 3,
+          p: 1,
+          overflowX: "auto",
         }}
       >
         {CATEGORIES.map((cat) => (
@@ -120,305 +144,355 @@ const Categories = () => {
             selected={activeCategory === cat.value}
             onClick={() => setActiveCategory(cat.value)}
             sx={{
-              px: 3,
-              py: 2,
-              borderRadius: "12px",
-              mx: 0.5,
-              display: "flex",
               flexDirection: "column",
-              alignItems: "center",
-              justifyContent: "center",
-              minWidth: "120px",
-              transition: "all 0.3s ease",
-              "&:hover": {
-                backgroundColor: "#f0f4ff",
-                transform: "translateY(-2px)",
-              },
+              minWidth: 120,
+              mx: 0.5,
+              borderRadius: 2,
               "&.Mui-selected": {
-                background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-                color: "white",
-                boxShadow: "0 6px 20px rgba(102, 126, 234, 0.3)",
-                "& .MuiListItemText-primary": {
-                  color: "white",
-                  fontWeight: 600,
-                },
-                "& .MuiSvgIcon-root": {
-                  color: "white",
-                },
+                bgcolor: "#1a237e",
+                color: "#fff",
               },
             }}
           >
-            <Box sx={{ mb: 1, fontSize: "24px" }}>
-              {cat.icon}
-            </Box>
-            <ListItemText 
-              primary={cat.label} 
+            {cat.icon}
+            <ListItemText
+              primary={cat.label}
               primaryTypographyProps={{
-                fontSize: "0.9rem",
-                fontWeight: 500,
-                textAlign: "center"
+                fontSize: "0.85rem",
+                fontWeight: 600,
+                textAlign: "center",
               }}
             />
           </ListItemButton>
         ))}
       </Paper>
 
-      {/* CATEGORY TITLE */}
-      <Box sx={{ mb: 3, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-        <Box>
-          <Typography variant="h5" sx={{ fontWeight: 700, color: "#1a237e" }}>
-            {CATEGORIES.find((c) => c.value === activeCategory)?.label}
-          </Typography>
-          <Typography variant="body2" sx={{ color: "#78909c", mt: 0.5 }}>
-            {filteredProducts.length} products available
-          </Typography>
-        </Box>
-        <Chip 
-          label="Prescription Required" 
-          size="small" 
-          sx={{ 
-            bgcolor: "#fff3e0", 
-            color: "#ef6c00",
-            fontWeight: 500
-          }} 
-        />
-      </Box>
+      {loading && <LinearProgress sx={{ mb: 3 }} />}
 
-      {/* LOADING INDICATOR */}
-      {loading && (
-        <Box sx={{ width: "100%", mb: 3 }}>
-          <LinearProgress 
-            sx={{ 
-              height: 8, 
-              borderRadius: 4,
-              backgroundColor: "#e3f2fd",
-              "& .MuiLinearProgress-bar": {
-                background: "linear-gradient(90deg, #667eea 0%, #764ba2 100%)",
-              }
-            }} 
-          />
-        </Box>
-      )}
+      {/* PRODUCTS */}
+      <Fade in={!loading}>
+        <Grid container spacing={3}>
+          {filteredProducts.map((product) => {
+            const id = product._id || product.id;
 
-      {/* PRODUCTS SECTION */}
-      <Fade in={!loading} timeout={500}>
-        <Box>
-          {loading ? (
-            <Box sx={{ textAlign: "center", py: 8 }}>
-              <Typography variant="h6" sx={{ color: "#5c6bc0" }}>
-                Loading products...
-              </Typography>
-            </Box>
-          ) : filteredProducts.length === 0 ? (
-            <Paper 
-              elevation={0}
-              sx={{ 
-                textAlign: "center", 
-                py: 8, 
-                borderRadius: "16px",
-                bgcolor: "#f8fdff",
-                border: "2px dashed #bbdefb"
-              }}
-            >
-              <LocalPharmacy sx={{ fontSize: 60, color: "#90a4ae", mb: 2 }} />
-              <Typography variant="h6" sx={{ color: "#546e7a", mb: 1 }}>
-                No products found
-              </Typography>
-              <Typography variant="body2" sx={{ color: "#78909c", maxWidth: "400px", mx: "auto" }}>
-                We couldn't find any products in this category. Please check back later or browse other categories.
-              </Typography>
-            </Paper>
-          ) : (
-            <Grid container spacing={3}>
-              {filteredProducts.map((product) => (
-                <Grid item xs={12} sm={6} md={4} lg={3} key={product.id}>
-                  <Card 
-                    sx={{ 
-                      height: "100%",
-                      borderRadius: "16px",
-                      overflow: "hidden",
-                      transition: "all 0.3s ease",
-                      border: "1px solid #e8eaf6",
-                      "&:hover": {
-                        transform: "translateY(-8px)",
-                        boxShadow: "0 20px 40px rgba(102, 126, 234, 0.15)",
-                        borderColor: "#667eea",
-                      }
+            return (
+              <Grid item xs={12} sm={6} md={4} lg={3} key={id}>
+                <Card
+                  sx={{
+                    height: "100%",
+                    display: "flex",
+                    flexDirection: "column",
+                    borderRadius: 3,
+                    boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
+                    transition: "0.3s",
+                    "&:hover": {
+                      transform: "translateY(-4px)",
+                      boxShadow: "0 8px 20px rgba(0,0,0,0.12)",
+                    },
+                  }}
+                >
+                  {/* IMAGE CONTAINER - Fixed aspect ratio */}
+                  <Box
+                    sx={{
+                      position: "relative",
+                      width: "100%",
+                      pt: "75%", // 4:3 aspect ratio
+                      bgcolor: "#f9fafb",
+                      borderBottom: "1px solid #e0e0e0",
                     }}
                   >
-                    {/* PRODUCT IMAGE WITH OVERLAY */}
-                    <Box sx={{ position: "relative" }}>
+                    <Box
+                      sx={{
+                        position: "absolute",
+                        top: 0,
+                        left: 0,
+                        width: "100%",
+                        height: "100%",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        p: 2,
+                      }}
+                    >
                       <CardMedia
                         component="img"
-                        height="200"
                         image={product.image || "/no-image.png"}
-                        alt={product.name}
-                        sx={{ 
-                          objectFit: "cover",
-                          bgcolor: "#f5f7ff"
+                        alt={product.title}
+                        sx={{
+                          maxWidth: "80%",
+                          maxHeight: "80%",
+                          objectFit: "contain",
                         }}
                       />
-                      <Box 
-                        sx={{ 
-                          position: "absolute", 
-                          top: 12, 
-                          right: 12,
-                          display: "flex",
-                          gap: 1
-                        }}
-                      >
-                        <Button 
-                          size="small" 
-                          sx={{ 
-                            minWidth: "auto", 
-                            p: 0.5,
-                            bgcolor: "white",
-                            borderRadius: "50%",
-                            "&:hover": { bgcolor: "#fff" }
-                          }}
-                        >
-                          <FavoriteBorder sx={{ fontSize: 20, color: "#f44336" }} />
-                        </Button>
-                      </Box>
-                      {product.discount && (
-                        <Chip 
-                          label={`${product.discount}% OFF`}
-                          size="small"
-                          sx={{ 
-                            position: "absolute",
-                            top: 12,
-                            left: 12,
-                            bgcolor: "#ff4081",
-                            color: "white",
-                            fontWeight: "bold",
-                            fontSize: "0.75rem"
-                          }}
-                        />
-                      )}
                     </Box>
+                  </Box>
 
-                    <CardContent sx={{ p: 3 }}>
-                      {/* CATEGORY TAG */}
-                      <Chip 
-                        label={product.category || activeCategory}
+                  {/* CONTENT AREA - Consistent height */}
+                  <CardContent
+                    sx={{
+                      flexGrow: 1,
+                      display: "flex",
+                      flexDirection: "column",
+                      p: 2,
+                      pb: "16px !important",
+                    }}
+                  >
+                    {/* PRODUCT TITLE - Fixed height with ellipsis */}
+                    <Typography
+                      variant="body1"
+                      fontWeight={600}
+                      sx={{
+                        mb: 1,
+                        minHeight: "44px",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        display: "-webkit-box",
+                        WebkitLineClamp: 2,
+                        WebkitBoxOrient: "vertical",
+                        lineHeight: 1.2,
+                      }}
+                    >
+                      {product.title}
+                    </Typography>
+
+                    {/* CATEGORY TAG */}
+                    {product.category && (
+                      <Chip
+                        label={product.category}
                         size="small"
-                        sx={{ 
-                          mb: 2,
-                          bgcolor: "#e8eaf6",
-                          color: "#3f51b5",
+                        sx={{
+                          mb: 1.5,
+                          alignSelf: "flex-start",
                           fontSize: "0.7rem",
-                          fontWeight: 500
+                          height: "20px",
                         }}
                       />
+                    )}
 
-                      {/* PRODUCT NAME */}
-                      <Typography 
-                        variant="h6" 
-                        sx={{ 
-                          fontWeight: 600,
-                          color: "#1a237e",
-                          mb: 1,
-                          fontSize: "1rem",
-                          lineHeight: 1.4,
-                          height: "2.8rem",
-                          overflow: "hidden",
-                          display: "-webkit-box",
-                          WebkitLineClamp: 2,
-                          WebkitBoxOrient: "vertical"
+                    {/* PRICE AND ACTIONS */}
+                    <Box
+                      sx={{
+                        mt: "auto",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                      }}
+                    >
+                      <Typography
+                        fontWeight={700}
+                        color="#1a237e"
+                        sx={{
+                          fontSize: "1.1rem",
                         }}
                       >
-                        {product.name}
+                        ₹{product.price}
                       </Typography>
 
-                      {/* RATING */}
-                      <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
-                        <Star sx={{ fontSize: 16, color: "#ffb300" }} />
-                        <Typography variant="body2" sx={{ ml: 0.5, color: "#5c6bc0", fontWeight: 500 }}>
-                          {getRandomRating()}
-                        </Typography>
-                        <Typography variant="caption" sx={{ ml: 1, color: "#90a4ae" }}>
-                          ({(Math.floor(Math.random() * 100) + 50)} reviews)
-                        </Typography>
-                      </Box>
-
-                      {/* PRICE AND ACTIONS */}
-                      <Box sx={{ 
-                        display: "flex", 
-                        alignItems: "center", 
-                        justifyContent: "space-between",
-                        mt: "auto"
-                      }}>
-                        <Box>
-                          <Typography 
-                            variant="h6" 
-                            sx={{ 
-                              fontWeight: 700,
-                              color: "#1a237e",
-                              fontSize: "1.25rem"
-                            }}
-                          >
-                            ₹{product.price}
-                          </Typography>
-                          {product.originalPrice && (
-                            <Typography 
-                              variant="caption" 
-                              sx={{ 
-                                textDecoration: "line-through",
-                                color: "#90a4ae",
-                                ml: 1
-                              }}
-                            >
-                              ₹{product.originalPrice}
-                            </Typography>
-                          )}
-                        </Box>
-                        <Button
-                          variant="contained"
+                      <Box sx={{ display: "flex", gap: 1 }}>
+                        {/* VIEW DETAILS ARROW */}
+                        <IconButton
                           size="small"
-                          startIcon={<AddShoppingCart />}
+                          onClick={() => handleViewDetails(product)}
                           sx={{
-                            background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-                            borderRadius: "10px",
-                            px: 2,
-                            py: 0.75,
-                            textTransform: "none",
-                            fontWeight: 600,
+                            color: "#1a237e",
+                            bgcolor: "rgba(26, 35, 126, 0.1)",
                             "&:hover": {
-                              background: "linear-gradient(135deg, #5a6fd8 0%, #6a4090 100%)",
-                              boxShadow: "0 8px 16px rgba(102, 126, 234, 0.3)"
-                            }
+                              bgcolor: "rgba(26, 35, 126, 0.2)",
+                            },
                           }}
                         >
-                          Add to Cart
+                          <ArrowForward fontSize="small" />
+                        </IconButton>
+
+                        {/* ADD TO CART BUTTON */}
+                        <Button
+                          size="small"
+                          onClick={() => handleAddToCart(product)}
+                          sx={{
+                            minWidth: "80px",
+                            bgcolor: addedItems[id] ? "#4CAF50" : "#1a237e",
+                            color: "#fff",
+                            fontWeight: 600,
+                            textTransform: "none",
+                            borderRadius: 2,
+                            "&:hover": {
+                              bgcolor: addedItems[id] ? "#43a047" : "#0d133d",
+                            },
+                          }}
+                        >
+                          {addedItems[id] ? "Added" : "Add"}
                         </Button>
                       </Box>
-
-                      {/* STOCK STATUS */}
-                      <Typography 
-                        variant="caption" 
-                        sx={{ 
-                          display: "block",
-                          mt: 2,
-                          p: 1,
-                          borderRadius: "6px",
-                          bgcolor: product.inStock ? "#e8f5e9" : "#ffebee",
-                          color: product.inStock ? "#2e7d32" : "#d32f2f",
-                          textAlign: "center",
-                          fontWeight: 500
-                        }}
-                      >
-                        {product.inStock ? "✓ In Stock" : "✗ Out of Stock"}
-                      </Typography>
-                    </CardContent>
-                  </Card>
-                </Grid>
-              ))}
-            </Grid>
-          )}
-        </Box>
+                    </Box>
+                  </CardContent>
+                </Card>
+              </Grid>
+            );
+          })}
+        </Grid>
       </Fade>
 
-   
+      {/* PRODUCT DETAILS MODAL */}
+      <Modal
+        open={modalOpen}
+        onClose={handleCloseModal}
+        aria-labelledby="product-details-modal"
+      >
+        <Box
+          sx={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            width: { xs: "90%", sm: "70%", md: "500px" },
+            maxHeight: "90vh",
+            bgcolor: "background.paper",
+            borderRadius: 3,
+            boxShadow: 24,
+            overflow: "hidden",
+            display: "flex",
+            flexDirection: "column",
+          }}
+        >
+          {/* MODAL HEADER */}
+          <Box
+            sx={{
+              p: 3,
+              borderBottom: "1px solid #e0e0e0",
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
+            <Typography variant="h6" fontWeight={600}>
+              Product Details
+            </Typography>
+            <IconButton onClick={handleCloseModal} size="small">
+              <Close />
+            </IconButton>
+          </Box>
+
+          {/* MODAL CONTENT */}
+          <Box sx={{ overflow: "auto", flex: 1 }}>
+            {selectedProduct && (
+              <Box sx={{ p: 3 }}>
+                {/* PRODUCT IMAGE */}
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "center",
+                    mb: 3,
+                  }}
+                >
+                  <CardMedia
+                    component="img"
+                    image={selectedProduct.image || "/no-image.png"}
+                    alt={selectedProduct.title}
+                    sx={{
+                      maxHeight: "200px",
+                      maxWidth: "100%",
+                      objectFit: "contain",
+                    }}
+                  />
+                </Box>
+
+                {/* PRODUCT TITLE */}
+                <Typography variant="h6" fontWeight={600} gutterBottom>
+                  {selectedProduct.title}
+                </Typography>
+
+                {/* PRODUCT CATEGORY */}
+                {selectedProduct.category && (
+                  <Chip
+                    label={selectedProduct.category}
+                    sx={{ mb: 2 }}
+                    color="primary"
+                    size="small"
+                  />
+                )}
+
+                {/* PRODUCT PRICE */}
+                <Typography
+                  variant="h5"
+                  fontWeight={700}
+                  color="#1a237e"
+                  gutterBottom
+                >
+                  ₹{selectedProduct.price}
+                </Typography>
+
+                {/* PRODUCT DESCRIPTION */}
+                <Typography
+                  variant="body1"
+                  sx={{
+                    mt: 2,
+                    color: "text.secondary",
+                    lineHeight: 1.6,
+                  }}
+                >
+                  {selectedProduct.description || 
+                    "No detailed description available for this product. This is a high-quality healthcare product that meets all safety standards and regulations."}
+                </Typography>
+
+                {/* ADDITIONAL INFO */}
+                <Box sx={{ mt: 3, pt: 2, borderTop: "1px solid #e0e0e0" }}>
+                  <Typography variant="body2" color="text.secondary">
+                    • Certified healthcare product
+                    <br />
+                    • Quality assured
+                    <br />
+                    • Safe for use
+                  </Typography>
+                </Box>
+              </Box>
+            )}
+          </Box>
+
+          {/* MODAL FOOTER */}
+          <Box
+            sx={{
+              p: 2,
+              borderTop: "1px solid #e0e0e0",
+              display: "flex",
+              justifyContent: "flex-end",
+              gap: 2,
+            }}
+          >
+            <Button
+              variant="outlined"
+              onClick={handleCloseModal}
+              sx={{ textTransform: "none" }}
+            >
+              Close
+            </Button>
+            <Button
+              variant="contained"
+              onClick={() => {
+                handleAddToCart(selectedProduct);
+                handleCloseModal();
+              }}
+              sx={{
+                bgcolor: "#1a237e",
+                textTransform: "none",
+                "&:hover": { bgcolor: "#0d133d" },
+              }}
+            >
+              Add to Cart
+            </Button>
+          </Box>
+        </Box>
+      </Modal>
+
+      {/* SNACKBAR */}
+      <Snackbar
+        open={openSnack}
+        autoHideDuration={2000}
+        onClose={() => setOpenSnack(false)}
+      >
+        <Alert severity="success" variant="filled">
+          Item added to cart
+        </Alert>
+      </Snackbar>
     </Box>
   );
 };
