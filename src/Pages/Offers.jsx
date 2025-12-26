@@ -12,19 +12,18 @@ import {
   Chip,
   LinearProgress,
   Button,
-  Fade,
   Alert,
   Snackbar,
   Container,
-  Badge,
   Avatar,
   IconButton,
+  Rating,
+  Divider,
 } from "@mui/material";
 import {
   LocalOffer,
   Whatshot,
   TrendingUp,
-  Star,
   ShoppingCart,
   Timer,
   Inventory,
@@ -36,6 +35,11 @@ import {
   FavoriteBorder,
   CompareArrows,
   CheckCircle,
+  Euro,
+  ArrowDropDown,
+  Star,
+  StarBorder,
+  CardGiftcard,
 } from "@mui/icons-material";
 import { apiCall } from "../api/api";
 
@@ -55,16 +59,13 @@ const Offers = () => {
   const [allProducts, setAllProducts] = useState([]);
   const [loading, setLoading] = useState(false);
   const [snackbar, setSnackbar] = useState({ open: false, message: "" });
-  const [viewMode, setViewMode] = useState("grid"); // grid or list
+  const [viewMode, setViewMode] = useState("grid");
   const BASE_URL = "http://localhost:8000";
 
   useEffect(() => {
     fetchAllProducts();
   }, []);
 
-  /**
-   * FETCH SPECIAL OFFERS
-   */
   const fetchAllProducts = async () => {
     try {
       setLoading(true);
@@ -79,9 +80,7 @@ const Offers = () => {
         return;
       }
 
-      // API RESPONSE NORMALIZATION
       const products = response?.data || response?.products || response || [];
-
       setAllProducts(Array.isArray(products) ? products : []);
     } catch (err) {
       console.error("Special Offers Error:", err);
@@ -95,71 +94,43 @@ const Offers = () => {
     }
   };
 
-  /**
-   * FILTER PRODUCTS CATEGORY WISE
-   */
   const filteredProducts = allProducts.filter(
     (item) => item.category === activeCategory && item.is_active === 1
   );
 
-  /**
-   * Calculate savings amount
-   */
   const calculateSavings = (original, offer) => {
     return original - offer;
   };
 
-  /**
-   * Calculate savings percentage
-   */
   const calculateSavingsPercentage = (original, offer) => {
     return Math.round(((original - offer) / original) * 100);
   };
 
-  /**
-   * Get stock status
-   */
   const getStockStatus = (stock) => {
-    if (stock > 20) return { color: "#2ECC71", label: "In Stock" };
-    if (stock > 10) return { color: "#F39C12", label: "Low Stock" };
-    return { color: "#E74C3C", label: "Limited" };
+    if (stock > 20) return { color: "#10B981", label: "In Stock" };
+    if (stock > 10) return { color: "#F59E0B", label: "Low Stock" };
+    return { color: "#EF4444", label: "Limited" };
   };
 
-  /**
-   * Handle add to cart
-   */
   const handleAddToCart = (product) => {
-    // Add your cart logic here
     setSnackbar({
       open: true,
       message: `${product.title} added to cart!`,
     });
   };
 
-  /**
-   * Handle quick view
-   */
   const handleQuickView = (product) => {
-    // Add quick view logic here
     console.log("Quick view:", product);
   };
 
-  /**
-   * Handle wishlist
-   */
   const handleWishlist = (product) => {
-    // Add wishlist logic here
     setSnackbar({
       open: true,
       message: `${product.title} added to wishlist!`,
     });
   };
 
-  /**
-   * Handle compare
-   */
   const handleCompare = (product) => {
-    // Add compare logic here
     setSnackbar({
       open: true,
       message: `${product.title} added to compare!`,
@@ -170,250 +141,310 @@ const Offers = () => {
     <Box
       sx={{
         minHeight: "100vh",
-        backgroundColor: "#F8F9FA",
+        backgroundColor: "#FDFCFA",
         mt: -13,
+        backgroundImage: "radial-gradient(#E5E7EB 1px, transparent 1px)",
+        backgroundSize: "20px 20px",
       }}
     >
       {/* ================= HERO BANNER ================= */}
       <Box
         sx={{
-          background: "linear-gradient(135deg, #1A5276 0%, #2E86C1 100%)",
-          py: { xs: 6, md: 8 },
+          background: "linear-gradient(135deg, #059669 0%, #10B981 100%)",
+          py: { xs: 8, md: 10 },
           px: 3,
           position: "relative",
           overflow: "hidden",
+          clipPath: "polygon(0 0, 100% 0, 100% 90%, 0 100%)",
         }}
       >
         <Container maxWidth="xl">
-          <Box sx={{ position: "relative", zIndex: 1 }}>
-            <Chip
-              icon={<FlashOn />}
-              label="LIMITED TIME OFFER"
-              sx={{
-                bgcolor: "#FF6B35",
-                color: "white",
-                fontWeight: 700,
-                mb: 3,
-                fontSize: "0.9rem",
-              }}
-            />
-            <Typography
-              variant="h2"
-              fontWeight={800}
-              sx={{
-                color: "white",
-                mb: 2,
-                fontSize: { xs: "2rem", md: "3rem" },
-              }}
-            >
-              Healthcare Deals
-              <br />
-              <Box component="span" sx={{ color: "#FFD700" }}>
-                Up to 70% OFF
+          <Grid container spacing={4} alignItems="center">
+            <Grid item xs={12} md={7}>
+              <Box sx={{ position: "relative", zIndex: 1 }}>
+                <Chip
+                  icon={<FlashOn />}
+                  label="EXCLUSIVE DEALS"
+                  sx={{
+                    bgcolor: "#FFFFFF",
+                    color: "#059669",
+                    fontWeight: 700,
+                    mb: 3,
+                    fontSize: "0.9rem",
+                    height: 32,
+                  }}
+                />
+                <Typography
+                  variant="h1"
+                  fontWeight={800}
+                  sx={{
+                    color: "white",
+                    mb: 2,
+                    fontSize: { xs: "2.5rem", md: "3.75rem" },
+                    lineHeight: 1.2,
+                  }}
+                >
+                  Healthcare
+                  <br />
+                  <Box component="span" sx={{ color: "#FFD700" }}>
+                    Mega Sale
+                  </Box>
+                </Typography>
+                <Typography
+                  variant="h6"
+                  sx={{ color: "rgba(255,255,255,0.95)", mb: 4, maxWidth: "600px" }}
+                >
+                  Premium medical products at unbeatable prices. Quality healthcare made affordable.
+                </Typography>
+                <Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
+                  <Button
+                    variant="contained"
+                    startIcon={<LocalOffer />}
+                    sx={{
+                      bgcolor: "#FFFFFF",
+                      color: "#059669",
+                      fontWeight: 700,
+                      px: 4,
+                      py: 1.5,
+                      borderRadius: "12px",
+                      fontSize: "1rem",
+                      "&:hover": {
+                        bgcolor: "#F0FDF4",
+                        transform: "translateY(-2px)",
+                      },
+                    }}
+                  >
+                    Explore Offers
+                  </Button>
+                  <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                    <Timer sx={{ color: "#FFD700" }} />
+                    <Typography variant="body2" sx={{ color: "white", fontWeight: 600 }}>
+                      Ends in 48:00:00
+                    </Typography>
+                  </Box>
+                </Box>
               </Box>
-            </Typography>
-            <Typography
-              variant="h6"
-              sx={{ color: "rgba(255,255,255,0.9)", mb: 4, maxWidth: "600px" }}
-            >
-              Exclusive discounts on medical supplies. Quality products at unbeatable prices.
-            </Typography>
-            <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap" }}>
-              <Button
-                variant="contained"
-                startIcon={<LocalOffer />}
+            </Grid>
+            <Grid item xs={12} md={5}>
+              <Box
                 sx={{
-                  bgcolor: "#FF6B35",
-                  color: "white",
-                  fontWeight: 700,
-                  px: 4,
-                  py: 1.5,
-                  borderRadius: 2,
-                  "&:hover": {
-                    bgcolor: "#FF5500",
-                  },
+                  position: "relative",
+                  textAlign: "center",
                 }}
               >
-                Shop Now
-              </Button>
-              <Button
-                variant="outlined"
-                sx={{
-                  borderColor: "white",
-                  color: "white",
-                  fontWeight: 600,
-                  px: 4,
-                  py: 1.5,
-                  borderRadius: 2,
-                  "&:hover": {
-                    borderColor: "white",
-                    bgcolor: "rgba(255,255,255,0.1)",
-                  },
-                }}
-              >
-                View All Categories
-              </Button>
-            </Box>
-          </Box>
+                <Box
+                  sx={{
+                    width: 300,
+                    height: 300,
+                    mx: "auto",
+                    background: "radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%)",
+                    borderRadius: "50%",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  <Box
+                    sx={{
+                      width: 240,
+                      height: 240,
+                      background: "linear-gradient(135deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0.05) 100%)",
+                      borderRadius: "50%",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      backdropFilter: "blur(10px)",
+                    }}
+                  >
+                    <Typography
+                      variant="h1"
+                      fontWeight={900}
+                      sx={{
+                        color: "white",
+                        fontSize: "4rem",
+                        textShadow: "0 4px 20px rgba(0,0,0,0.2)",
+                      }}
+                    >
+                      70% OFF
+                    </Typography>
+                  </Box>
+                </Box>
+              </Box>
+            </Grid>
+          </Grid>
         </Container>
 
-        {/* Decorative elements */}
+        {/* Decorative waves */}
         <Box
           sx={{
             position: "absolute",
-            top: 0,
+            bottom: 0,
+            left: 0,
             right: 0,
-            width: "300px",
-            height: "300px",
-            background: "radial-gradient(circle, rgba(255,107,53,0.2) 0%, transparent 70%)",
-            borderRadius: "50%",
+            height: "100px",
+            background: "url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDBweCIgdmlld0JveD0iMCAwIDEyODAgMTQwIiBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxwYXRoIGQ9Ik0xMjgwIDE0MEwwIDE0MFYwYzMyMCA0MCA2NDAgODAgMTI4MCA4MHYxNDB6IiBmaWxsPSIjRkRGQ0ZBIi8+PC9zdmc+')",
+            backgroundSize: "cover",
           }}
         />
       </Box>
 
       {/* ================= MAIN CONTENT ================= */}
-      <Container maxWidth="xl" sx={{ py: 6 }}>
-        {/* ================= CATEGORY FILTERS ================= */}
+      <Container maxWidth="xl" sx={{ py: 6, mt: -8 }}>
+        {/* ================= CATEGORY SELECTOR ================= */}
         <Paper
           elevation={0}
           sx={{
-            p: 3,
-            mb: 4,
-            borderRadius: 3,
+            p: 4,
+            mb: 6,
+            borderRadius: 4,
             bgcolor: "white",
-            border: "1px solid #E8E8E8",
+            border: "2px solid #F3F4F6",
+            boxShadow: "0 4px 24px rgba(0,0,0,0.05)",
           }}
         >
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              mb: 3,
-              flexWrap: "wrap",
-              gap: 2,
-            }}
+          <Typography
+            variant="h4"
+            fontWeight={800}
+            color="#1F2937"
+            gutterBottom
+            sx={{ mb: 4 }}
           >
-            <Typography variant="h5" fontWeight={700} color="#1A5276">
-              Special Offers by Category
-            </Typography>
-            <Box sx={{ display: "flex", gap: 1 }}>
-              <Chip
-                icon={<Timer />}
-                label="Ends in 48:00:00"
-                color="error"
-                sx={{ fontWeight: 600 }}
-              />
-              <Chip
-                icon={<TrendingUp />}
-                label={`${filteredProducts.length} Deals`}
-                sx={{ bgcolor: "#1A5276", color: "white", fontWeight: 600 }}
-              />
-            </Box>
-          </Box>
-
-          {/* Category Tabs */}
-          <Tabs
-            value={activeCategory}
-            onChange={(e, newValue) => setActiveCategory(newValue)}
-            variant="scrollable"
-            scrollButtons="auto"
-            sx={{
-              "& .MuiTabs-indicator": {
-                backgroundColor: "#1A5276",
-                height: 3,
-              },
-              "& .MuiTab-root": {
-                textTransform: "none",
-                fontSize: "1rem",
-                fontWeight: 600,
-                minHeight: 60,
-                "&.Mui-selected": {
-                  color: "#1A5276",
-                },
-              },
-            }}
-          >
+            Browse by Category
+          </Typography>
+          
+          <Grid container spacing={2}>
             {CATEGORIES.map((cat) => (
-              <Tab
-                key={cat.value}
-                value={cat.value}
-                label={
-                  <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                    <Avatar
-                      sx={{
-                        width: 32,
-                        height: 32,
-                        bgcolor: activeCategory === cat.value ? "#1A5276" : "#F0F0F0",
-                        color: activeCategory === cat.value ? "white" : "#666",
-                      }}
-                    >
-                      {cat.icon}
-                    </Avatar>
-                    <Box sx={{ textAlign: "left" }}>
-                      <Typography variant="body2" fontWeight={600}>
-                        {cat.label}
-                      </Typography>
-                      <Typography variant="caption" color="text.secondary">
-                        {allProducts.filter(p => p.category === cat.value && p.is_active === 1).length} offers
-                      </Typography>
-                    </Box>
-                  </Box>
-                }
-              />
+              <Grid item xs={6} sm={4} md={2.4} key={cat.value}>
+                <Card
+                  elevation={0}
+                  onClick={() => setActiveCategory(cat.value)}
+                  sx={{
+                    p: 3,
+                    borderRadius: 3,
+                    cursor: "pointer",
+                    textAlign: "center",
+                    bgcolor: activeCategory === cat.value ? "#F0FDF4" : "#F9FAFB",
+                    border: activeCategory === cat.value 
+                      ? "2px solid #10B981" 
+                      : "2px solid transparent",
+                    transition: "all 0.3s ease",
+                    "&:hover": {
+                      transform: "translateY(-4px)",
+                      boxShadow: "0 12px 24px rgba(16, 185, 129, 0.1)",
+                    },
+                  }}
+                >
+                  <Avatar
+                    sx={{
+                      width: 56,
+                      height: 56,
+                      mx: "auto",
+                      mb: 2,
+                      bgcolor: activeCategory === cat.value ? "#10B981" : "#E5E7EB",
+                      color: activeCategory === cat.value ? "white" : "#6B7280",
+                      fontSize: "1.5rem",
+                    }}
+                  >
+                    {cat.icon}
+                  </Avatar>
+                  <Typography
+                    variant="body1"
+                    fontWeight={600}
+                    color={activeCategory === cat.value ? "#059669" : "#374151"}
+                  >
+                    {cat.label}
+                  </Typography>
+                  <Typography variant="caption" color="#6B7280">
+                    {allProducts.filter(p => p.category === cat.value && p.is_active === 1).length} offers
+                  </Typography>
+                </Card>
+              </Grid>
             ))}
-          </Tabs>
+          </Grid>
         </Paper>
 
         {/* ================= PRODUCTS SECTION ================= */}
         {loading ? (
-          <Box sx={{ textAlign: "center", py: 8 }}>
-            <LinearProgress sx={{ width: "100%", maxWidth: 400, mx: "auto", mb: 2 }} />
-            <Typography color="text.secondary">Loading amazing deals...</Typography>
+          <Box sx={{ textAlign: "center", py: 12 }}>
+            <LinearProgress 
+              sx={{ 
+                width: "100%", 
+                maxWidth: 400, 
+                mx: "auto", 
+                mb: 2,
+                height: 8,
+                borderRadius: 4,
+                bgcolor: "#F3F4F6",
+                "& .MuiLinearProgress-bar": {
+                  bgcolor: "#10B981",
+                  borderRadius: 4,
+                }
+              }} 
+            />
+            <Typography variant="h6" color="text.secondary">
+              Loading exclusive deals...
+            </Typography>
           </Box>
         ) : (
           <Box>
             {/* Section Header */}
-            <Box sx={{ mb: 4 }}>
-              <Typography variant="h4" fontWeight={700} color="#1A5276" gutterBottom>
-                {CATEGORIES.find((c) => c.value === activeCategory)?.label} Deals
-              </Typography>
-              <Typography variant="body1" color="text.secondary">
-                Don't miss these exclusive offers. Limited quantities available!
-              </Typography>
+            <Box sx={{ mb: 6, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <Box>
+                <Typography variant="h3" fontWeight={800} color="#1F2937" gutterBottom>
+                  {CATEGORIES.find((c) => c.value === activeCategory)?.label} Deals
+                </Typography>
+                <Typography variant="body1" color="#6B7280">
+                  Exclusive discounts on quality healthcare products
+                </Typography>
+              </Box>
+              <Chip
+                icon={<TrendingUp />}
+                label={`${filteredProducts.length} Products`}
+                sx={{ 
+                  bgcolor: "#10B981", 
+                  color: "white", 
+                  fontWeight: 700,
+                  fontSize: "0.875rem",
+                  height: 40,
+                }}
+              />
             </Box>
 
             {/* Products Grid */}
             {filteredProducts.length === 0 ? (
               <Paper
                 sx={{
-                  p: 8,
+                  p: 12,
                   textAlign: "center",
-                  borderRadius: 3,
+                  borderRadius: 4,
                   bgcolor: "white",
+                  border: "2px dashed #E5E7EB",
                 }}
               >
-                <LocalOffer sx={{ fontSize: 80, color: "#E0E0E0", mb: 3 }} />
-                <Typography variant="h5" color="text.secondary" gutterBottom>
-                  No Current Offers
+                <LocalOffer sx={{ fontSize: 80, color: "#D1D5DB", mb: 3 }} />
+                <Typography variant="h5" color="#6B7280" gutterBottom>
+                  No Deals Available
                 </Typography>
-                <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
-                  Check back soon for new deals in this category!
+                <Typography variant="body1" color="#6B7280" sx={{ mb: 4 }}>
+                  Check back soon for new offers in this category!
                 </Typography>
                 <Button
-                  variant="outlined"
+                  variant="contained"
                   onClick={() => setActiveCategory("medicines")}
                   sx={{
-                    borderColor: "#1A5276",
-                    color: "#1A5276",
+                    bgcolor: "#10B981",
+                    color: "white",
                     fontWeight: 600,
+                    px: 4,
+                    py: 1.5,
+                    borderRadius: 3,
                   }}
                 >
                   View All Categories
                 </Button>
               </Paper>
             ) : (
-              <Grid container spacing={3}>
+              <Grid container spacing={4}>
                 {filteredProducts.map((product) => {
                   const savings = calculateSavings(
                     product.original_price,
@@ -430,123 +461,75 @@ const Offers = () => {
                       <Card
                         sx={{
                           height: "100%",
-                          borderRadius: 3,
-                          overflow: "visible",
+                          borderRadius: 4,
+                          overflow: "hidden",
                           position: "relative",
-                          transition: "all 0.3s ease",
-                          border: "1px solid #E8E8E8",
+                          transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+                          bgcolor: "white",
+                          border: "2px solid #F3F4F6",
                           "&:hover": {
-                            transform: "translateY(-4px)",
-                            boxShadow: "0 16px 40px rgba(0,0,0,0.12)",
-                            borderColor: "#1A5276",
+                            transform: "translateY(-8px)",
+                            boxShadow: "0 24px 48px rgba(0,0,0,0.12)",
+                            borderColor: "#10B981",
                           },
                         }}
                       >
-                        {/* TOP RIBBON */}
+                        {/* SALE BADGE */}
                         <Box
                           sx={{
                             position: "absolute",
-                            top: -10,
+                            top: 16,
                             left: 16,
-                            right: 16,
                             zIndex: 2,
                           }}
                         >
                           <Box
                             sx={{
+                              bgcolor: "#EF4444",
+                              color: "white",
+                              px: 2,
+                              py: 0.5,
+                              borderRadius: 2,
+                              fontWeight: 900,
+                              fontSize: "0.875rem",
                               display: "flex",
-                              justifyContent: "space-between",
                               alignItems: "center",
+                              gap: 0.5,
                             }}
                           >
-                            <Chip
-                              label={`${product.discount_percent}% OFF`}
-                              sx={{
-                                bgcolor: "#FF6B35",
-                                color: "white",
-                                fontWeight: 800,
-                                fontSize: "0.875rem",
-                                height: 28,
-                              }}
-                              icon={<Percent sx={{ fontSize: 16 }} />}
-                            />
-                            <Chip
-                              label={`Save ₹${savings}`}
-                              sx={{
-                                bgcolor: "#27AE60",
-                                color: "white",
-                                fontWeight: 600,
-                                fontSize: "0.75rem",
-                              }}
-                            />
+                            <ArrowDropDown />
+                            {savingsPercentage}%
                           </Box>
                         </Box>
 
-                        {/* QUICK ACTION BUTTONS */}
-                        <Box
+                        {/* WISHLIST BUTTON */}
+                        <IconButton
+                          onClick={() => handleWishlist(product)}
                           sx={{
                             position: "absolute",
-                            top: 30,
-                            right: 12,
+                            top: 16,
+                            right: 16,
                             zIndex: 2,
-                            display: "flex",
-                            flexDirection: "column",
-                            gap: 1,
-                            opacity: 0,
-                            transition: "opacity 0.3s ease",
-                            ".MuiCard-root:hover &": {
-                              opacity: 1,
-                            },
+                            bgcolor: "white",
+                            boxShadow: 2,
+                            "&:hover": { bgcolor: "#FEF2F2" },
                           }}
                         >
-                          <IconButton
-                            size="small"
-                            onClick={() => handleWishlist(product)}
-                            sx={{
-                              bgcolor: "white",
-                              boxShadow: 1,
-                              "&:hover": { bgcolor: "#FFF0F0" },
-                            }}
-                          >
-                            <FavoriteBorder sx={{ fontSize: 18, color: "#E74C3C" }} />
-                          </IconButton>
-                          <IconButton
-                            size="small"
-                            onClick={() => handleCompare(product)}
-                            sx={{
-                              bgcolor: "white",
-                              boxShadow: 1,
-                              "&:hover": { bgcolor: "#F0F8FF" },
-                            }}
-                          >
-                            <CompareArrows sx={{ fontSize: 18, color: "#1A5276" }} />
-                          </IconButton>
-                          <IconButton
-                            size="small"
-                            onClick={() => handleQuickView(product)}
-                            sx={{
-                              bgcolor: "white",
-                              boxShadow: 1,
-                              "&:hover": { bgcolor: "#F0F0F0" },
-                            }}
-                          >
-                            <Visibility sx={{ fontSize: 18, color: "#666" }} />
-                          </IconButton>
-                        </Box>
+                          <FavoriteBorder sx={{ color: "#DC2626" }} />
+                        </IconButton>
 
                         {/* PRODUCT IMAGE */}
                         <Box
                           sx={{
                             p: 3,
-                            pt: 4,
-                            bgcolor: "#F8FAFC",
-                            borderBottom: "1px solid #E8E8E8",
+                            bgcolor: "#F9FAFB",
+                            borderBottom: "2px solid #F3F4F6",
                           }}
                         >
                           <Box
                             sx={{
                               width: "100%",
-                              height: 180,
+                              height: 200,
                               display: "flex",
                               alignItems: "center",
                               justifyContent: "center",
@@ -565,50 +548,39 @@ const Offers = () => {
                                 maxHeight: "100%",
                                 maxWidth: "100%",
                                 objectFit: "contain",
+                                transition: "transform 0.3s ease",
+                                "&:hover": {
+                                  transform: "scale(1.05)",
+                                },
                               }}
                             />
-                            {product.stock <= 10 && (
-                              <Box
-                                sx={{
-                                  position: "absolute",
-                                  bottom: 0,
-                                  left: 0,
-                                  right: 0,
-                                  bgcolor: "rgba(231, 76, 60, 0.9)",
-                                  color: "white",
-                                  textAlign: "center",
-                                  py: 0.5,
-                                }}
-                              >
-                                <Typography variant="caption" fontWeight={600}>
-                                  Almost Gone!
-                                </Typography>
-                              </Box>
-                            )}
                           </Box>
                         </Box>
 
                         {/* PRODUCT INFO */}
                         <CardContent sx={{ p: 3 }}>
                           {/* CATEGORY */}
-                          <Chip
-                            label={product.category}
-                            size="small"
+                          <Typography
+                            variant="caption"
                             sx={{
-                              mb: 2,
-                              bgcolor: "#E8F4FD",
-                              color: "#1A5276",
+                              color: "#6B7280",
                               fontWeight: 500,
+                              letterSpacing: "0.05em",
+                              display: "block",
+                              mb: 1,
                             }}
-                          />
+                          >
+                            {product.category.toUpperCase()}
+                          </Typography>
 
                           {/* TITLE */}
                           <Typography
-                            variant="body1"
+                            variant="h6"
                             fontWeight={600}
                             sx={{
                               mb: 2,
-                              minHeight: 44,
+                              minHeight: 48,
+                              color: "#1F2937",
                               overflow: "hidden",
                               textOverflow: "ellipsis",
                               display: "-webkit-box",
@@ -619,74 +591,100 @@ const Offers = () => {
                             {product.title}
                           </Typography>
 
+                          {/* RATING */}
+                          {product.rating && (
+                            <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 2 }}>
+                              <Rating
+                                value={product.rating}
+                                precision={0.5}
+                                size="small"
+                                readOnly
+                                emptyIcon={<StarBorder sx={{ color: "#D1D5DB" }} />}
+                                icon={<Star sx={{ color: "#FBBF24" }} />}
+                              />
+                              <Typography variant="caption" color="#6B7280">
+                                ({product.rating})
+                              </Typography>
+                            </Box>
+                          )}
+
                           {/* PRICING */}
                           <Box sx={{ mb: 3 }}>
-                            <Box sx={{ display: "flex", alignItems: "baseline", gap: 1 }}>
+                            <Box sx={{ display: "flex", alignItems: "baseline", gap: 2, mb: 1 }}>
                               <Typography
-                                variant="h5"
+                                variant="h4"
                                 fontWeight={800}
-                                color="#1A5276"
+                                color="#059669"
                               >
                                 ₹{product.offer_price}
                               </Typography>
                               <Typography
-                                variant="body2"
-                                color="text.secondary"
+                                variant="body1"
+                                color="#9CA3AF"
                                 sx={{ textDecoration: "line-through" }}
                               >
                                 ₹{product.original_price}
                               </Typography>
                             </Box>
-                            <Typography variant="caption" color="text.secondary">
-                              You save {savingsPercentage}%
+                            <Typography variant="body2" color="#059669" fontWeight={600}>
+                              Save ₹{savings} ({savingsPercentage}% OFF)
                             </Typography>
                           </Box>
 
-                          {/* STOCK AND RATING */}
+                          <Divider sx={{ my: 2 }} />
+
+                          {/* STOCK AND ACTIONS */}
                           <Box
                             sx={{
                               display: "flex",
                               justifyContent: "space-between",
                               alignItems: "center",
-                              mb: 3,
                             }}
                           >
                             <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                              <Inventory sx={{ fontSize: 16, color: stockStatus.color }} />
-                              <Typography variant="body2" sx={{ color: stockStatus.color }}>
+                              <Box
+                                sx={{
+                                  width: 8,
+                                  height: 8,
+                                  borderRadius: "50%",
+                                  bgcolor: stockStatus.color,
+                                }}
+                              />
+                              <Typography variant="body2" color={stockStatus.color}>
                                 {stockStatus.label}
                               </Typography>
                             </Box>
-                            {product.rating && (
-                              <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
-                                <Star sx={{ fontSize: 16, color: "#FFD700" }} />
-                                <Typography variant="body2" fontWeight={600}>
-                                  {product.rating}
-                                </Typography>
-                              </Box>
-                            )}
+                            
+                            <Box sx={{ display: "flex", gap: 1 }}>
+                              <IconButton
+                                size="small"
+                                onClick={() => handleQuickView(product)}
+                                sx={{
+                                  border: "1px solid #E5E7EB",
+                                  color: "#6B7280",
+                                }}
+                              >
+                                <Visibility />
+                              </IconButton>
+                              <Button
+                                variant="contained"
+                                startIcon={<ShoppingCart />}
+                                onClick={() => handleAddToCart(product)}
+                                sx={{
+                                  bgcolor: "#10B981",
+                                  color: "white",
+                                  fontWeight: 700,
+                                  borderRadius: 3,
+                                  px: 2,
+                                  "&:hover": {
+                                    bgcolor: "#059669",
+                                  },
+                                }}
+                              >
+                                Add
+                              </Button>
+                            </Box>
                           </Box>
-
-                          {/* ACTION BUTTON */}
-                          <Button
-                            fullWidth
-                            variant="contained"
-                            startIcon={<ShoppingCart />}
-                            onClick={() => handleAddToCart(product)}
-                            sx={{
-                              py: 1.5,
-                              borderRadius: 2,
-                              bgcolor: "#1A5276",
-                              fontWeight: 700,
-                              textTransform: "none",
-                              fontSize: "1rem",
-                              "&:hover": {
-                                bgcolor: "#154360",
-                              },
-                            }}
-                          >
-                            Add to Cart
-                          </Button>
                         </CardContent>
                       </Card>
                     </Grid>
@@ -695,46 +693,89 @@ const Offers = () => {
               </Grid>
             )}
 
-            {/* BOTTOM BANNER */}
+            {/* BOTTOM CTA */}
             {filteredProducts.length > 0 && (
               <Paper
                 sx={{
-                  mt: 6,
-                  p: 4,
-                  borderRadius: 3,
-                  background: "linear-gradient(135deg, #1A5276 0%, #2E86C1 100%)",
+                  mt: 8,
+                  p: 5,
+                  borderRadius: 4,
+                  background: "linear-gradient(135deg, #1F2937 0%, #374151 100%)",
                   color: "white",
+                  position: "relative",
+                  overflow: "hidden",
                 }}
               >
-                <Box sx={{ display: "flex", alignItems: "center", gap: 3 }}>
-                  <NewReleases sx={{ fontSize: 48 }} />
-                  <Box sx={{ flex: 1 }}>
-                    <Typography variant="h6" fontWeight={700} gutterBottom>
-                      Limited Time Offer Ending Soon!
+                <Grid container alignItems="center" spacing={4}>
+                  <Grid item xs={12} md={8}>
+                    <Typography variant="h4" fontWeight={800} gutterBottom>
+                      Don't Miss Out!
                     </Typography>
-                    <Typography variant="body2" sx={{ opacity: 0.9 }}>
-                      These exclusive deals are available for a limited time only. 
-                      Prices will go back to normal in 48 hours. Don't miss out!
+                    <Typography variant="body1" sx={{ color: "#D1D5DB", mb: 3 }}>
+                      These exclusive healthcare deals are available for a limited time only. 
+                      Stock up on quality products while prices are at their lowest.
                     </Typography>
-                  </Box>
-                  <Button
-                    variant="contained"
-                    endIcon={<ArrowForward />}
-                    sx={{
-                      bgcolor: "white",
-                      color: "#1A5276",
-                      fontWeight: 700,
-                      px: 4,
-                      py: 1.5,
-                      borderRadius: 2,
-                      "&:hover": {
-                        bgcolor: "#F8F9FA",
-                      },
-                    }}
-                  >
-                    Shop All Deals
-                  </Button>
-                </Box>
+                    <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap" }}>
+                      <Button
+                        variant="contained"
+                        endIcon={<ArrowForward />}
+                        sx={{
+                          bgcolor: "#10B981",
+                          color: "white",
+                          fontWeight: 700,
+                          px: 4,
+                          py: 1.5,
+                          borderRadius: 3,
+                          "&:hover": {
+                            bgcolor: "#059669",
+                          },
+                        }}
+                      >
+                        View All Offers
+                      </Button>
+                      <Button
+                        variant="outlined"
+                        startIcon={<CardGiftcard />}
+                        sx={{
+                          borderColor: "white",
+                          color: "white",
+                          fontWeight: 600,
+                          px: 4,
+                          py: 1.5,
+                          borderRadius: 3,
+                          "&:hover": {
+                            borderColor: "white",
+                            bgcolor: "rgba(255,255,255,0.1)",
+                          },
+                        }}
+                      >
+                        Gift Cards
+                      </Button>
+                    </Box>
+                  </Grid>
+                  <Grid item xs={12} md={4}>
+                    <Box
+                      sx={{
+                        textAlign: "center",
+                        p: 3,
+                        bgcolor: "rgba(255,255,255,0.1)",
+                        borderRadius: 3,
+                        backdropFilter: "blur(10px)",
+                      }}
+                    >
+                      <Timer sx={{ fontSize: 48, mb: 2, color: "#10B981" }} />
+                      <Typography variant="h6" fontWeight={700}>
+                        Limited Time
+                      </Typography>
+                      <Typography variant="body2" sx={{ color: "#D1D5DB" }}>
+                        Offer ends in
+                      </Typography>
+                      <Typography variant="h5" fontWeight={900} sx={{ color: "#10B981", mt: 1 }}>
+                        48:00:00
+                      </Typography>
+                    </Box>
+                  </Grid>
+                </Grid>
               </Paper>
             )}
           </Box>
@@ -752,7 +793,11 @@ const Offers = () => {
           severity="success"
           variant="filled"
           onClose={() => setSnackbar({ ...snackbar, open: false })}
-          sx={{ bgcolor: "#1A5276" }}
+          sx={{
+            bgcolor: "#10B981",
+            borderRadius: 2,
+            fontWeight: 600,
+          }}
         >
           <CheckCircle sx={{ mr: 1 }} />
           {snackbar.message}
