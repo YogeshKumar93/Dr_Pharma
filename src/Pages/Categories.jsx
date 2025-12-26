@@ -26,6 +26,7 @@ import {
   Vaccines,
   ArrowForward,
   Close,
+  MedicalInformationOutlined,
 } from "@mui/icons-material";
 import { apiCall } from "../api/api";
 import { useCart } from "../Contexts/CartContext";
@@ -36,6 +37,12 @@ const CATEGORIES = [
   { label: "Syrups", value: "syrups", icon: <Science /> },
   { label: "Kits", value: "kits", icon: <MedicalInformation /> },
   { label: "Supplements", value: "supplements", icon: <Vaccines /> },
+  {
+  label: "Prescribed Medicines",
+  value: "prescribed",
+  icon: <MedicalInformationOutlined />,
+}
+
 ];
 
 const Categories = () => {
@@ -49,35 +56,49 @@ const Categories = () => {
   const [addedItems, setAddedItems] = useState({});
   const [openSnack, setOpenSnack] = useState(false);
 
-  useEffect(() => {
-    fetchAllProducts();
-  }, []);
+ useEffect(() => {
+  fetchAllProducts(activeCategory);
+}, []);
 
-  const fetchAllProducts = async () => {
-    try {
-      setLoading(true);
-      const { response, error } = await apiCall("GET", "products");
 
-      if (error) {
-        setAllProducts([]);
-        return;
-      }
+ const fetchAllProducts = async (categoryValue) => {
+  try {
+    setLoading(true);
 
-      const products =
-        response?.data || response?.products || response || [];
+    let endpoint = "products";
 
-      setAllProducts(Array.isArray(products) ? products : []);
-    } catch (err) {
-      console.error(err);
-      setAllProducts([]);
-    } finally {
-      setLoading(false);
+    // 🔥 prescribed tab
+    if (categoryValue === "prescribed") {
+      endpoint = "products?prescribed=1";
     }
-  };
 
-  const filteredProducts = allProducts.filter(
-    (item) => item.category === activeCategory
-  );
+    const { response, error } = await apiCall("GET", endpoint);
+
+    if (error) {
+      setAllProducts([]);
+      return;
+    }
+
+    const products =
+      response?.data || response?.products || response || [];
+
+    setAllProducts(Array.isArray(products) ? products : []);
+  } catch (err) {
+    console.error(err);
+    setAllProducts([]);
+  } finally {
+    setLoading(false);
+  }
+};
+
+
+ const filteredProducts =
+  activeCategory === "prescribed"
+    ? allProducts // already filtered by backend
+    : allProducts.filter(
+        (item) => item.category === activeCategory
+      );
+
 
   const handleAddToCart = (product) => {
     const id = product._id || product.id;
@@ -142,7 +163,11 @@ const Categories = () => {
           <ListItemButton
             key={cat.value}
             selected={activeCategory === cat.value}
-            onClick={() => setActiveCategory(cat.value)}
+           onClick={() => {
+  setActiveCategory(cat.value);
+  fetchAllProducts(cat.value);
+}}
+
             sx={{
               flexDirection: "column",
               minWidth: 120,

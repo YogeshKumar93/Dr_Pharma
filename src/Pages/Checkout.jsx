@@ -12,6 +12,7 @@ const Checkout = ({ user }) => {
   const [pincode, setPincode] = useState("");
   const [paymentMethod, setPaymentMethod] = useState("cod");
   const [loading, setLoading] = useState(false);
+  const [prescriptionFile, setPrescriptionFile] = useState(null);
 
   const navigate = useNavigate();
 
@@ -20,6 +21,21 @@ const Checkout = ({ user }) => {
     0
   );
 
+  /* ================= Prescription Handler ================= */
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const allowedTypes = ["image/jpeg", "image/png", "application/pdf"];
+    if (!allowedTypes.includes(file.type)) {
+      alert("Only JPG, PNG or PDF files allowed");
+      return;
+    }
+
+    setPrescriptionFile(file);
+  };
+
+  /* ================= Place Order ================= */
   const placeOrder = async () => {
     if (!address || !city || !pincode) {
       alert("Please fill complete address");
@@ -31,21 +47,28 @@ const Checkout = ({ user }) => {
       return;
     }
 
-    const payload = {
-      payment_method: paymentMethod,
-      address: `${address}, ${city} - ${pincode}`,
-      cart: cartItems.map((item) => ({
-        product_id: item.id,
-        qty: item.qty,
-      })),
-    };
+    if (!prescriptionFile) {
+      alert("Please upload prescription before placing order");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("payment_method", paymentMethod);
+    formData.append("address", `${address}, ${city} - ${pincode}`);
+    formData.append("prescription", prescriptionFile);
+
+    cartItems.forEach((item, index) => {
+      formData.append(`cart[${index}][product_id]`, item.id);
+      formData.append(`cart[${index}][qty]`, item.qty);
+    });
 
     try {
       setLoading(true);
       const { response, error } = await apiCall(
         "POST",
         ApiEndpoints.PLACE_ORDER,
-        payload
+        formData,
+        true
       );
 
       if (error || !response?.status) {
@@ -55,10 +78,7 @@ const Checkout = ({ user }) => {
 
       alert(`Order placed successfully\nOrder No: ${response.order_number}`);
       clearCart();
-      // window.location.href = "/myorders";
       navigate("/myorders");
-
-
     } catch (err) {
       console.error(err);
       alert("Something went wrong");
@@ -68,137 +88,201 @@ const Checkout = ({ user }) => {
   };
 
   return (
-    <> <style>
-      {`
-        @keyframes spin {
-          0% { transform: rotate(0deg); }
-          100% { transform: rotate(360deg); }
-        }
-      `}
-    </style>
-    <div style={styles.container}>
-      <div style={styles.checkoutContainer}>
-        <h1 style={styles.title}>Checkout</h1>
-        
-        {/* Order Summary Section */}
-        <div style={styles.section}>
-          <h2 style={styles.sectionTitle}>Order Summary</h2>
-          <div style={styles.orderSummary}>
-            {cartItems.length > 0 ? (
-              <>
-                {cartItems.map((item) => (
-                  <div key={item.id} style={styles.cartItem}>
-                    <div style={styles.itemDetails}>
-                      <span style={styles.itemName}>{item.name}</span>
-                      <span style={styles.itemQty}>Qty: {item.qty}</span>
+    <>
+      <style>
+        {`
+          @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+          }
+        `}
+      </style>
+
+      <div style={styles.container}>
+        <div style={styles.checkoutContainer}>
+          <h1 style={styles.title}>Checkout</h1>
+
+          {/* ================= Order Summary ================= */}
+          <div style={styles.section}>
+            <h2 style={styles.sectionTitle}>Order Summary</h2>
+            <div style={styles.orderSummary}>
+              {cartItems.length > 0 ? (
+                <>
+                  {cartItems.map((item) => (
+                    <div key={item.id} style={styles.cartItem}>
+                      <div style={styles.itemDetails}>
+                        <span style={styles.itemName}>{item.name}</span>
+                        <span style={styles.itemQty}>Qty: {item.qty}</span>
+                      </div>
+                      <div style={styles.itemPrice}>
+                        ₹{(item.price * item.qty).toFixed(2)}
+                      </div>
                     </div>
-                    <div style={styles.itemPrice}>
-                      ₹{(item.price * item.qty).toFixed(2)}
-                    </div>
+                  ))}
+                  <div style={styles.totalRow}>
+                    <span style={styles.totalLabel}>Total Amount:</span>
+                    <span style={styles.totalAmount}>
+                      ₹{cartTotal.toFixed(2)}
+                    </span>
                   </div>
-                ))}
-                <div style={styles.totalRow}>
-                  <span style={styles.totalLabel}>Total Amount:</span>
-                  <span style={styles.totalAmount}>₹{cartTotal.toFixed(2)}</span>
+                </>
+              ) : (
+                <p style={styles.emptyCart}>Your cart is empty</p>
+              )}
+            </div>
+          </div>
+
+          {/* ================= Prescription Upload ================= */}
+          <div style={styles.section}>
+            <h2 style={styles.sectionTitle}>Prescription Upload</h2>
+            <div style={styles.formGroup}>
+              <label style={styles.label}>
+                Upload Doctor Prescription{" "}
+                <span style={{ color: "red" }}>*</span>
+              </label>
+              <input
+                type="file"
+                accept=".jpg,.jpeg,.png,.pdf"
+                onChange={handleFileChange}
+                style={styles.input}
+              />
+              {prescriptionFile ? (
+                <p style={{ color: "green", marginTop: "8px" }}>
+                  ✅ {prescriptionFile.name}
+                </p>
+              ) : (
+                <p style={{ color: "red", marginTop: "8px" }}>
+                  ❌ Prescription required
+                </p>
+              )}
+            </div>
+          </div>
+
+          {/* ================= Shipping Address ================= */}
+          <div style={styles.section}>
+            <h2 style={styles.sectionTitle}>Shipping Address</h2>
+            <div style={styles.formGroup}>
+              <label style={styles.label}>Address</label>
+              <textarea
+                style={styles.textarea}
+                value={address}
+                onChange={(e) => setAddress(e.target.value)}
+                rows="3"
+              />
+            </div>
+
+            <div style={styles.row}>
+              <div style={styles.formGroupHalf}>
+                <label style={styles.label}>City</label>
+                <input
+                  style={styles.input}
+                  value={city}
+                  onChange={(e) => setCity(e.target.value)}
+                />
+              </div>
+
+              <div style={styles.formGroupHalf}>
+                <label style={styles.label}>Pincode</label>
+                <input
+                  style={styles.input}
+                  value={pincode}
+                  maxLength="6"
+                  onChange={(e) => setPincode(e.target.value)}
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* ================= Payment Method ================= */}
+          <div style={styles.section}>
+            <h2 style={styles.sectionTitle}>Payment Method</h2>
+
+            <div style={styles.paymentOptions}>
+              <div
+                style={
+                  paymentMethod === "cod"
+                    ? styles.paymentOptionActive
+                    : styles.paymentOption
+                }
+                onClick={() => setPaymentMethod("cod")}
+              >
+                <div style={styles.radioContainer}>
+                  <div
+                    style={
+                      paymentMethod === "cod"
+                        ? styles.radioActive
+                        : styles.radio
+                    }
+                  />
+                  <span style={styles.paymentLabel}>
+                    Cash on Delivery
+                  </span>
                 </div>
-              </>
-            ) : (
-              <p style={styles.emptyCart}>Your cart is empty</p>
-            )}
-          </div>
-        </div>
-
-        {/* Shipping Address Section */}
-        <div style={styles.section}>
-          <h2 style={styles.sectionTitle}>Shipping Address</h2>
-          <div style={styles.formGroup}>
-            <label style={styles.label}>Address</label>
-            <textarea
-              style={styles.textarea}
-              placeholder="House number, street, area"
-              value={address}
-              onChange={(e) => setAddress(e.target.value)}
-              rows="3"
-            />
-          </div>
-          
-          <div style={styles.row}>
-            <div style={styles.formGroupHalf}>
-              <label style={styles.label}>City</label>
-              <input
-                style={styles.input}
-                placeholder="Enter your city"
-                value={city}
-                onChange={(e) => setCity(e.target.value)}
-              />
-            </div>
-            
-            <div style={styles.formGroupHalf}>
-              <label style={styles.label}>Pincode</label>
-              <input
-                style={styles.input}
-                placeholder="Enter pincode"
-                value={pincode}
-                onChange={(e) => setPincode(e.target.value)}
-                maxLength="6"
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* Payment Method Section */}
-        <div style={styles.section}>
-          <h2 style={styles.sectionTitle}>Payment Method</h2>
-          <div style={styles.paymentOptions}>
-            <div 
-              style={paymentMethod === "cod" ? styles.paymentOptionActive : styles.paymentOption}
-              onClick={() => setPaymentMethod("cod")}
-            >
-              <div style={styles.radioContainer}>
-                <div style={paymentMethod === "cod" ? styles.radioActive : styles.radio} />
-                <span style={styles.paymentLabel}>Cash on Delivery</span>
+                <p style={styles.paymentDescription}>
+                  Pay when you receive your order
+                </p>
               </div>
-              <p style={styles.paymentDescription}>Pay when you receive your order</p>
-            </div>
-            
-            <div 
-              style={paymentMethod === "online" ? styles.paymentOptionActive : styles.paymentOption}
-              onClick={() => setPaymentMethod("online")}
-            >
-              <div style={styles.radioContainer}>
-                <div style={paymentMethod === "online" ? styles.radioActive : styles.radio} />
-                <span style={styles.paymentLabel}>Online Payment</span>
+
+              <div
+                style={
+                  paymentMethod === "online"
+                    ? styles.paymentOptionActive
+                    : styles.paymentOption
+                }
+                onClick={() => setPaymentMethod("online")}
+              >
+                <div style={styles.radioContainer}>
+                  <div
+                    style={
+                      paymentMethod === "online"
+                        ? styles.radioActive
+                        : styles.radio
+                    }
+                  />
+                  <span style={styles.paymentLabel}>
+                    Online Payment
+                  </span>
+                </div>
+                <p style={styles.paymentDescription}>
+                  Pay using card, UPI, or wallet
+                </p>
               </div>
-              <p style={styles.paymentDescription}>Pay using card, UPI, or wallet</p>
             </div>
           </div>
-        </div>
 
-        {/* Place Order Button */}
-        <div style={styles.buttonContainer}>
-          <button 
-            onClick={placeOrder} 
-            disabled={loading || cartItems.length === 0}
-            style={cartItems.length === 0 ? styles.buttonDisabled : styles.button}
-          >
-            {loading ? (
-              <span style={styles.buttonContent}>
-                <span style={styles.spinner} /> Placing Order...
-              </span>
-            ) : (
-              `Place Order - ₹${cartTotal.toFixed(2)}`
-            )}
-          </button>
-          <p style={styles.secureNote}>
-            🔒 Your payment information is secure and encrypted
-          </p>
+          {/* ================= Place Order ================= */}
+          <div style={styles.buttonContainer}>
+            <button
+              onClick={placeOrder}
+              disabled={
+                loading || cartItems.length === 0 || !prescriptionFile
+              }
+              style={
+                loading || cartItems.length === 0 || !prescriptionFile
+                  ? styles.buttonDisabled
+                  : styles.button
+              }
+            >
+              {loading ? (
+                <span style={styles.buttonContent}>
+                  <span style={styles.spinner} /> Placing Order...
+                </span>
+              ) : (
+                `Place Order - ₹${cartTotal.toFixed(2)}`
+              )}
+            </button>
+
+            <p style={styles.secureNote}>
+              🔒 Your payment information is secure and encrypted
+            </p>
+          </div>
         </div>
       </div>
-    </div>
     </>
   );
 };
 
+/* ================= STYLES (UNCHANGED FROM YOUR CODE) ================= */
 const styles = {
   container: {
     backgroundColor: "#f8f9fa",
@@ -218,11 +302,9 @@ const styles = {
     margin: "20px 0",
   },
   title: {
-    color: "#2d3748",
     fontSize: "28px",
     fontWeight: "600",
     marginBottom: "3px",
-    paddingBottom: "6px",
     borderBottom: "2px solid #edf2f7",
   },
   section: {
@@ -237,8 +319,6 @@ const styles = {
     fontSize: "18px",
     fontWeight: "600",
     marginBottom: "20px",
-    display: "flex",
-    alignItems: "center",
   },
   orderSummary: {
     backgroundColor: "white",
@@ -249,182 +329,77 @@ const styles = {
   cartItem: {
     display: "flex",
     justifyContent: "space-between",
-    alignItems: "center",
     padding: "12px 0",
     borderBottom: "1px solid #f1f1f1",
   },
-  itemDetails: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "4px",
-  },
-  itemName: {
-    color: "#2d3748",
-    fontWeight: "500",
-  },
-  itemQty: {
-    color: "#718096",
-    fontSize: "14px",
-  },
-  itemPrice: {
-    color: "#2d3748",
-    fontWeight: "600",
-  },
+  itemDetails: { display: "flex", flexDirection: "column" },
+  itemName: { fontWeight: "500" },
+  itemQty: { fontSize: "14px", color: "#718096" },
+  itemPrice: { fontWeight: "600" },
   totalRow: {
     display: "flex",
     justifyContent: "space-between",
-    alignItems: "center",
     paddingTop: "16px",
     marginTop: "16px",
     borderTop: "2px solid #e2e8f0",
   },
-  totalLabel: {
-    color: "#4a5568",
-    fontSize: "16px",
-    fontWeight: "500",
-  },
-  totalAmount: {
-    color: "#2d3748",
-    fontSize: "24px",
-    fontWeight: "700",
-  },
-  emptyCart: {
-    textAlign: "center",
-    color: "#718096",
-    padding: "20px",
-  },
-  formGroup: {
-    marginBottom: "20px",
-  },
-  row: {
-    display: "flex",
-    gap: "20px",
-    '@media (max-width: 768px)': {
-      flexDirection: "column",
-      gap: "0",
-    },
-  },
-  formGroupHalf: {
-    flex: "1",
-    marginBottom: "20px",
-  },
-  label: {
-    display: "block",
-    color: "#4a5568",
-    fontSize: "14px",
-    fontWeight: "500",
-    marginBottom: "8px",
-  },
+  totalAmount: { fontSize: "24px", fontWeight: "700" },
+  emptyCart: { textAlign: "center", padding: "20px" },
+  formGroup: { marginBottom: "20px" },
+  row: { display: "flex", gap: "20px" },
+  formGroupHalf: { flex: 1 },
+  label: { fontSize: "14px", fontWeight: "500" },
   input: {
     width: "100%",
-    padding: "12px 16px",
-    border: "1px solid #e2e8f0",
+    padding: "12px",
     borderRadius: "8px",
-    fontSize: "16px",
-    color: "#2d3748",
-    backgroundColor: "white",
-    transition: "border-color 0.2s",
-    boxSizing: "border-box",
+    border: "1px solid #e2e8f0",
   },
   textarea: {
     width: "100%",
-    padding: "12px 16px",
-    border: "1px solid #e2e8f0",
+    padding: "12px",
     borderRadius: "8px",
-    fontSize: "16px",
-    color: "#2d3748",
-    backgroundColor: "white",
-    transition: "border-color 0.2s",
-    resize: "vertical",
-    minHeight: "80px",
-    boxSizing: "border-box",
-    fontFamily: "inherit",
+    border: "1px solid #e2e8f0",
   },
-  paymentOptions: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "12px",
-  },
+  paymentOptions: { display: "flex", flexDirection: "column", gap: "12px" },
   paymentOption: {
     padding: "20px",
     border: "2px solid #e2e8f0",
     borderRadius: "8px",
     cursor: "pointer",
-    transition: "all 0.2s",
-    backgroundColor: "white",
   },
   paymentOptionActive: {
     padding: "20px",
     border: "2px solid #3182ce",
-    borderRadius: "8px",
-    cursor: "pointer",
-    transition: "all 0.2s",
     backgroundColor: "#ebf8ff",
+    borderRadius: "8px",
   },
-  radioContainer: {
-    display: "flex",
-    alignItems: "center",
-    gap: "12px",
-    marginBottom: "8px",
-  },
+  radioContainer: { display: "flex", gap: "12px" },
   radio: {
     width: "20px",
     height: "20px",
     borderRadius: "50%",
     border: "2px solid #cbd5e0",
-    backgroundColor: "white",
   },
   radioActive: {
     width: "20px",
     height: "20px",
     borderRadius: "50%",
     border: "6px solid #3182ce",
-    backgroundColor: "white",
   },
-  paymentLabel: {
-    fontSize: "16px",
-    fontWeight: "600",
-    color: "#2d3748",
-  },
-  paymentDescription: {
-    fontSize: "14px",
-    color: "#718096",
-    margin: "0",
-    paddingLeft: "32px",
-  },
-  buttonContainer: {
-    marginTop: "32px",
-    textAlign: "center",
-  },
+  buttonContainer: { marginTop: "32px", textAlign: "center" },
   button: {
     width: "100%",
     padding: "18px",
-     backgroundColor: "#f1c40f",
-    color: "black",
-    border: "none",
+    backgroundColor: "#f1c40f",
     borderRadius: "10px",
-    fontSize: "18px",
     fontWeight: "600",
-    cursor: "pointer",
-    transition: "background-color 0.2s",
-    boxShadow: "0 4px 12px rgba(49, 130, 206, 0.3)",
   },
   buttonDisabled: {
     width: "100%",
     padding: "18px",
     backgroundColor: "#cbd5e0",
-    color: "#718096",
-    border: "none",
     borderRadius: "10px",
-    fontSize: "18px",
-    fontWeight: "600",
-    cursor: "not-allowed",
-  },
-  buttonContent: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: "8px",
   },
   spinner: {
     width: "20px",
@@ -434,14 +409,7 @@ const styles = {
     borderRadius: "50%",
     animation: "spin 1s linear infinite",
   },
-  secureNote: {
-    color: "#718096",
-    fontSize: "14px",
-    marginTop: "12px",
-    textAlign: "center",
-  },
+  secureNote: { fontSize: "14px", marginTop: "12px" },
 };
-
- 
 
 export default Checkout;

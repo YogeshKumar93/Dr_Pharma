@@ -78,9 +78,9 @@ const Sidebar = ({ onItemClick, collapsed }) => {
       tooltip: 'Product Inventory'
     },
     {
-      text: 'Prescriptions',
+      text: 'AllPrescripedMedicine',
       icon: <LocalPharmacyIcon />,
-      path: '/prescriptions',
+      path: '/allprescribedmedicine',
       tooltip: 'Prescription Management'
     },
     {
@@ -235,7 +235,7 @@ const SideNavAndHeader = () => {
     '/medicines': 'Medicines',
     '/payments': 'Payment Management',
     '/specialoffers': 'Special Offers',
-    '/prescriptions': 'Prescription Management',
+    '/allprescribedmedicine': 'Prescription Management',
     '/settings': 'System Settings',
   };
 

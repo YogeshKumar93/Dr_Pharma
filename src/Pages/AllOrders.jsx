@@ -22,6 +22,9 @@ const AllOrders = () => {
   const [addOpen, setAddOpen] = useState(false);
 const [editOpen, setEditOpen] = useState(false);
 const [selectedOrder, setSelectedOrder] = useState(null);
+const [prescriptionOpen, setPrescriptionOpen] = useState(false);
+const [orderItems, setOrderItems] = useState([]);
+
 
  // Pagination
   const [page, setPage] = useState(0);
@@ -47,6 +50,17 @@ const [selectedOrder, setSelectedOrder] = useState(null);
       order_status: status,
     }).then(fetchOrders);
   };
+
+  const handleViewPrescription = (orderId) => {
+  apiCall("POST", "admin/order/detail", {
+    order_id: orderId,
+  }).then(({ response }) => {
+    console.log("ORDER ITEMS 👉", response.items);
+    setOrderItems(response.items || []);
+    setPrescriptionOpen(true);
+  });
+};
+
 
    /* -------------------- PAGINATED DATA -------------------- */
     const paginatedOrders = useMemo(() => {
@@ -125,6 +139,28 @@ const [selectedOrder, setSelectedOrder] = useState(null);
       field: "created_at",
       render: (v) => new Date(v).toLocaleDateString(),
     },
+   {
+  headerName: "Prescription",
+  render: (_, row) => {
+    const hasPrescription = row.items?.some(
+      (i) => i.prescription_file
+    );
+
+    return hasPrescription ? (
+      <Button
+        size="small"
+        variant="outlined"
+        onClick={() => handleViewPrescription(row.id)}
+      >
+        View
+      </Button>
+    ) : (
+      <Chip label="N/A" size="small" />
+    );
+  },
+}
+
+
   ];
 
   /* -------------------- ACTION COLUMN -------------------- */
@@ -190,6 +226,56 @@ const [selectedOrder, setSelectedOrder] = useState(null);
   order={selectedOrder}
   onFetchRef={fetchOrders}
 />
+
+{prescriptionOpen && (
+  <Box
+    sx={{
+      position: "fixed",
+      inset: 0,
+      background: "rgba(0,0,0,0.4)",
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      zIndex: 9999,
+    }}
+    onClick={() => setPrescriptionOpen(false)}
+  >
+    <Box
+      sx={{ background: "#fff", p: 2, borderRadius: 2, maxWidth: 500 }}
+      onClick={(e) => e.stopPropagation()}
+    >
+      <h3>Prescription Images</h3>
+
+      {orderItems.map(
+        (item) =>
+          item.prescription_file && (
+            <img
+              key={item.id}
+              src={`http://localhost:8000/${item.prescription_file}`}
+              alt="Prescription"
+              style={{
+                width: 100,
+                height: 100,
+                objectFit: "cover",
+                marginRight: 8,
+                marginBottom: 8,
+                border: "1px solid #ccc",
+              }}
+            />
+          )
+      )}
+
+      {orderItems.every((i) => !i.prescription_file) && (
+        <p>No prescription uploaded</p>
+      )}
+
+      <Box sx={{ textAlign: "right" }}>
+        <Button onClick={() => setPrescriptionOpen(false)}>Close</Button>
+      </Box>
+    </Box>
+  </Box>
+)}
+
 
     </Box>
   );

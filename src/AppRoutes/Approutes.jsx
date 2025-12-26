@@ -15,7 +15,7 @@ import Users from "../Pages/Users";
 import Medicines from "../Pages/Medicines";
 import Payments from "../Pages/Payments";
 import Settings from "../Pages/Settings";
-import Prescriptions from "../Pages/Prescriptions";
+
 
 import LandingPage from "../Components/Landings/Landingpage";
 import { CartProvider } from "../Contexts/CartContext";
@@ -35,6 +35,7 @@ import VerifyOtp from "../Pages/VerifyOtp";
 import ForgotPassword from "../Pages/ForgotPassword";
 import UserProfile from "../Pages/UserProfile";
 import SpecialOffers from "../Pages/SpecialOffers";
+import AllPrescripedMedicine from "../Pages/AllPrescripedMedicine";
 
 
 const AppRoutes = () => {
@@ -87,7 +88,7 @@ const AppRoutes = () => {
               <Route path="/medicines" element={<Medicines />} />
               <Route path="/payments" element={<Payments />} />
               <Route path="/settings" element={<Settings />} />
-              <Route path="/prescriptions" element={<Prescriptions />} />
+              <Route path="/allprescribedmedicine" element={<AllPrescripedMedicine />} />
               <Route path="/myorders" element={<MyOrders />} />
               <Route path="/allorders" element={<AllOrders />} />
               <Route path="/specialoffers" element={<SpecialOffers />} />
