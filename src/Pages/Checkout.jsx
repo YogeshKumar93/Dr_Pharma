@@ -69,6 +69,7 @@ import {
   Payment as PaymentIcon,
   ArrowDropDown
 } from "@mui/icons-material";
+import OnlinePayment from "./OnlinePayment";
 
 const Checkout = ({ user }) => {
   const { cartItems, clearCart } = useCart();
@@ -755,355 +756,36 @@ const Checkout = ({ user }) => {
       </Grid>
 
       {/* Amazon-style Payment Dialog */}
-      <Dialog
-        open={openPaymentDialog}
-        onClose={handlePaymentDialogClose}
-        maxWidth="md"
-        fullWidth
-        PaperProps={{
-          sx: {
-            borderRadius: 2,
-            maxHeight: "90vh"
-          }
-        }}
-      >
-        <DialogTitle sx={{ 
-          bgcolor: "#f8f9fa", 
-          color: "#1A5276",
-          borderBottom: "1px solid #e0e0e0",
-          py: 2
-        }}>
-          <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-            <Typography variant="h6" fontWeight={600}>
-              Select Payment Method
-            </Typography>
-            <IconButton 
-              onClick={handlePaymentDialogClose}
-              size="small"
-            >
-              <Close />
-            </IconButton>
-          </Box>
-        </DialogTitle>
-        
-        <DialogContent sx={{ p: 0 }}>
-          <Grid container>
-            {/* Left Column - Payment Options */}
-            <Grid item xs={12} md={8} sx={{ p: 3 }}>
-              {/* Promo Code Section */}
-              <Paper sx={{ p: 2, mb: 3, bgcolor: "#f8f9fa", borderRadius: 2 }}>
-                <Typography variant="subtitle1" fontWeight={600} gutterBottom>
-                  Enter Code
-                </Typography>
-                <Box sx={{ display: "flex", gap: 1 }}>
-                  <TextField
-                    fullWidth
-                    size="small"
-                    placeholder="Enter promo code"
-                    value={promoCode}
-                    onChange={(e) => setPromoCode(e.target.value)}
-                    sx={{ bgcolor: "white" }}
-                  />
-                  <Button 
-                    variant="contained"
-                    sx={{ 
-                      bgcolor: "#1A5276", 
-                      color: "white",
-                      minWidth: 100
-                    }}
-                  >
-                    Apply
-                  </Button>
-                </Box>
-              </Paper>
+      <OnlinePayment
+  open={openPaymentDialog}
+  onClose={handlePaymentDialogClose}
+  cartItems={cartItems}
+  cartTotal={cartTotal}
+  paymentOptions={paymentOptions}
 
-              {/* Payment Methods List */}
-              <Typography variant="subtitle1" fontWeight={600} gutterBottom sx={{ mb: 2 }}>
-                Another payment method
-              </Typography>
+  onlinePaymentMethod={onlinePaymentMethod}
+  setOnlinePaymentMethod={setOnlinePaymentMethod}
+  setPaymentMethod={setPaymentMethod}
 
-              <List sx={{ width: '100%', bgcolor: 'background.paper' }}>
-                {paymentOptions.filter(opt => opt.id !== "cod").map((option) => (
-                  <Paper 
-                    key={option.id}
-                    elevation={0}
-                    sx={{ 
-                      mb: 2,
-                      border: `1px solid ${
-                        onlinePaymentMethod === option.id ? "#1A5276" : "#e0e0e0"
-                      }`,
-                      borderRadius: 1,
-                      overflow: 'hidden'
-                    }}
-                  >
-                    <ListItem
-                      button
-                      onClick={() => !option.disabled && handlePaymentSelect(option.id, option)}
-                      disabled={option.disabled}
-                      sx={{
-                        py: 2,
-                        bgcolor: onlinePaymentMethod === option.id ? '#eaf4fb' : 'transparent',
-                        borderLeft: onlinePaymentMethod === option.id ? '4px solid #1A5276' : 'none'
-                      }}
-                    >
-                      <ListItemIcon>
-                        {onlinePaymentMethod === option.id ? (
-                          <RadioButtonChecked sx={{ color: "#1A5276" }} />
-                        ) : (
-                          <RadioButtonUnchecked />
-                        )}
-                      </ListItemIcon>
-                      <ListItemText
-                        primary={
-                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                            <Box sx={{ color: option.color, display: 'flex', alignItems: 'center' }}>
-                              {option.icon}
-                            </Box>
-                            <Typography fontWeight={600}>
-                              {option.name}
-                            </Typography>
-                            {option.disabled && (
-                              <Chip 
-                                label={option.disabledReason} 
-                                size="small" 
-                                variant="outlined"
-                                sx={{ ml: 1 }}
-                              />
-                            )}
-                          </Box>
-                        }
-                        secondary={
-                          <Typography variant="body2" color="text.secondary">
-                            {option.description}
-                          </Typography>
-                        }
-                      />
-                      {onlinePaymentMethod === option.id && (
-                        <ArrowRightAlt sx={{ color: "#1A5276" }} />
-                      )}
-                    </ListItem>
+  cardNumber={cardNumber}
+  setCardNumber={setCardNumber}
+  expiryDate={expiryDate}
+  setExpiryDate={setExpiryDate}
+  cvv={cvv}
+  setCvv={setCvv}
 
-                    {/* Card Details Section */}
-                    {option.id === "card" && onlinePaymentMethod === "card" && (
-                      <Box sx={{ p: 2, bgcolor: "#f9f9f9", borderTop: "1px solid #e0e0e0" }}>
-                        <Typography variant="subtitle2" fontWeight={600} gutterBottom>
-                          Enter Card Details
-                        </Typography>
-                        <Grid container spacing={2}>
-                          <Grid item xs={12}>
-                            <TextField
-                              fullWidth
-                              label="Card Number"
-                              placeholder="1234 5678 9012 3456"
-                              value={cardNumber}
-                              onChange={(e) => setCardNumber(e.target.value)}
-                              InputProps={{
-                                startAdornment: (
-                                  <InputAdornment position="start">
-                                    <CardIcon />
-                                  </InputAdornment>
-                                ),
-                              }}
-                            />
-                          </Grid>
-                          <Grid item xs={6}>
-                            <TextField
-                              fullWidth
-                              label="Expiry Date"
-                              placeholder="MM/YY"
-                              value={expiryDate}
-                              onChange={(e) => setExpiryDate(e.target.value)}
-                            />
-                          </Grid>
-                          <Grid item xs={6}>
-                            <TextField
-                              fullWidth
-                              label="CVV"
-                              type="password"
-                              placeholder="123"
-                              value={cvv}
-                              onChange={(e) => setCvv(e.target.value)}
-                            />
-                          </Grid>
-                        </Grid>
-                      </Box>
-                    )}
+  upiId={upiId}
+  setUpiId={setUpiId}
 
-                    {/* UPI Details Section */}
-                    {option.id === "upi" && onlinePaymentMethod === "upi" && (
-                      <Box sx={{ p: 2, bgcolor: "#f9f9f9", borderTop: "1px solid #e0e0e0" }}>
-                        <Typography variant="subtitle2" fontWeight={600} gutterBottom>
-                          Scan and Pay with UPI
-                        </Typography>
-                        <Box sx={{ textAlign: 'center', my: 2 }}>
-                          <Button
-                            variant="outlined"
-                            startIcon={<QrCodeScanner />}
-                            fullWidth
-                            sx={{ mb: 2 }}
-                          >
-                            Scan QR Code
-                          </Button>
-                          <Typography variant="body2" color="text.secondary" gutterBottom>
-                            OR
-                          </Typography>
-                          <TextField
-                            fullWidth
-                            label="Enter UPI ID"
-                            placeholder="username@upi"
-                            value={upiId}
-                            onChange={(e) => setUpiId(e.target.value)}
-                          />
-                        </Box>
-                      </Box>
-                    )}
+  selectedBank={selectedBank}
+  setSelectedBank={setSelectedBank}
 
-                    {/* Net Banking Section */}
-                    {option.id === "netbanking" && onlinePaymentMethod === "netbanking" && (
-                      <Box sx={{ p: 2, bgcolor: "#f9f9f9", borderTop: "1px solid #e0e0e0" }}>
-                        <Typography variant="subtitle2" fontWeight={600} gutterBottom>
-                          Select Bank
-                        </Typography>
-                        <Grid container spacing={1}>
-                          {option.banks?.map((bank, index) => (
-                            <Grid item xs={6} key={index}>
-                              <Paper
-                                elevation={selectedBank === bank ? 1 : 0}
-                                onClick={() => setSelectedBank(bank)}
-                                sx={{
-                                  p: 1.5,
-                                  border: `1px solid ${selectedBank === bank ? "#1A5276" : "#e0e0e0"}`,
-                                  borderRadius: 1,
-                                  cursor: 'pointer',
-                                  bgcolor: selectedBank === bank ? '#eaf4fb' : 'white',
-                                  '&:hover': {
-                                    borderColor: "#1A5276"
-                                  }
-                                }}
-                              >
-                                <Typography variant="body2" align="center">
-                                  {bank}
-                                </Typography>
-                              </Paper>
-                            </Grid>
-                          ))}
-                        </Grid>
-                      </Box>
-                    )}
+  selectedWallet={selectedWallet}
+  setSelectedWallet={setSelectedWallet}
 
-                    {/* Wallets Section */}
-                    {option.id === "wallet" && onlinePaymentMethod === "wallet" && (
-                      <Box sx={{ p: 2, bgcolor: "#f9f9f9", borderTop: "1px solid #e0e0e0" }}>
-                        <Typography variant="subtitle2" fontWeight={600} gutterBottom>
-                          Select Wallet
-                        </Typography>
-                        <Grid container spacing={1}>
-                          {option.wallets?.map((wallet, index) => (
-                            <Grid item xs={6} key={index}>
-                              <Paper
-                                elevation={selectedWallet === wallet ? 1 : 0}
-                                onClick={() => setSelectedWallet(wallet)}
-                                sx={{
-                                  p: 1.5,
-                                  border: `1px solid ${selectedWallet === wallet ? "#1A5276" : "#e0e0e0"}`,
-                                  borderRadius: 1,
-                                  cursor: 'pointer',
-                                  bgcolor: selectedWallet === wallet ? '#eaf4fb' : 'white',
-                                  '&:hover': {
-                                    borderColor: "#1A5276"
-                                  }
-                                }}
-                              >
-                                <Typography variant="body2" align="center">
-                                  {wallet}
-                                </Typography>
-                              </Paper>
-                            </Grid>
-                          ))}
-                        </Grid>
-                      </Box>
-                    )}
-                  </Paper>
-                ))}
-              </List>
-            </Grid>
+  handlePaymentSubmit={handlePaymentSubmit}
+/>
 
-            {/* Right Column - Order Summary */}
-            <Grid item xs={12} md={4} sx={{ bgcolor: "#f8f9fa", p: 3, borderLeft: "1px solid #e0e0e0" }}>
-              <Typography variant="h6" fontWeight={600} gutterBottom sx={{ color: "#1A5276" }}>
-                Order Summary
-              </Typography>
-              
-              <Box sx={{ mb: 3 }}>
-                {cartItems.map((item, index) => (
-                  <Box key={index} sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-                    
-                    <Typography variant="body2">
-                      {item.name} x {item.qty}
-                    </Typography>
-                    <Typography variant="body2" fontWeight={600}>
-                      ₹{(item.price * item.qty).toFixed(2)}
-                    </Typography>
-                  </Box>
-                ))}
-              </Box>
-
-              <Divider sx={{ my: 2 }} />
-
-              <Box sx={{ mb: 2 }}>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-                  <Typography variant="body2">Subtotal</Typography>
-                  <Typography variant="body2" fontWeight={600}>₹{cartTotal.toFixed(2)}</Typography>
-                </Box>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-                  <Typography variant="body2">Shipping</Typography>
-                  <Typography variant="body2" color="success.main">FREE</Typography>
-                </Box>
-              </Box>
-
-              <Divider sx={{ my: 2 }} />
-
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 3 }}>
-                <Typography variant="h6">Order Total</Typography>
-                <Typography variant="h5" fontWeight={700} sx={{ color: "#1A5276" }}>
-                  ₹{cartTotal.toFixed(2)}
-                </Typography>
-              </Box>
-
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
-                <Lock fontSize="small" sx={{ color: "#4CAF50" }} />
-                <Typography variant="caption" color="text.secondary">
-                  Secure & encrypted payment
-                </Typography>
-              </Box>
-            </Grid>
-          </Grid>
-        </DialogContent>
-        
-        <DialogActions sx={{ p: 2, px: 3, borderTop: "1px solid #e0e0e0", bgcolor: "#f8f9fa" }}>
-          <Button 
-            onClick={handlePaymentDialogClose} 
-            color="inherit"
-            sx={{ mr: 2 }}
-          >
-            Cancel
-          </Button>
-          <Button
-            variant="contained"
-            onClick={handlePaymentSubmit}
-            disabled={!onlinePaymentMethod}
-            sx={{
-              bgcolor: "yellow",
-              color: "#1A5276",
-              fontWeight: 600,
-              minWidth: 200,
-              py: 1.5
-            }}
-          >
-            {onlinePaymentMethod ? `Use this payment method` : 'Select Payment Method'}
-          </Button>
-        </DialogActions>
-      </Dialog>
 
       <style>
         {`
