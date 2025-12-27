@@ -24,7 +24,10 @@ const navigate = useNavigate();
       width: "100%",
       minHeight: "100vh",
       background: "#faf7f0",
-      padding: "30px 0",
+      // padding: "30px 0",
+      marginTop:-13,
+      
+      
     },
 
     pageWrapper: {
@@ -34,6 +37,7 @@ const navigate = useNavigate();
       width: "95%",
       maxWidth: "1400px",
       margin: "0 auto",
+      
     },
 
     cartContainer: {
@@ -138,7 +142,7 @@ const navigate = useNavigate();
   };
 
   return (
-    <div style={styles.pageOuter}>
+    <div style={styles.pageOuter} >
       <div style={styles.pageWrapper}>
 
         {/* LEFT - CART */}

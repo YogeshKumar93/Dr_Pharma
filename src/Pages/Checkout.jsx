@@ -92,189 +92,136 @@ const Checkout = ({ user }) => {
       <style>
         {`
           @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            to { transform: rotate(360deg); }
           }
         `}
       </style>
 
-      <div style={styles.container}>
-        <div style={styles.checkoutContainer}>
-          <h1 style={styles.title}>Checkout</h1>
+      <div style={styles.page}>
+        <h1 style={styles.pageTitle}>Checkout</h1>
 
-          {/* ================= Order Summary ================= */}
-          <div style={styles.section}>
-            <h2 style={styles.sectionTitle}>Order Summary</h2>
-            <div style={styles.orderSummary}>
-              {cartItems.length > 0 ? (
-                <>
-                  {cartItems.map((item) => (
-                    <div key={item.id} style={styles.cartItem}>
-                      <div style={styles.itemDetails}>
-                        <span style={styles.itemName}>{item.name}</span>
-                        <span style={styles.itemQty}>Qty: {item.qty}</span>
-                      </div>
-                      <div style={styles.itemPrice}>
-                        ₹{(item.price * item.qty).toFixed(2)}
-                      </div>
+        <div style={styles.grid}>
+          {/* ================= ORDER SUMMARY ================= */}
+          <div style={styles.card}>
+            <h2 style={styles.cardTitle}>🛒 Order Summary</h2>
+
+            {cartItems.length ? (
+              <>
+                {cartItems.map((item) => (
+                  <div key={item.id} style={styles.cartRow}>
+                    <div>
+                      <div style={styles.itemName}>{item.name}</div>
+                      <div style={styles.itemQty}>Qty: {item.qty}</div>
                     </div>
-                  ))}
-                  <div style={styles.totalRow}>
-                    <span style={styles.totalLabel}>Total Amount:</span>
-                    <span style={styles.totalAmount}>
-                      ₹{cartTotal.toFixed(2)}
-                    </span>
+                    <div style={styles.price}>
+                      ₹{(item.price * item.qty).toFixed(2)}
+                    </div>
                   </div>
-                </>
-              ) : (
-                <p style={styles.emptyCart}>Your cart is empty</p>
-              )}
-            </div>
+                ))}
+
+                <div style={styles.totalRow}>
+                  <span>Total</span>
+                  <span>₹{cartTotal.toFixed(2)}</span>
+                </div>
+              </>
+            ) : (
+              <p>Your cart is empty</p>
+            )}
           </div>
 
-          {/* ================= Prescription Upload ================= */}
-          <div style={styles.section}>
-            <h2 style={styles.sectionTitle}>Prescription Upload</h2>
-            <div style={styles.formGroup}>
-              <label style={styles.label}>
-                Upload Doctor Prescription{" "}
-                <span style={{ color: "red" }}>*</span>
-              </label>
-              <input
-                type="file"
-                accept=".jpg,.jpeg,.png,.pdf"
-                onChange={handleFileChange}
-                style={styles.input}
-              />
-              {prescriptionFile ? (
-                <p style={{ color: "green", marginTop: "8px" }}>
-                  ✅ {prescriptionFile.name}
-                </p>
-              ) : (
-                <p style={{ color: "red", marginTop: "8px" }}>
-                  ❌ Prescription required
-                </p>
-              )}
-            </div>
-          </div>
+          {/* ================= ADDRESS + PRESCRIPTION ================= */}
+          <div style={styles.card}>
+            <h2 style={styles.cardTitle}>📍 Delivery Details</h2>
 
-          {/* ================= Shipping Address ================= */}
-          <div style={styles.section}>
-            <h2 style={styles.sectionTitle}>Shipping Address</h2>
-            <div style={styles.formGroup}>
-              <label style={styles.label}>Address</label>
-              <textarea
-                style={styles.textarea}
-                value={address}
-                onChange={(e) => setAddress(e.target.value)}
-                rows="3"
-              />
-            </div>
+            <label style={styles.label}>Shipping Address</label>
+            <textarea
+              rows="3"
+              style={styles.textarea}
+              value={address}
+              onChange={(e) => setAddress(e.target.value)}
+            />
 
             <div style={styles.row}>
-              <div style={styles.formGroupHalf}>
-                <label style={styles.label}>City</label>
-                <input
-                  style={styles.input}
-                  value={city}
-                  onChange={(e) => setCity(e.target.value)}
-                />
-              </div>
-
-              <div style={styles.formGroupHalf}>
-                <label style={styles.label}>Pincode</label>
-                <input
-                  style={styles.input}
-                  value={pincode}
-                  maxLength="6"
-                  onChange={(e) => setPincode(e.target.value)}
-                />
-              </div>
+              <input
+                style={styles.input}
+                placeholder="City"
+                value={city}
+                onChange={(e) => setCity(e.target.value)}
+              />
+              <input
+                style={styles.input}
+                placeholder="Pincode"
+                maxLength="6"
+                value={pincode}
+                onChange={(e) => setPincode(e.target.value)}
+              />
             </div>
+
+            <hr style={styles.divider} />
+
+            <label style={styles.label}>
+              Upload Prescription <span style={{ color: "red" }}>*</span>
+            </label>
+            <input
+              type="file"
+              accept=".jpg,.jpeg,.png,.pdf"
+              onChange={handleFileChange}
+            />
+
+            {prescriptionFile ? (
+              <p style={styles.success}>✅ {prescriptionFile.name}</p>
+            ) : (
+              <p style={styles.error}>❌ Prescription required</p>
+            )}
           </div>
 
-          {/* ================= Payment Method ================= */}
-          <div style={styles.section}>
-            <h2 style={styles.sectionTitle}>Payment Method</h2>
+          {/* ================= PAYMENT ================= */}
+          <div style={{ ...styles.card, ...styles.sticky }}>
+            <h2 style={styles.cardTitle}>💳 Payment</h2>
 
-            <div style={styles.paymentOptions}>
-              <div
-                style={
-                  paymentMethod === "cod"
-                    ? styles.paymentOptionActive
-                    : styles.paymentOption
-                }
-                onClick={() => setPaymentMethod("cod")}
-              >
-                <div style={styles.radioContainer}>
-                  <div
-                    style={
-                      paymentMethod === "cod"
-                        ? styles.radioActive
-                        : styles.radio
-                    }
-                  />
-                  <span style={styles.paymentLabel}>
-                    Cash on Delivery
-                  </span>
-                </div>
-                <p style={styles.paymentDescription}>
-                  Pay when you receive your order
-                </p>
-              </div>
-
-              <div
-                style={
-                  paymentMethod === "online"
-                    ? styles.paymentOptionActive
-                    : styles.paymentOption
-                }
-                onClick={() => setPaymentMethod("online")}
-              >
-                <div style={styles.radioContainer}>
-                  <div
-                    style={
-                      paymentMethod === "online"
-                        ? styles.radioActive
-                        : styles.radio
-                    }
-                  />
-                  <span style={styles.paymentLabel}>
-                    Online Payment
-                  </span>
-                </div>
-                <p style={styles.paymentDescription}>
-                  Pay using card, UPI, or wallet
-                </p>
-              </div>
+            <div
+              style={
+                paymentMethod === "cod"
+                  ? styles.paymentActive
+                  : styles.payment
+              }
+              onClick={() => setPaymentMethod("cod")}
+            >
+              Cash on Delivery
             </div>
-          </div>
 
-          {/* ================= Place Order ================= */}
-          <div style={styles.buttonContainer}>
+            <div
+              style={
+                paymentMethod === "online"
+                  ? styles.paymentActive
+                  : styles.payment
+              }
+              onClick={() => setPaymentMethod("online")}
+            >
+              Online Payment
+            </div>
+
             <button
               onClick={placeOrder}
               disabled={
-                loading || cartItems.length === 0 || !prescriptionFile
+                loading || !cartItems.length || !prescriptionFile
               }
               style={
-                loading || cartItems.length === 0 || !prescriptionFile
+                loading || !cartItems.length || !prescriptionFile
                   ? styles.buttonDisabled
                   : styles.button
               }
             >
               {loading ? (
-                <span style={styles.buttonContent}>
+                <span style={styles.loading}>
                   <span style={styles.spinner} /> Placing Order...
                 </span>
               ) : (
-                `Place Order - ₹${cartTotal.toFixed(2)}`
+                `Place Order – ₹${cartTotal.toFixed(2)}`
               )}
             </button>
 
-            <p style={styles.secureNote}>
-              🔒 Your payment information is secure and encrypted
-            </p>
+            <p style={styles.secure}>🔒 Secure & encrypted checkout</p>
           </div>
         </div>
       </div>
@@ -282,134 +229,117 @@ const Checkout = ({ user }) => {
   );
 };
 
-/* ================= STYLES (UNCHANGED FROM YOUR CODE) ================= */
+/* ================= STYLES ================= */
 const styles = {
-  container: {
-    backgroundColor: "#f8f9fa",
-    minHeight: "70vh",
-    padding: "10px",
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "flex-start",
+  page: {
+    background: "#f4f6f8",
+    minHeight: "100vh",
+    padding: "30px",
   },
-  checkoutContainer: {
-    maxWidth: "600px",
-    width: "100%",
-    backgroundColor: "white",
+  pageTitle: {
+    textAlign: "center",
+    color: "#1A5276",
+    marginBottom: "30px",
+  },
+  grid: {
+    display: "grid",
+    gridTemplateColumns: "1fr 1.2fr 1fr",
+    gap: "24px",
+  },
+  card: {
+    background: "#fff",
     borderRadius: "12px",
-    boxShadow: "0 2px 20px rgba(0,0,0,0.08)",
-    padding: "28px",
-    margin: "20px 0",
+    padding: "20px",
+    boxShadow: "0 4px 18px rgba(0,0,0,0.08)",
   },
-  title: {
-    fontSize: "28px",
-    fontWeight: "600",
-    marginBottom: "3px",
-    borderBottom: "2px solid #edf2f7",
+  sticky: {
+    position: "sticky",
+    top: "20px",
+    height: "fit-content",
   },
-  section: {
-    marginBottom: "10px",
-    padding: "15px",
-    backgroundColor: "#d6d0d0ff",
-    borderRadius: "10px",
-    border: "1px solid #e2e8f0",
+  cardTitle: {
+    color: "#1A5276",
+    marginBottom: "16px",
   },
-  sectionTitle: {
-    color: "#052966ff",
-    fontSize: "18px",
-    fontWeight: "600",
-    marginBottom: "20px",
-  },
-  orderSummary: {
-    backgroundColor: "white",
-    borderRadius: "8px",
-    padding: "16px",
-    border: "1px solid #e2e8f0",
-  },
-  cartItem: {
+  cartRow: {
     display: "flex",
     justifyContent: "space-between",
-    padding: "12px 0",
-    borderBottom: "1px solid #f1f1f1",
+    padding: "10px 0",
+    borderBottom: "1px solid #eee",
   },
-  itemDetails: { display: "flex", flexDirection: "column" },
-  itemName: { fontWeight: "500" },
-  itemQty: { fontSize: "14px", color: "#718096" },
-  itemPrice: { fontWeight: "600" },
+  itemName: { fontWeight: "600" },
+  itemQty: { fontSize: "13px", color: "#777" },
+  price: { fontWeight: "600" },
   totalRow: {
     display: "flex",
     justifyContent: "space-between",
-    paddingTop: "16px",
-    marginTop: "16px",
-    borderTop: "2px solid #e2e8f0",
+    fontWeight: "700",
+    fontSize: "18px",
+    marginTop: "12px",
   },
-  totalAmount: { fontSize: "24px", fontWeight: "700" },
-  emptyCart: { textAlign: "center", padding: "20px" },
-  formGroup: { marginBottom: "20px" },
-  row: { display: "flex", gap: "20px" },
-  formGroupHalf: { flex: 1 },
-  label: { fontSize: "14px", fontWeight: "500" },
+  label: { fontWeight: "600", marginTop: "10px" },
   input: {
-    width: "100%",
-    padding: "12px",
-    borderRadius: "8px",
-    border: "1px solid #e2e8f0",
+    flex: 1,
+    padding: "10px",
+    borderRadius: "6px",
+    border: "1px solid #ccc",
   },
   textarea: {
     width: "100%",
-    padding: "12px",
-    borderRadius: "8px",
-    border: "1px solid #e2e8f0",
+    padding: "10px",
+    borderRadius: "6px",
+    border: "1px solid #ccc",
   },
-  paymentOptions: { display: "flex", flexDirection: "column", gap: "12px" },
-  paymentOption: {
-    padding: "20px",
-    border: "2px solid #e2e8f0",
+  row: { display: "flex", gap: "10px", marginTop: "10px" },
+  divider: { margin: "20px 0" },
+  success: { color: "green", marginTop: "8px" },
+  error: { color: "red", marginTop: "8px" },
+  payment: {
+    border: "2px solid #ddd",
+    padding: "14px",
     borderRadius: "8px",
     cursor: "pointer",
+    marginBottom: "10px",
   },
-  paymentOptionActive: {
-    padding: "20px",
-    border: "2px solid #3182ce",
-    backgroundColor: "#ebf8ff",
+  paymentActive: {
+    border: "2px solid #1A5276",
+    background: "#eaf4fb",
+    padding: "14px",
     borderRadius: "8px",
+    cursor: "pointer",
+    marginBottom: "10px",
   },
-  radioContainer: { display: "flex", gap: "12px" },
-  radio: {
-    width: "20px",
-    height: "20px",
-    borderRadius: "50%",
-    border: "2px solid #cbd5e0",
-  },
-  radioActive: {
-    width: "20px",
-    height: "20px",
-    borderRadius: "50%",
-    border: "6px solid #3182ce",
-  },
-  buttonContainer: { marginTop: "32px", textAlign: "center" },
   button: {
     width: "100%",
-    padding: "18px",
-    backgroundColor: "#f1c40f",
+    padding: "16px",
+    background: "yellow",
+    border: "none",
     borderRadius: "10px",
-    fontWeight: "600",
+    fontWeight: "700",
+    marginTop: "15px",
   },
   buttonDisabled: {
     width: "100%",
-    padding: "18px",
-    backgroundColor: "#cbd5e0",
+    padding: "16px",
+    background: "#ccc",
+    border: "none",
     borderRadius: "10px",
+    marginTop: "15px",
   },
+  loading: { display: "flex", justifyContent: "center", gap: "10px" },
   spinner: {
-    width: "20px",
-    height: "20px",
-    border: "2px solid rgba(255,255,255,0.3)",
-    borderTopColor: "white",
+    width: "18px",
+    height: "18px",
+    border: "2px solid #fff",
+    borderTopColor: "#1A5276",
     borderRadius: "50%",
     animation: "spin 1s linear infinite",
   },
-  secureNote: { fontSize: "14px", marginTop: "12px" },
+  secure: {
+    fontSize: "13px",
+    marginTop: "10px",
+    textAlign: "center",
+  },
 };
 
 export default Checkout;
