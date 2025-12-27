@@ -291,7 +291,7 @@ const Checkout = ({ user }) => {
   ];
 
   return (
-    <Container maxWidth="xl" sx={{ py: 4, minHeight: "100vh", bgcolor: "#f4f6f8" }}>
+    <Container maxWidth="xl" sx={{ py: 4, minHeight: "100vh", bgcolor: "#f4f6f8", mt:-13 }}>
       <Typography
         variant="h4"
         align="center"
@@ -305,7 +305,7 @@ const Checkout = ({ user }) => {
         Checkout
       </Typography>
 
-      <Grid container spacing={3}>
+      <Grid container spacing={3} alignItems="stretch">
         {/* ORDER SUMMARY */}
         <Grid item xs={12} md={4}>
           <Paper
@@ -332,7 +332,7 @@ const Checkout = ({ user }) => {
               </Typography>
             </Box>
 
-            <CardContent>
+            <CardContent sx={{ flexGrow: 1 }}>
               {cartItems.length ? (
                 <>
                   <Stack spacing={2}>
@@ -416,7 +416,7 @@ const Checkout = ({ user }) => {
               </Typography>
             </Box>
 
-            <CardContent>
+            <CardContent sx={{ flexGrow: 1 }}>
               <Typography variant="subtitle1" fontWeight={600} gutterBottom>
                 Shipping Address
               </Typography>
@@ -518,7 +518,10 @@ const Checkout = ({ user }) => {
               borderRadius: 2,
               overflow: "hidden",
               position: "sticky",
-              top: 20
+              top: 20,
+                height: "100%",
+              display: "flex",
+              flexDirection: "column"
             }}
           >
             <Box
@@ -537,7 +540,7 @@ const Checkout = ({ user }) => {
               </Typography>
             </Box>
 
-            <CardContent>
+            <CardContent sx={{ flexGrow: 1 }}>
               <Typography variant="subtitle1" fontWeight={600} gutterBottom>
                 Select Payment Method
               </Typography>
@@ -726,7 +729,7 @@ const Checkout = ({ user }) => {
                 ) : paymentMethod === "online" ? (
                   `Pay ₹${cartTotal.toFixed(2)}`
                 ) : (
-                  `Place Order – ₹${cartTotal.toFixed(2)}`
+                  `Place Order : ₹${cartTotal.toFixed(2)}`
                 )}
               </Button>
 
@@ -1034,6 +1037,7 @@ const Checkout = ({ user }) => {
               <Box sx={{ mb: 3 }}>
                 {cartItems.map((item, index) => (
                   <Box key={index} sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                    
                     <Typography variant="body2">
                       {item.name} x {item.qty}
                     </Typography>
