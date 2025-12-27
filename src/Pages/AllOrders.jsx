@@ -24,6 +24,7 @@ const [editOpen, setEditOpen] = useState(false);
 const [selectedOrder, setSelectedOrder] = useState(null);
 const [prescriptionOpen, setPrescriptionOpen] = useState(false);
 const [orderItems, setOrderItems] = useState([]);
+const [previewImage, setPreviewImage] = useState(null);
 
 
  // Pagination
@@ -249,19 +250,26 @@ const [orderItems, setOrderItems] = useState([]);
       {orderItems.map(
         (item) =>
           item.prescription_file && (
-            <img
-              key={item.id}
-              src={`http://localhost:8000/${item.prescription_file}`}
-              alt="Prescription"
-              style={{
-                width: 100,
-                height: 100,
-                objectFit: "cover",
-                marginRight: 8,
-                marginBottom: 8,
-                border: "1px solid #ccc",
-              }}
-            />
+           <img
+  key={item.id}
+  src={`http://localhost:8000/${item.prescription_file}`}
+  alt="Prescription"
+ onClick={(e) => {
+  e.stopPropagation(); // ⭐ VERY IMPORTANT
+  setPreviewImage(`http://localhost:8000/${item.prescription_file}`);
+}}
+
+  style={{
+    width: 120,
+    height: 120,
+    objectFit: "cover",
+    marginRight: 10,
+    marginBottom: 10,
+    border: "1px solid #ccc",
+    cursor: "pointer",
+  }}
+/>
+
           )
       )}
 
@@ -272,6 +280,40 @@ const [orderItems, setOrderItems] = useState([]);
       <Box sx={{ textAlign: "right" }}>
         <Button onClick={() => setPrescriptionOpen(false)}>Close</Button>
       </Box>
+    </Box>
+  </Box>
+)}
+
+{previewImage && (
+  <Box
+    sx={{
+      position: "fixed",
+      inset: 0,
+      background: "rgba(0,0,0,0.8)",
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      zIndex: 10000,
+    }}
+    onClick={() => setPreviewImage(null)}
+  >
+    <Box
+      onClick={(e) => e.stopPropagation()}
+      sx={{
+        maxWidth: "90%",
+        maxHeight: "90%",
+      }}
+    >
+      <img
+        src={previewImage}
+        alt="Full Prescription"
+        style={{
+          width: "100%",
+          height: "auto",
+          borderRadius: 8,
+          boxShadow: "0 0 20px rgba(0,0,0,0.5)",
+        }}
+      />
     </Box>
   </Box>
 )}
