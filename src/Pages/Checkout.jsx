@@ -4,6 +4,14 @@ import { apiCall } from "../api/api";
 import ApiEndpoints from "../api/apiendpoints";
 import { useState } from "react";
 
+import {
+  Typography,
+  Divider,
+  Button,
+  Chip,
+  Box,
+} from "@mui/material";
+
 const Checkout = ({ user }) => {
   const { cartItems, clearCart } = useCart();
 
@@ -21,7 +29,6 @@ const Checkout = ({ user }) => {
     0
   );
 
-  /* ================= Prescription Handler ================= */
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -35,20 +42,19 @@ const Checkout = ({ user }) => {
     setPrescriptionFile(file);
   };
 
-  /* ================= Place Order ================= */
   const placeOrder = async () => {
     if (!address || !city || !pincode) {
       alert("Please fill complete address");
       return;
     }
 
-    if (cartItems.length === 0) {
+    if (!cartItems.length) {
       alert("Cart is empty");
       return;
     }
 
     if (!prescriptionFile) {
-      alert("Please upload prescription before placing order");
+      alert("Please upload prescription");
       return;
     }
 
@@ -80,7 +86,6 @@ const Checkout = ({ user }) => {
       clearCart();
       navigate("/myorders");
     } catch (err) {
-      console.error(err);
       alert("Something went wrong");
     } finally {
       setLoading(false);
@@ -90,50 +95,56 @@ const Checkout = ({ user }) => {
   return (
     <>
       <style>
-        {`
-          @keyframes spin {
-            to { transform: rotate(360deg); }
-          }
-        `}
+        {`@keyframes spin { to { transform: rotate(360deg); } }`}
       </style>
 
       <div style={styles.page}>
-        <h1 style={styles.pageTitle}>Checkout</h1>
+        <Typography variant="h4" align="center" sx={{ color: "#1A5276", mb: 4 }}>
+          Checkout
+        </Typography>
 
         <div style={styles.grid}>
-          {/* ================= ORDER SUMMARY ================= */}
+          {/* ORDER SUMMARY */}
           <div style={styles.card}>
-            <h2 style={styles.cardTitle}>🛒 Order Summary</h2>
+            <Typography variant="h6" sx={styles.cardTitle}>
+              🛒 Order Summary
+            </Typography>
 
-            {cartItems.length ? (
-              <>
-                {cartItems.map((item) => (
-                  <div key={item.id} style={styles.cartRow}>
-                    <div>
-                      <div style={styles.itemName}>{item.name}</div>
-                      <div style={styles.itemQty}>Qty: {item.qty}</div>
-                    </div>
-                    <div style={styles.price}>
-                      ₹{(item.price * item.qty).toFixed(2)}
-                    </div>
-                  </div>
-                ))}
+            <Divider sx={{ mb: 2 }} />
 
-                <div style={styles.totalRow}>
-                  <span>Total</span>
-                  <span>₹{cartTotal.toFixed(2)}</span>
+            {cartItems.map((item) => (
+              <Box key={item.id} style={styles.cartRow}>
+                <div>
+                  <Typography fontWeight={600}>{item.name}</Typography>
+                  <Typography fontSize="13px" color="text.secondary">
+                    Qty: {item.qty}
+                  </Typography>
                 </div>
-              </>
-            ) : (
-              <p>Your cart is empty</p>
-            )}
+                <Typography fontWeight={600}>
+                  ₹{(item.price * item.qty).toFixed(2)}
+                </Typography>
+              </Box>
+            ))}
+
+            <Divider sx={{ my: 2 }} />
+
+            <Box style={styles.totalRow}>
+              <Typography fontWeight={700}>Total</Typography>
+              <Typography fontWeight={700}>
+                ₹{cartTotal.toFixed(2)}
+              </Typography>
+            </Box>
           </div>
 
-          {/* ================= ADDRESS + PRESCRIPTION ================= */}
+          {/* ADDRESS */}
           <div style={styles.card}>
-            <h2 style={styles.cardTitle}>📍 Delivery Details</h2>
+            <Typography variant="h6" sx={styles.cardTitle}>
+              📍 Delivery Details
+            </Typography>
 
-            <label style={styles.label}>Shipping Address</label>
+            <Divider sx={{ mb: 2 }} />
+
+            <Typography fontWeight={600}>Shipping Address</Typography>
             <textarea
               rows="3"
               style={styles.textarea}
@@ -157,11 +168,12 @@ const Checkout = ({ user }) => {
               />
             </div>
 
-            <hr style={styles.divider} />
+            <Divider sx={{ my: 2 }} />
 
-            <label style={styles.label}>
+            <Typography fontWeight={600}>
               Upload Prescription <span style={{ color: "red" }}>*</span>
-            </label>
+            </Typography>
+
             <input
               type="file"
               accept=".jpg,.jpeg,.png,.pdf"
@@ -169,15 +181,26 @@ const Checkout = ({ user }) => {
             />
 
             {prescriptionFile ? (
-              <p style={styles.success}>✅ {prescriptionFile.name}</p>
+              <Chip
+                label={prescriptionFile.name}
+                color="success"
+                size="small"
+                sx={{ mt: 1 }}
+              />
             ) : (
-              <p style={styles.error}>❌ Prescription required</p>
+              <Typography color="error" fontSize="13px" mt={1}>
+                Prescription required
+              </Typography>
             )}
           </div>
 
-          {/* ================= PAYMENT ================= */}
+          {/* PAYMENT */}
           <div style={{ ...styles.card, ...styles.sticky }}>
-            <h2 style={styles.cardTitle}>💳 Payment</h2>
+            <Typography variant="h6" sx={styles.cardTitle}>
+              💳 Payment
+            </Typography>
+
+            <Divider sx={{ mb: 2 }} />
 
             <div
               style={
@@ -201,27 +224,30 @@ const Checkout = ({ user }) => {
               Online Payment
             </div>
 
-            <button
+            <Button
+              fullWidth
+              variant="contained"
+              disabled={loading || !cartItems.length || !prescriptionFile}
               onClick={placeOrder}
-              disabled={
-                loading || !cartItems.length || !prescriptionFile
-              }
-              style={
-                loading || !cartItems.length || !prescriptionFile
-                  ? styles.buttonDisabled
-                  : styles.button
-              }
+              sx={{
+                mt: 2,
+                backgroundColor: "yellow",
+                color: "#000",
+                fontWeight: 700,
+                "&:hover": { backgroundColor: "#f1c40f" },
+              }}
             >
-              {loading ? (
-                <span style={styles.loading}>
-                  <span style={styles.spinner} /> Placing Order...
-                </span>
-              ) : (
-                `Place Order – ₹${cartTotal.toFixed(2)}`
-              )}
-            </button>
+              {loading ? "Placing Order..." : `Place Order – ₹${cartTotal}`}
+            </Button>
 
-            <p style={styles.secure}>🔒 Secure & encrypted checkout</p>
+            <Typography
+              fontSize="12px"
+              align="center"
+              color="text.secondary"
+              mt={1}
+            >
+              🔒 Secure & encrypted checkout
+            </Typography>
           </div>
         </div>
       </div>
@@ -236,11 +262,6 @@ const styles = {
     minHeight: "100vh",
     padding: "30px",
   },
-  pageTitle: {
-    textAlign: "center",
-    color: "#1A5276",
-    marginBottom: "30px",
-  },
   grid: {
     display: "grid",
     gridTemplateColumns: "1fr 1.2fr 1fr",
@@ -248,52 +269,46 @@ const styles = {
   },
   card: {
     background: "#fff",
-    borderRadius: "12px",
+    borderRadius: "14px",
     padding: "20px",
-    boxShadow: "0 4px 18px rgba(0,0,0,0.08)",
+    boxShadow: "0 6px 20px rgba(0,0,0,0.08)",
   },
   sticky: {
     position: "sticky",
     top: "20px",
-    height: "fit-content",
   },
   cardTitle: {
     color: "#1A5276",
-    marginBottom: "16px",
+    fontWeight: 700,
   },
   cartRow: {
     display: "flex",
     justifyContent: "space-between",
-    padding: "10px 0",
-    borderBottom: "1px solid #eee",
+    marginBottom: "10px",
   },
-  itemName: { fontWeight: "600" },
-  itemQty: { fontSize: "13px", color: "#777" },
-  price: { fontWeight: "600" },
   totalRow: {
     display: "flex",
     justifyContent: "space-between",
-    fontWeight: "700",
     fontSize: "18px",
-    marginTop: "12px",
-  },
-  label: { fontWeight: "600", marginTop: "10px" },
-  input: {
-    flex: 1,
-    padding: "10px",
-    borderRadius: "6px",
-    border: "1px solid #ccc",
   },
   textarea: {
     width: "100%",
     padding: "10px",
     borderRadius: "6px",
     border: "1px solid #ccc",
+    marginTop: "6px",
   },
-  row: { display: "flex", gap: "10px", marginTop: "10px" },
-  divider: { margin: "20px 0" },
-  success: { color: "green", marginTop: "8px" },
-  error: { color: "red", marginTop: "8px" },
+  row: {
+    display: "flex",
+    gap: "10px",
+    marginTop: "10px",
+  },
+  input: {
+    flex: 1,
+    padding: "10px",
+    borderRadius: "6px",
+    border: "1px solid #ccc",
+  },
   payment: {
     border: "2px solid #ddd",
     padding: "14px",
@@ -308,37 +323,7 @@ const styles = {
     borderRadius: "8px",
     cursor: "pointer",
     marginBottom: "10px",
-  },
-  button: {
-    width: "100%",
-    padding: "16px",
-    background: "yellow",
-    border: "none",
-    borderRadius: "10px",
-    fontWeight: "700",
-    marginTop: "15px",
-  },
-  buttonDisabled: {
-    width: "100%",
-    padding: "16px",
-    background: "#ccc",
-    border: "none",
-    borderRadius: "10px",
-    marginTop: "15px",
-  },
-  loading: { display: "flex", justifyContent: "center", gap: "10px" },
-  spinner: {
-    width: "18px",
-    height: "18px",
-    border: "2px solid #fff",
-    borderTopColor: "#1A5276",
-    borderRadius: "50%",
-    animation: "spin 1s linear infinite",
-  },
-  secure: {
-    fontSize: "13px",
-    marginTop: "10px",
-    textAlign: "center",
+    fontWeight: 600,
   },
 };
 
