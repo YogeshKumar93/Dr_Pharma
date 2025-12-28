@@ -133,24 +133,19 @@ const UserProfile = () => {
       width: "100%", 
       p: 1.5,
       maxWidth: { lg: '1600px', xl: '1800px' },
-      mx: 'auto'
+      // mx: 'auto',
+      mt:-4
     }}>
-      {/* HEADER SECTION */}
-      <Box sx={{ mb: 3 }}>
-        <Typography variant="h5" fontWeight="700" gutterBottom sx={{ color: '#1a237e' }}>
-          My Account Dashboard
-        </Typography>
-        <Divider sx={{ mb: 1 }} />
-      </Box>
+     
 
       {/* MAIN LAYOUT */}
-      <Grid container spacing={3}>
+      <Grid container spacing={3} alignItems="stretch">
         {/* LEFT SIDEBAR - USER PROFILE */}
-        <Grid item xs={12} lg={3.5}>
+        <Grid item xs={12} md={5}>
           <Paper sx={{ 
-            p: 3, 
+            p: 6, 
             borderRadius: 2.5,
-            height: '90%',
+            height: '92%',
             background: 'linear-gradient(135deg, #667eea 0%, #764ba2 50%, #667eea 100%)',
             color: 'white',
             position: 'relative',
@@ -161,7 +156,7 @@ const UserProfile = () => {
               position: 'absolute', 
               top: -40, 
               right: -40, 
-              width: 150, 
+              width: 250, 
               height: 150, 
               borderRadius: '50%',
               background: 'radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 70%)'
@@ -272,7 +267,7 @@ const UserProfile = () => {
         </Grid>
 
         {/* RIGHT CONTENT */}
-        <Grid item xs={12} lg={8.5}>
+        <Grid item xs={12} md={7}>
           {/* STATS CARDS */}
           <Grid container spacing={5.5} sx={{ mb: 1 }}>
             <Grid item xs={6} md={3}>
