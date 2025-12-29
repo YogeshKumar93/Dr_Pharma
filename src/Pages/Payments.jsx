@@ -73,66 +73,84 @@ const Payments = () => {
   }, [payments, page, rowsPerPage]);
 
   /* -------------------- COLUMNS -------------------- */
-  const columns = useMemo(
-    () => [
-      { headerName: "ID", field: "id", width: "60px" },
+ const columns = useMemo(() => [
+  { headerName: "ID", field: "id", width: "60px" },
 
-      { headerName: "Order ID", field: "order_id" },
+  { headerName: "Order ID", field: "order_id" },
 
-      { headerName: "User ID", field: "user_id" },
+  {
+    headerName: "User",
+    render: (_, row) => (
+      <Box>
+        <Typography fontSize={13} fontWeight={600}>
+          {row?.order?.user?.name}
+        </Typography>
+        <Typography fontSize={11} color="text.secondary">
+          {row?.order?.user?.email}
+        </Typography>
+      </Box>
+    ),
+  },
 
-      {
-        headerName: "Amount",
-        field: "amount",
-        render: (value) => `₹ ${value}`,
-      },
+  {
+    headerName: "Amount",
+    field: "amount",
+    render: (v) => `₹ ${v}`,
+  },
 
-      {
-        headerName: "Method",
-        field: "payment_method",
-        render: (value) => (
-          <strong style={{ textTransform: "uppercase" }}>{value}</strong>
-        ),
-      },
+  {
+    headerName: "Method",
+    field: "payment_method",
+    render: (v) => (
+      <Chip
+        label={v?.toUpperCase()}
+        color={v === "cod" ? "warning" : "primary"}
+        size="small"
+      />
+    ),
+  },
 
-      {
-        headerName: "Transaction ID",
-        field: "transaction_id",
-        render: (value) => value || "-",
-      },
+  {
+    headerName: "Txn ID",
+    field: "transaction_id",
+    render: (v, row) =>
+      row.payment_method === "online" ? v || "-" : "COD",
+  },
 
-      {
-        headerName: "Status",
-        field: "payment_status",
-        render: (value, row) => (
-          <Select
-            size="small"
-            value={value}
-            onChange={(e) => updateStatus(row.id, e.target.value)}
-          >
-            <MenuItem value="pending">Pending</MenuItem>
-            <MenuItem value="paid">Paid</MenuItem>
-            <MenuItem value="failed">Failed</MenuItem>
-          </Select>
-        ),
-      },
+  {
+    headerName: "Payment Status",
+    field: "payment_status",
+    render: (v, row) => (
+      <Select
+        size="small"
+        value={v}
+        onChange={(e) => updateStatus(row.id, e.target.value)}
+      >
+        <MenuItem value="pending">Pending</MenuItem>
+        <MenuItem value="paid">Paid</MenuItem>
+        <MenuItem value="failed">Failed</MenuItem>
+      </Select>
+    ),
+  },
 
-      {
-        headerName: "Created",
-        field: "created_at",
-        render: (value) =>
-          value ? new Date(value).toLocaleDateString("en-GB") : "-",
-      },
+  {
+    headerName: "Order Status",
+    render: (_, row) => (
+      <Chip
+        label={row?.order?.status}
+        color={row?.order?.status === "confirmed" ? "success" : "default"}
+        size="small"
+      />
+    ),
+  },
 
-      {
-        headerName: "Updated",
-        field: "updated_at",
-        render: (value) =>
-          value ? new Date(value).toLocaleDateString("en-GB") : "-",
-      },
-    ],
-    []
-  );
+  {
+    headerName: "Date",
+    field: "created_at",
+    render: (v) => new Date(v).toLocaleDateString("en-GB"),
+  },
+], []);
+
 
    /* -------------------- ACTIONS -------------------- */
   const actions = (row) => (

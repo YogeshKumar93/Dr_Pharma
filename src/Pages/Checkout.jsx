@@ -195,7 +195,7 @@ const Checkout = ({ user }) => {
     }
 
     const formData = new FormData();
-    formData.append("payment_method", paymentMethod === "online" ? onlinePaymentMethod : paymentMethod);
+    formData.append("payment_method", paymentMethod === "online" ? onlinePaymentMethod : "cod");
     formData.append("address", `${address}, ${city} - ${pincode}`);
     formData.append("prescription", prescriptionFile);
 
@@ -217,6 +217,27 @@ const Checkout = ({ user }) => {
         alert(response?.message || "Order failed");
         return;
       }
+       const orderId = response.order_id;
+       console.log("CREATE_PAYMENT URL:", ApiEndpoints.CREATE_PAYMENT);
+
+
+        // 2️⃣ 🔥 CREATE PAYMENT ENTRY (THIS WAS MISSING)
+    await apiCall(
+      "POST",
+      ApiEndpoints.CREATE_PAYMENT,
+      {
+        order_id: orderId,
+        amount: cartTotal,
+        payment_method:
+          paymentMethod === "online" ? onlinePaymentMethod : "cod",
+        transaction_id:
+          paymentMethod === "online"
+            ? `TXN_${Date.now()}`
+            : null,
+             payment_status:
+      paymentMethod === "online" ? "success" : "pending"
+      }
+    );
 
       alert(`Order placed successfully\nOrder No: ${response.order_number}`);
       clearCart();
