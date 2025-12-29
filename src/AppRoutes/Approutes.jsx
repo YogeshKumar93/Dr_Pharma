@@ -37,6 +37,7 @@ import UserProfile from "../Pages/UserProfile";
 import SpecialOffers from "../Pages/SpecialOffers";
 import AllPrescripedMedicine from "../Pages/AllPrescripedMedicine";
 import AdminLogout from "../Pages/AdminLogout";
+import AdminProfile from "../Pages/AdminProfile";
 
 
 const AppRoutes = () => {
@@ -94,6 +95,7 @@ const AppRoutes = () => {
               <Route path="/myorders" element={<MyOrders />} />
               <Route path="/allorders" element={<AllOrders />} />
               <Route path="/specialoffers" element={<SpecialOffers />} />
+              <Route path="/admin/adminprofile" element={<AdminProfile />} />
             
 
             </Route>

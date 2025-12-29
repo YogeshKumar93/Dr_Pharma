@@ -42,7 +42,8 @@ import EmailIcon from '@mui/icons-material/Email';
 import PhoneIcon from '@mui/icons-material/Phone';
 import Logo from "../assets/Logo1.png";
 import { useAuth } from '../Contexts/AuthContext';
-import AdminLogout from '../Pages/AdminLogout';
+import AdminProfile from '../Pages/AdminProfile';
+ 
 // import PersonIcon from "@mui/icons-material/Person";
 // import SettingsIcon from "@mui/icons-material/Settings";
 // import LogoutIcon from "@mui/icons-material/Logout";
@@ -341,12 +342,18 @@ const handleCloseMenu = () => {
       },
     }}
   >
-    <MenuItem>
-      <ListItemIcon>
-        <PersonIcon fontSize="small" />
-      </ListItemIcon>
-      Profile
-    </MenuItem>
+    <MenuItem
+  onClick={() => {
+    handleCloseMenu();
+    navigate("/admin/adminprofile");
+  }}
+>
+  <ListItemIcon>
+    <PersonIcon fontSize="small" />
+  </ListItemIcon>
+  Profile
+</MenuItem>
+
 
     <MenuItem>
       <ListItemIcon>
@@ -361,7 +368,7 @@ const handleCloseMenu = () => {
       <ListItemIcon>
         <LogoutIcon fontSize="small" color="error" />
       </ListItemIcon>
-      <AdminLogout />
+      Logout
     </MenuItem>
   </Menu>
 </Box>
