@@ -2,6 +2,7 @@ const ApiEndpoints = {
   // ---------- AUTH ----------
   REGISTER: "register",
   LOGIN: "login",
+    LOGOUT: "logout",
    ME: "me",
    FORGOT_PASSWORD: "forgot-password",
    RESET_PASSWORD: "reset-password",

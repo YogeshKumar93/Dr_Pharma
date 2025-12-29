@@ -36,6 +36,7 @@ import ForgotPassword from "../Pages/ForgotPassword";
 import UserProfile from "../Pages/UserProfile";
 import SpecialOffers from "../Pages/SpecialOffers";
 import AllPrescripedMedicine from "../Pages/AllPrescripedMedicine";
+import AdminLogout from "../Pages/AdminLogout";
 
 
 const AppRoutes = () => {
@@ -68,6 +69,7 @@ const AppRoutes = () => {
 
             {/* 🔓 AUTH PAGES (NO layout) */}
             <Route path="/login" element={<Login />} />
+            <Route path="/adminlogout" element={<AdminLogout />} />
             <Route path="/register" element={<Register />} />
             <Route path="/resetpassword" element={<ResetPassword />} />
             <Route path="/verify-otp" element={<VerifyOtp />} />

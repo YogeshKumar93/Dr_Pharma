@@ -28,7 +28,7 @@ export const AuthProvider = ({ children }) => {
     apiCall("GET", ApiEndpoints.ME)
       .then(({ response }) => {
         if (response?.user) {
-          setUser(response.user);
+          setUser(response);
         } else {
           localStorage.removeItem("token");
           setUser(null);

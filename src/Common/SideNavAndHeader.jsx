@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, Outlet, useLocation } from 'react-router-dom';
+import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import {
   Box,
   CssBaseline,
@@ -41,6 +41,8 @@ import LocalOfferIcon from "@mui/icons-material/LocalOffer";
 import EmailIcon from '@mui/icons-material/Email';
 import PhoneIcon from '@mui/icons-material/Phone';
 import Logo from "../assets/Logo1.png";
+import { useAuth } from '../Contexts/AuthContext';
+import AdminLogout from '../Pages/AdminLogout';
 // import PersonIcon from "@mui/icons-material/Person";
 // import SettingsIcon from "@mui/icons-material/Settings";
 // import LogoutIcon from "@mui/icons-material/Logout";
@@ -104,7 +106,7 @@ const Sidebar = ({ onItemClick, collapsed }) => {
     {
       text: 'Logout',
       icon: <LogoutIcon />,
-      path: '/logout',
+      path: '/adminlogout',
       tooltip: 'Logout from System'
     },
   ];
@@ -226,6 +228,8 @@ const SideNavAndHeader = () => {
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const [mobileOpen, setMobileOpen] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
+   const { logout } = useAuth();
+  const navigate = useNavigate();
 
   const pageTitles = {
     '/dashboard': 'Dashboard',
@@ -250,10 +254,10 @@ const handleCloseMenu = () => {
   setAnchorEl(null);
 };
 
-const handleLogout = () => {
-  localStorage.clear(); // or remove token only
-  window.location.href = "/login"; // or use navigate()
-};
+  const handleLogout = async () => {
+    await logout();       
+    navigate("/login");    
+  };
 
 
   const currentTitle = pageTitles[location.pathname] || 'Dr. Pharma Admin';
@@ -357,7 +361,7 @@ const handleLogout = () => {
       <ListItemIcon>
         <LogoutIcon fontSize="small" color="error" />
       </ListItemIcon>
-      Logout
+      <AdminLogout />
     </MenuItem>
   </Menu>
 </Box>
