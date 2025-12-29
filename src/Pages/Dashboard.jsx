@@ -169,7 +169,7 @@ const Dashboard = () => {
       todayValue: todayData.prescriptions_today,
     },
     { 
-      title: "Revenue", 
+      title: "Total Sales", 
       value: stats.orders * 1800, 
       icon: <MoneyIcon sx={{ fontSize: '1.2rem' }} />, 
       color: "#A3BE8C", 
@@ -229,7 +229,7 @@ const Dashboard = () => {
         flexWrap: 'wrap',
         gap: 2
       }}>
-        <Box>
+        {/* <Box>
           <Typography variant="h5" sx={{ 
             fontWeight: 700, 
             color: '#2E3440',
@@ -244,7 +244,7 @@ const Dashboard = () => {
           }}>
             Real-time analytics and insights
           </Typography>
-        </Box>
+        </Box> */}
 
         <Box sx={{ display: 'flex', gap: 1.5, alignItems: 'center' }}>
           <Chip
@@ -389,7 +389,7 @@ const Dashboard = () => {
                     color: '#4C566A',
                     fontSize: '0.85rem'
                   }}>
-                    Weekly revenue and order trends
+                    Weekly sale and order trends
                   </Typography>
                 </Box>
                 <Box sx={{ display: 'flex', gap: 0.5 }}>
