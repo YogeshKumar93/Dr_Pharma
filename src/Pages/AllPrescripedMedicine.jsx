@@ -88,13 +88,28 @@ const AllPrescripedMedicine = () => {
         rows={products}
         loading={loading}
         actions={actions}
+          serverPagination
         page={page}
         rowsPerPage={rowsPerPage}
+         onRefresh={fetchProducts} 
         totalCount={products.length}
         onPageChange={(e, p) => setPage(p)}
-        onRowsPerPageChange={(e) => setRowsPerPage(+e.target.value)}
+      onRowsPerPageChange={(e) => {
+          setRowsPerPage(parseInt(e.target.value, 10));
+          setPage(0);
+        }}
         topActions={
-          <Button variant="contained" onClick={() => setAddOpen(true)}>
+          <Button 
+                 
+                 variant="contained"
+                  onClick={() => setAddOpen(true)}
+                    sx={{
+                       backgroundColor: "#1A5276",
+               "&:hover": {
+                 backgroundColor: "#154360",
+               },
+                    }} 
+                  >
             Add Prescribed Medicine
           </Button>
         }

@@ -181,6 +181,7 @@ const SpecialOffers = () => {
         loading={loading}
         actions={actions}
         page={page}
+         serverPagination
         rowsPerPage={rowsPerPage}
         totalCount={offers.length}
         onRefresh={fetchOffers}
@@ -190,10 +191,17 @@ const SpecialOffers = () => {
           setPage(0);
         }}
         topActions={
-          <Button
-            variant="contained"
-            onClick={() => setAddOpen(true)}
-          >
+           <Button 
+                  
+                  variant="contained"
+                   onClick={() => setAddOpen(true)}
+                     sx={{
+                        backgroundColor: "#1A5276",
+                "&:hover": {
+                  backgroundColor: "#154360",
+                },
+                     }} 
+                   >
             Add Special Offer
           </Button>
         }
