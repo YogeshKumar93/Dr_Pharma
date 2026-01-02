@@ -404,7 +404,7 @@ const Checkout = ({ user }) => {
                       >
                         <Box>
                           <Typography variant="body1" fontWeight={600}>
-                            {item.name}
+                            {item.title}
                           </Typography>
                           <Typography variant="body2" color="text.secondary">
                             Qty: {item.qty}

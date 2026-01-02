@@ -196,7 +196,7 @@ const navigate = useNavigate();
 
               <div style={styles.summaryBox}>
                 <div>Subtotal: ₹{cartTotal.toFixed(2)}</div>
-                <div>Shipping: ₹5.99</div>
+                <div>Shipping: ₹50.00</div>
                 <strong>Total: ₹{(cartTotal + 5.99).toFixed(2)}</strong>
               </div>
 
