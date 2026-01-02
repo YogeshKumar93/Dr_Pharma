@@ -80,6 +80,33 @@ const MyOrders = () => {
     return statusColors[status] || "default";
   };
 
+  // ==================== Cancel Orders ========================
+  const handleCancelOrder = async (orderId) => {
+  if (!window.confirm("Are you sure you want to cancel this order?")) return;
+
+  const { response, error } = await apiCall(
+    "POST",
+    `orders/cancel/${orderId}`
+  );
+
+  if (error) {
+    alert(error.message || "Failed to cancel order");
+    return;
+  }
+
+  alert("Order cancelled successfully");
+
+  // 🔥 Update UI without refetch
+  setOrders((prevOrders) =>
+    prevOrders.map((order) =>
+      order.id === orderId
+        ? { ...order, order_status: "cancelled" }
+        : order
+    )
+  );
+};
+
+
   const formatDate = (dateString) => {
     if (!dateString) return "N/A";
     return new Date(dateString).toLocaleDateString("en-IN", {
@@ -464,7 +491,9 @@ const MyOrders = () => {
                           <Button
                             variant="outlined"
                             size="small"
+                            color="error"
                             disabled={order.order_status === "cancelled"}
+                            onClick={() => handleCancelOrder(order.id)}
                           >
                             Cancel Order
                           </Button>

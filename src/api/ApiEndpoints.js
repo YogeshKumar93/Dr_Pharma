@@ -25,6 +25,7 @@ const ApiEndpoints = {
   PLACE_ORDER: "orders/place",
   MY_ORDERS: "orders/myorders",
   SHOW_ORDER: "orders/show",
+  CANCEL_ORDER: "orders/cancel/${id}",
 
   // ---------- ORDERS (ADMIN) ----------
   ADMIN_ALL_ORDERS: "admin/orders",
