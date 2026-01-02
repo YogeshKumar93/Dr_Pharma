@@ -13,6 +13,9 @@ const AllPincodes = () => {
   const [loading, setLoading] = useState(false);
   const [addOpen, setAddOpen] = useState(false);
 
+   const [page, setPage] = useState(0);
+    const [rowsPerPage, setRowsPerPage] = useState(10);
+
   /* ---------------- FETCH PINCODES ---------------- */
   const fetchPincodes = async () => {   
 
@@ -43,18 +46,24 @@ const AllPincodes = () => {
     fetchPincodes();
   }, []);
 
+/* -------------------- PAGINATED DATA -------------------- */
+  const paginatedPincodes = useMemo(() => {
+      const start = page * rowsPerPage;
+      const end = start + rowsPerPage;
+      return pincodes.slice(start, end);
+    }, [pincodes, page, rowsPerPage]);
   /* ---------------- DELETE ---------------- */
-//   const handleDelete = async (row) => {
-//     if (!window.confirm(`Delete pincode ${row.pincode}?`)) return;
+  const handleDelete = async (row) => {
+    if (!window.confirm(`Delete pincode ${row.pincode}?`)) return;
 
-//     const { error } = await apiCall(
-//       "POST",
-//       ApiEndpoints.DELETE_PINCODE,
-//       { id: row.id }
-//     );
+    const { error } = await apiCall(
+      "POST",
+      "admin/pincodes/delete",
+      { id: row.id }
+    );
 
-//     if (!error) fetchPincodes();
-//   };
+    if (!error) fetchPincodes();
+  };
 
   /* ---------------- TABLE COLUMNS ---------------- */
   const columns = useMemo(
@@ -106,9 +115,19 @@ const AllPincodes = () => {
     <Box sx={{ p: 1 }}>
       <CommonTable
         columns={columns}
-        rows={pincodes}
+        rows={paginatedPincodes}
         loading={loading}
         actions={actions}
+        serverPagination
+         page={page}
+        rowsPerPage={rowsPerPage}
+         onRefresh={fetchPincodes} 
+        totalCount={pincodes.length}
+        onPageChange={(e, newPage) => setPage(newPage)}
+        onRowsPerPageChange={(e) => {
+          setRowsPerPage(parseInt(e.target.value, 10));
+          setPage(0);
+        }}
         topActions={
           <Button
             variant="contained"
