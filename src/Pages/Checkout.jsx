@@ -97,10 +97,16 @@ const Checkout = ({ user }) => {
 
   const navigate = useNavigate();
 
+  const SHIPPING_CHARGE = 50.00;
+
+
   const cartTotal = cartItems.reduce(
     (sum, item) => sum + item.price * item.qty,
     0
   );
+  
+const shippingCharge = SHIPPING_CHARGE;
+const finalTotal = cartTotal + shippingCharge;
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
@@ -235,7 +241,7 @@ const Checkout = ({ user }) => {
         ApiEndpoints.CREATE_PAYMENT,
         {
           order_id: orderId,
-          amount: cartTotal,
+          amount: finalTotal,
           payment_method:
             paymentMethod === "online" ? onlinePaymentMethod : "cod",
           transaction_id:
@@ -418,25 +424,29 @@ const Checkout = ({ user }) => {
                   </Stack>
 
                   <Divider sx={{ my: 2 }} />
+<Stack spacing={1}>
+  <Box display="flex" justifyContent="space-between">
+    <Typography>Subtotal</Typography>
+    <Typography>₹{cartTotal.toFixed(2)}</Typography>
+  </Box>
 
-                  <Box
-                    sx={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "center"
-                    }}
-                  >
-                    <Typography variant="h6" fontWeight={700}>
-                      Total
-                    </Typography>
-                    <Typography
-                      variant="h5"
-                      fontWeight={700}
-                      sx={{ color: "#1A5276" }}
-                    >
-                      ₹{cartTotal.toFixed(2)}
-                    </Typography>
-                  </Box>
+  <Box display="flex" justifyContent="space-between">
+    <Typography>Shipping</Typography>
+    <Typography>₹{SHIPPING_CHARGE.toFixed(2)}</Typography>
+  </Box>
+
+  <Divider />
+
+  <Box display="flex" justifyContent="space-between">
+    <Typography variant="h6" fontWeight={700}>
+      Total
+    </Typography>
+    <Typography variant="h6" fontWeight={700} color="#1A5276">
+      ₹{finalTotal.toFixed(2)}
+    </Typography>
+  </Box>
+</Stack>
+
                 </>
               ) : (
                 <Alert severity="info">Your cart is empty</Alert>
@@ -798,9 +808,9 @@ const Checkout = ({ user }) => {
                     Placing Order...
                   </Box>
                 ) : paymentMethod === "online" ? (
-                  `Pay ₹${cartTotal.toFixed(2)}`
+                  `Pay ₹${finalTotal.toFixed(2)}`
                 ) : (
-                  `Place Order : ₹${cartTotal.toFixed(2)}`
+                  `Place Order : ₹${finalTotal.toFixed(2)}`
                 )}
               </Button>
 
