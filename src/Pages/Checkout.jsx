@@ -93,6 +93,8 @@ const Checkout = ({ user }) => {
   const [showWallets, setShowWallets] = useState(false);
   const [selectedBank, setSelectedBank] = useState("");
   const [selectedWallet, setSelectedWallet] = useState("");
+  const [isPincodeDeliverable, setIsPincodeDeliverable] = useState(null);
+
   const navigate = useNavigate();
 
   const cartTotal = cartItems.reduce(
@@ -134,7 +136,7 @@ const Checkout = ({ user }) => {
   const handlePaymentSelect = (methodId, details) => {
     setOnlinePaymentMethod(methodId);
     setSelectedPaymentDetails(details);
-    
+
     // Reset all other sections
     setShowCardDetails(methodId === "card");
     setShowUPIDetails(methodId === "upi");
@@ -179,6 +181,12 @@ const Checkout = ({ user }) => {
       return;
     }
 
+    // 🔴 BLOCK ORDER IF PINCODE NOT DELIVERABLE
+    if (isPincodeDeliverable === false) {
+      alert("Order cannot be placed for this pincode");
+      return;
+    }
+
     if (cartItems.length === 0) {
       alert("Cart is empty");
       return;
@@ -217,28 +225,28 @@ const Checkout = ({ user }) => {
         alert(response?.message || "Order failed");
         return;
       }
-       const orderId = response.order_id;
-       console.log("CREATE_PAYMENT URL:", ApiEndpoints.CREATE_PAYMENT);
+      const orderId = response.order_id;
+      console.log("CREATE_PAYMENT URL:", ApiEndpoints.CREATE_PAYMENT);
 
 
-        // 2️⃣ 🔥 CREATE PAYMENT ENTRY 
-    await apiCall(
-      "POST",
-      ApiEndpoints.CREATE_PAYMENT,
-      {
-        order_id: orderId,
-        amount: cartTotal,
-        payment_method:
-          paymentMethod === "online" ? onlinePaymentMethod : "cod",
-        transaction_id:
-          paymentMethod === "online"
-            ? `TXN_${Date.now()}`
-            : null,
-             payment_status:
-      paymentMethod === "online" ? "success" : "pending"
-      },
-      true // ✅ JWT TOKEN PASS
-    );
+      // 2️⃣ 🔥 CREATE PAYMENT ENTRY 
+      await apiCall(
+        "POST",
+        ApiEndpoints.CREATE_PAYMENT,
+        {
+          order_id: orderId,
+          amount: cartTotal,
+          payment_method:
+            paymentMethod === "online" ? onlinePaymentMethod : "cod",
+          transaction_id:
+            paymentMethod === "online"
+              ? `TXN_${Date.now()}`
+              : null,
+          payment_status:
+            paymentMethod === "online" ? "success" : "pending"
+        },
+        true // ✅ JWT TOKEN PASS
+      );
 
       alert(`Order placed successfully\nOrder No: ${response.order_number}`);
       clearCart();
@@ -250,6 +258,30 @@ const Checkout = ({ user }) => {
       setLoading(false);
     }
   };
+
+  // ================pincode ===================
+  const checkPincode = async (pin) => {
+    if (!pin || pin.length < 6) {
+      setIsPincodeDeliverable(null);
+      return;
+    }
+
+    try {
+      const { response, error } = await apiCall("POST", "checkpincode", { pincode: pin });
+
+      if (error) {
+        console.error(error);
+        setIsPincodeDeliverable(false);
+        return;
+      }
+
+      setIsPincodeDeliverable(response.deliverable);
+    } catch (err) {
+      console.error(err);
+      setIsPincodeDeliverable(false);
+    }
+  };
+
 
   // Payment options with Amazon-like structure
   const paymentOptions = [
@@ -269,7 +301,7 @@ const Checkout = ({ user }) => {
       description: "All major banks",
       banks: [
         "State Bank of India",
-        "HDFC Bank", 
+        "HDFC Bank",
         "ICICI Bank",
         "Axis Bank",
         "Kotak Mahindra Bank",
@@ -314,7 +346,7 @@ const Checkout = ({ user }) => {
   ];
 
   return (
-    <Container maxWidth="xl" sx={{ py: 4, minHeight: "100vh", bgcolor: "#f4f6f8", mt:-13 }}>
+    <Container maxWidth="xl" sx={{ py: 4, minHeight: "100vh", bgcolor: "#f4f6f8", mt: -13 }}>
       <Typography
         variant="h4"
         align="center"
@@ -470,10 +502,28 @@ const Checkout = ({ user }) => {
                     fullWidth
                     placeholder="Pincode"
                     value={pincode}
-                    onChange={(e) => setPincode(e.target.value)}
+                    onChange={(e) => {
+                      setPincode(e.target.value);
+                      setIsPincodeDeliverable(null); // reset validity while typing
+                    }}
+                    onBlur={() => checkPincode(pincode)}
                     inputProps={{ maxLength: 6 }}
                     variant="outlined"
                   />
+
+                  {isPincodeDeliverable === false && (
+                    <Alert severity="error" sx={{ mt: 1 }}>
+                      Order cannot be placed for this pincode
+                    </Alert>
+                  )}
+
+
+                  {isPincodeDeliverable === true && (
+                    <Alert severity="success" sx={{ mt: 1 }}>
+                      Delivery available for this pincode
+                    </Alert>
+                  )}
+
                 </Grid>
               </Grid>
 
@@ -542,7 +592,7 @@ const Checkout = ({ user }) => {
               overflow: "hidden",
               position: "sticky",
               top: 20,
-                height: "100%",
+              height: "100%",
               display: "flex",
               flexDirection: "column"
             }}
@@ -584,9 +634,8 @@ const Checkout = ({ user }) => {
                   sx={{
                     p: 2,
                     mb: 2,
-                    border: `2px solid ${
-                      paymentMethod === "cod" ? "#1A5276" : "#e0e0e0"
-                    }`,
+                    border: `2px solid ${paymentMethod === "cod" ? "#1A5276" : "#e0e0e0"
+                      }`,
                     borderRadius: 1,
                     bgcolor: paymentMethod === "cod" ? "#eaf4fb" : "white",
                     cursor: "pointer",
@@ -629,9 +678,8 @@ const Checkout = ({ user }) => {
                   sx={{
                     p: 2,
                     mb: 2,
-                    border: `2px solid ${
-                      paymentMethod === "online" ? "#1A5276" : "#e0e0e0"
-                    }`,
+                    border: `2px solid ${paymentMethod === "online" ? "#1A5276" : "#e0e0e0"
+                      }`,
                     borderRadius: 1,
                     bgcolor: paymentMethod === "online" ? "#eaf4fb" : "white",
                     cursor: "pointer",
@@ -779,34 +827,34 @@ const Checkout = ({ user }) => {
 
       {/* Amazon-style Payment Dialog */}
       <OnlinePayment
-  open={openPaymentDialog}
-  onClose={handlePaymentDialogClose}
-  cartItems={cartItems}
-  cartTotal={cartTotal}
-  paymentOptions={paymentOptions}
+        open={openPaymentDialog}
+        onClose={handlePaymentDialogClose}
+        cartItems={cartItems}
+        cartTotal={cartTotal}
+        paymentOptions={paymentOptions}
 
-  onlinePaymentMethod={onlinePaymentMethod}
-  setOnlinePaymentMethod={setOnlinePaymentMethod}
-  setPaymentMethod={setPaymentMethod}
+        onlinePaymentMethod={onlinePaymentMethod}
+        setOnlinePaymentMethod={setOnlinePaymentMethod}
+        setPaymentMethod={setPaymentMethod}
 
-  cardNumber={cardNumber}
-  setCardNumber={setCardNumber}
-  expiryDate={expiryDate}
-  setExpiryDate={setExpiryDate}
-  cvv={cvv}
-  setCvv={setCvv}
+        cardNumber={cardNumber}
+        setCardNumber={setCardNumber}
+        expiryDate={expiryDate}
+        setExpiryDate={setExpiryDate}
+        cvv={cvv}
+        setCvv={setCvv}
 
-  upiId={upiId}
-  setUpiId={setUpiId}
+        upiId={upiId}
+        setUpiId={setUpiId}
 
-  selectedBank={selectedBank}
-  setSelectedBank={setSelectedBank}
+        selectedBank={selectedBank}
+        setSelectedBank={setSelectedBank}
 
-  selectedWallet={selectedWallet}
-  setSelectedWallet={setSelectedWallet}
+        selectedWallet={selectedWallet}
+        setSelectedWallet={setSelectedWallet}
 
-  handlePaymentSubmit={handlePaymentSubmit}
-/>
+        handlePaymentSubmit={handlePaymentSubmit}
+      />
 
 
       <style>
