@@ -134,7 +134,7 @@ const UserProfile = () => {
       p: 1.5,
       maxWidth: { lg: '1600px', xl: '1800px' },
       // mx: 'auto',
-      mt:-4
+      mt:"-30px"
     }}>
      
 

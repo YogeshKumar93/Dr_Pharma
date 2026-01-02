@@ -25,7 +25,7 @@ const navigate = useNavigate();
       minHeight: "100vh",
       background: "#faf7f0",
       // padding: "30px 0",
-      marginTop:-13,
+      marginTop:"-90px",
       
       
     },
@@ -37,6 +37,7 @@ const navigate = useNavigate();
       width: "95%",
       maxWidth: "1400px",
       margin: "0 auto",
+     
       
     },
 
