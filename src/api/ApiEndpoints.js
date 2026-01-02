@@ -42,7 +42,18 @@ const ApiEndpoints = {
   // --------------Special Offers -----------------
   GET_ALL_OFFERS: "special-offers",
   ADD_OFFERS: "special-offers/create",
-  DELETE_OFFERS: "special-offers/delete"
+  DELETE_OFFERS: "special-offers/delete",
+
+// ---------- PINCODES (ADMIN) ----------
+ADMIN_PINCODES: "admin/pincodes",
+CREATE_PINCODE: "admin/pincodes/create",
+UPDATE_PINCODE: "admin/pincodes/update",
+DELETE_PINCODE: "admin/pincodes/delete",
+
+// ---------- PINCODE (PUBLIC) ----------
+CHECK_PINCODE: "checkpincode",
+
+
 };
 
 export default ApiEndpoints;

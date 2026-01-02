@@ -99,10 +99,10 @@ const Sidebar = ({ onItemClick, collapsed }) => {
       tooltip: 'Special Offers'
     },
     {
-      text: 'Settings',
+      text: 'Pincodes',
       icon: <SettingsIcon />,
-      path: '/settings',
-      tooltip: 'System Settings'
+      path: '/allpincodes',
+      tooltip: 'Pincodes'
     },
     {
       text: 'Logout',
@@ -241,7 +241,7 @@ const SideNavAndHeader = () => {
     '/payments': 'Payment Management',
     '/specialoffers': 'Special Offers',
     '/allprescribedmedicine': 'Prescription Management',
-    '/settings': 'System Settings',
+    '/allpincodes': 'Pincodes',
   };
 
   const [anchorEl, setAnchorEl] = useState(null);

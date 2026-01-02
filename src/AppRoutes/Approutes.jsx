@@ -38,6 +38,7 @@ import SpecialOffers from "../Pages/SpecialOffers";
 import AllPrescripedMedicine from "../Pages/AllPrescripedMedicine";
 import AdminLogout from "../Pages/AdminLogout";
 import AdminProfile from "../Pages/AdminProfile";
+import AllPincodes from "../Pages/AllPincodes";
 
 
 const AppRoutes = () => {
@@ -91,6 +92,7 @@ const AppRoutes = () => {
               <Route path="/medicines" element={<Medicines />} />
               <Route path="/payments" element={<Payments />} />
               <Route path="/settings" element={<Settings />} />
+              <Route path="/allpincodes" element={<AllPincodes />} />
               <Route path="/allprescribedmedicine" element={<AllPrescripedMedicine />} />
               <Route path="/myorders" element={<MyOrders />} />
               <Route path="/allorders" element={<AllOrders />} />
