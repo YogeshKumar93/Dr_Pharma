@@ -334,7 +334,7 @@ const MyOrders = () => {
                         Items
                       </Typography>
                       <Typography variant="body2">
-                        {order.items_count || order.items?.length || "N/A"}{" "}
+                        {order.items?.length}
                         items
                       </Typography>
                     </Stack>
@@ -379,21 +379,18 @@ const MyOrders = () => {
                                   <TableRow key={index}>
                                     <TableCell>
                                       <Typography variant="body2">
-                                        {item.name || `Item ${index + 1}`}
+                                        {item.product_name || `Item ${index + 1}`}
                                       </Typography>
                                     </TableCell>
                                     <TableCell align="center">
-                                      {item.quantity || 1}
+                                      {item.qty || 1}
                                     </TableCell>
                                     <TableCell align="right">
-                                      ₹{item.price || 0}
+                                      ₹{item.price.toLocaleString("en-IN") || 0}
                                     </TableCell>
                                     <TableCell align="right">
                                       ₹
-                                      {(
-                                        (item.price || 0) *
-                                        (item.quantity || 1)
-                                      ).toLocaleString("en-IN")}
+                                       ₹{item.total.toLocaleString("en-IN")}
                                     </TableCell>
                                   </TableRow>
                                 ))}
@@ -413,73 +410,55 @@ const MyOrders = () => {
 
                         {/* Order Summary */}
                         <Paper
-                          elevation={0}
-                          sx={{
-                            p: 2,
-                            mt: 2,
-                            bgcolor: "grey.50",
-                            borderRadius: 1,
-                          }}
-                        >
-                          <Grid container justifyContent="flex-end">
-                            <Grid item xs={12} sm={6} md={4}>
-                              <Stack spacing={1}>
-                                <Stack
-                                  direction="row"
-                                  justifyContent="space-between"
-                                >
-                                  <Typography variant="body2">
-                                    Subtotal
-                                  </Typography>
-                                  <Typography variant="body2">
-                                    ₹
-                                    {order.subtotal?.toLocaleString("en-IN") ||
-                                      "N/A"}
-                                  </Typography>
-                                </Stack>
-                                <Stack
-                                  direction="row"
-                                  justifyContent="space-between"
-                                >
-                                  <Typography variant="body2">
-                                    Shipping
-                                  </Typography>
-                                  <Typography variant="body2">
-                                    ₹{order.shipping_cost || "Free"}
-                                  </Typography>
-                                </Stack>
-                                <Stack
-                                  direction="row"
-                                  justifyContent="space-between"
-                                >
-                                  <Typography variant="body2">Tax</Typography>
-                                  <Typography variant="body2">
-                                    ₹{order.tax || "N/A"}
-                                  </Typography>
-                                </Stack>
-                                <Divider />
-                                <Stack
-                                  direction="row"
-                                  justifyContent="space-between"
-                                >
-                                  <Typography variant="subtitle1" fontWeight="bold">
-                                    Total
-                                  </Typography>
-                                  <Typography
-                                    variant="subtitle1"
-                                    fontWeight="bold"
-                                    color="primary"
-                                  >
-                                    ₹
-                                    {order.total_amount?.toLocaleString(
-                                      "en-IN"
-                                    )}
-                                  </Typography>
-                                </Stack>
-                              </Stack>
-                            </Grid>
-                          </Grid>
-                        </Paper>
+  elevation={0}
+  sx={{
+    p: 2,
+    mt: 2,
+    bgcolor: "grey.50",
+    borderRadius: 1,
+  }}
+>
+  <Grid container justifyContent="flex-end">
+    <Grid item xs={12} sm={6} md={4}>
+      <Stack spacing={1}>
+        {/* SUBTOTAL */}
+        <Stack direction="row" justifyContent="space-between">
+          <Typography variant="body2">Subtotal</Typography>
+          <Typography variant="body2">
+            ₹{(
+              order.total_amount - (order.shipping_charge || 0)
+            ).toLocaleString("en-IN")}
+          </Typography>
+        </Stack>
+
+        {/* SHIPPING */}
+        <Stack direction="row" justifyContent="space-between">
+          <Typography variant="body2">Shipping</Typography>
+          <Typography variant="body2">
+            ₹{(order.shipping_charge || 0).toLocaleString("en-IN")}
+          </Typography>
+        </Stack>
+
+        <Divider />
+
+        {/* TOTAL */}
+        <Stack direction="row" justifyContent="space-between">
+          <Typography variant="subtitle1" fontWeight="bold">
+            Total
+          </Typography>
+          <Typography
+            variant="subtitle1"
+            fontWeight="bold"
+            color="primary"
+          >
+            ₹{order.total_amount.toLocaleString("en-IN")}
+          </Typography>
+        </Stack>
+      </Stack>
+    </Grid>
+  </Grid>
+</Paper>
+
 
                         {/* Action Buttons */}
                         <Stack
