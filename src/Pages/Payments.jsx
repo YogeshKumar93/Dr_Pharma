@@ -14,6 +14,7 @@ import CommonTable from "../Common/CommonTable";
 import { apiCall } from "../api/api";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
+import ApiEndpoints from "../api/apiendpoints";
 
 const Payments = () => {
   const [payments, setPayments] = useState([]);
@@ -24,19 +25,34 @@ const Payments = () => {
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
   /* -------------------- FETCH PAYMENTS -------------------- */
-  const fetchPayments = async () => {
-    try {
-      setLoading(true);
-      const { response } = await apiCall("GET", "admin/payments");
-      setPayments(Array.isArray(response) ? response : []);
-    } catch (err) {
-      console.error("Fetch payments failed", err);
-    } finally {
-      setLoading(false);
+ const fetchPayments = async () => {
+  console.log("fetchPayments called");
+  try {
+    setLoading(true);
+
+    const { response, error } = await apiCall(
+      "GET",
+      ApiEndpoints.ADMIN_PAYMENTS,
+      null,
+      true // ✅ JWT REQUIRED
+    );
+
+    if (error) {
+      console.error(error);
+      return;
     }
-  };
+
+    setPayments(Array.isArray(response) ? response : []);
+  } catch (err) {
+    console.error("Fetch payments failed", err);
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   useEffect(() => {
+     console.log("Payments page mounted");
     fetchPayments();
   }, []);
 

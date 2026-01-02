@@ -221,7 +221,7 @@ const Checkout = ({ user }) => {
        console.log("CREATE_PAYMENT URL:", ApiEndpoints.CREATE_PAYMENT);
 
 
-        // 2️⃣ 🔥 CREATE PAYMENT ENTRY (THIS WAS MISSING)
+        // 2️⃣ 🔥 CREATE PAYMENT ENTRY 
     await apiCall(
       "POST",
       ApiEndpoints.CREATE_PAYMENT,
@@ -236,7 +236,8 @@ const Checkout = ({ user }) => {
             : null,
              payment_status:
       paymentMethod === "online" ? "success" : "pending"
-      }
+      },
+      true // ✅ JWT TOKEN PASS
     );
 
       alert(`Order placed successfully\nOrder No: ${response.order_number}`);
