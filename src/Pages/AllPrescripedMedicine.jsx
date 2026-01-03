@@ -25,6 +25,19 @@ const AllPrescripedMedicine = () => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
+  const [filters, setFilters] = useState({
+    title: "",
+    category: "",
+    stock:"",
+  });
+  const categoryOptions = [
+  { label: "Medicines", value: "medicines" },
+  { label: "Medical Instruments", value: "medical instruments" },
+  { label: "Syrups", value: "syrups" },
+  { label: "Kits", value: "kits" },
+  { label: "Supplements", value: "supplements" },
+];
+
   const fetchProducts = async () => {
     try {
       setLoading(true);
@@ -57,6 +70,47 @@ const AllPrescripedMedicine = () => {
     fetchProducts();
   };
 
+  /* -------------------- FILTER CONFIG -------------------- */
+  const filtersConfig = [
+  {
+    type: "text",
+    name: "title",
+    label: "Search Title",
+  },
+  {
+    type: "dropdown",
+    name: "category",
+    label: "Category",
+     options: categoryOptions,
+  },
+ 
+];
+
+/* -------------------- FILTERED DATA -------------------- */
+const filteredProducts = useMemo(() => {
+  return products.filter((product) => {
+    // Title filter
+    if (filters.title && !product.title?.toLowerCase().includes(filters.title.toLowerCase())) {
+      return false;
+    }
+
+    // Category filter
+    if (filters.category && product.category?.toLowerCase() !== filters.category.toLowerCase()) {
+      return false;
+    } 
+
+    return true;
+  });
+}, [products, filters]);
+
+ /* -------------------- PAGINATED DATA -------------------- */
+ const paginatedProducts = useMemo(() => {
+  const start = page * rowsPerPage;
+  const end = start + rowsPerPage;
+  return filteredProducts.slice(start, end);
+}, [filteredProducts, page, rowsPerPage]);
+
+/* -------------------- COLUMNS -------------------- */
   const columns = useMemo(() => [
     { headerName: "ID", field: "id", width: "60px" },
     { headerName: "Title", field: "title" },
@@ -85,14 +139,20 @@ const AllPrescripedMedicine = () => {
     <Box p={1}>
       <CommonTable
         columns={columns}
-        rows={products}
+        rows={paginatedProducts}
         loading={loading}
         actions={actions}
+          filtersConfig={filtersConfig}
+  filters={filters}
+  onFiltersChange={(newFilters) => {
+    setFilters(newFilters);
+    setPage(0); 
+  }}
           serverPagination
         page={page}
         rowsPerPage={rowsPerPage}
          onRefresh={fetchProducts} 
-        totalCount={products.length}
+        totalCount={filteredProducts.length}
         onPageChange={(e, p) => setPage(p)}
       onRowsPerPageChange={(e) => {
           setRowsPerPage(parseInt(e.target.value, 10));

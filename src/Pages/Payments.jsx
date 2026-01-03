@@ -24,6 +24,14 @@ const Payments = () => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
+  const [filters, setFilters] = useState({
+  orderId: "",
+  user: "",
+  payment_status: "",
+  payment_method: "",
+});
+
+
   /* -------------------- FETCH PAYMENTS -------------------- */
  const fetchPayments = async () => {
   console.log("fetchPayments called");
@@ -81,12 +89,73 @@ const Payments = () => {
     return "warning";
   };
 
+  const filtersConfig = [
+  {
+    type: "text",
+    name: "orderId",
+    label: "Order ID",
+  },
+  {
+    type: "text",
+    name: "user",
+    label: "User Name / Email",
+  },
+  {
+    type: "dropdown",
+    name: "payment_status",
+    label: "Payment Status",
+    options: [
+      { label: "Pending", value: "pending" },
+      { label: "Paid", value: "paid" },
+      { label: "Failed", value: "failed" },
+    ],
+  },
+  {
+    type: "dropdown",
+    name: "payment_method",
+    label: "Payment Method",
+    options: [
+      { label: "COD", value: "cod" },
+      { label: "Online", value: "online" },
+    ],
+  },
+];
+// ================= filters=======================
+const filteredPayments = useMemo(() => {
+  return payments.filter((p) => {
+    // Filter by Order ID
+    if (filters.orderId && !p.order_id.toString().includes(filters.orderId)) {
+      return false;
+    }
+
+    // Filter by User
+    const userName = p?.order?.user?.name?.toLowerCase() || "";
+    const userEmail = p?.order?.user?.email?.toLowerCase() || "";
+    if (filters.user && !userName.includes(filters.user.toLowerCase()) && !userEmail.includes(filters.user.toLowerCase())) {
+      return false;
+    }
+
+    // Filter by Payment Status
+    if (filters.payment_status && p.payment_status !== filters.payment_status) {
+      return false;
+    }
+
+    // Filter by Payment Method
+    if (filters.payment_method && p.payment_method !== filters.payment_method) {
+      return false;
+    }
+
+    return true;
+  });
+}, [payments, filters]);
+
   /* -------------------- PAGINATED DATA -------------------- */
-  const paginatedPayments = useMemo(() => {
-    const start = page * rowsPerPage;
-    const end = start + rowsPerPage;
-    return payments.slice(start, end);
-  }, [payments, page, rowsPerPage]);
+ const paginatedPayments = useMemo(() => {
+  const start = page * rowsPerPage;
+  const end = start + rowsPerPage;
+  return filteredPayments.slice(start, end);
+}, [filteredPayments, page, rowsPerPage]);
+
 
   /* -------------------- COLUMNS -------------------- */
  const columns = useMemo(() => [
@@ -200,11 +269,17 @@ const Payments = () => {
         rows={paginatedPayments}
         loading={loading}
          actions={actions}
+          filtersConfig={filtersConfig}
+  filters={filters}
+  onFiltersChange={(newFilters) => {
+    setFilters(newFilters);
+    setPage(0); // Reset page on filter change
+  }}
         serverPagination
         page={page}
         rowsPerPage={rowsPerPage}
         onRefresh={fetchPayments}
-        totalCount={payments.length}
+        totalCount={filteredPayments.length}
         onPageChange={(e, newPage) => setPage(newPage)}
         onRowsPerPageChange={(e) => {
           setRowsPerPage(parseInt(e.target.value, 10));
