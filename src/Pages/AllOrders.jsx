@@ -31,6 +31,14 @@ const [previewImage, setPreviewImage] = useState(null);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
+  // 🔹 FILTER STATE
+const [filters, setFilters] = useState({
+  order_number: "",
+  payment_method: "",
+  order_status: "",
+});
+
+
   // 🔹 Fetch all admin orders
   const fetchOrders = () => {
     setLoading(true);
@@ -62,13 +70,47 @@ const [previewImage, setPreviewImage] = useState(null);
   });
 };
 
+/* -------------------- FILTERED DATA -------------------- */
+const filteredOrders = useMemo(() => {
+  return orders.filter((order) => {
+
+    // Order No filter
+    if (
+      filters.order_number &&
+      !order.order_number
+        ?.toLowerCase()
+        .includes(filters.order_number.toLowerCase())
+    ) {
+      return false;
+    }
+
+    // Payment Method filter
+    if (
+      filters.payment_method &&
+      order.payment_method !== filters.payment_method
+    ) {
+      return false;
+    }
+
+    // Order Status filter
+    if (
+      filters.order_status &&
+      order.order_status !== filters.order_status
+    ) {
+      return false;
+    }
+
+    return true;
+  });
+}, [orders, filters]);
 
    /* -------------------- PAGINATED DATA -------------------- */
     const paginatedOrders = useMemo(() => {
-      const start = page * rowsPerPage;
-      const end = start + rowsPerPage;
-      return orders.slice(start, end);
-    }, [orders, page, rowsPerPage]);
+  const start = page * rowsPerPage;
+  const end = start + rowsPerPage;
+  return filteredOrders.slice(start, end);
+}, [filteredOrders, page, rowsPerPage]);
+
 
   /* -------------------- ACTION HANDLERS -------------------- */
 
@@ -88,6 +130,37 @@ const [previewImage, setPreviewImage] = useState(null);
       order_id: row.id,
     }).then(fetchOrders);
   };
+
+  /* -------------------- FILTER CONFIG -------------------- */
+const filtersConfig = [
+  {
+    type: "text",
+    name: "order_number",
+    label: "Order No",
+  },
+  {
+    type: "dropdown",
+    name: "payment_method",
+    label: "Payment Method",
+    options: [
+      { label: "COD", value: "cod" },
+      { label: "Online", value: "online" },
+    ],
+  },
+  {
+    type: "dropdown",
+    name: "order_status",
+    label: "Order Status",
+    options: [
+      { label: "Pending", value: "pending" },
+      { label: "Confirmed", value: "confirmed" },
+      { label: "Shipped", value: "shipped" },
+      { label: "Delivered", value: "delivered" },
+      { label: "Cancelled", value: "cancelled" },
+    ],
+  },
+];
+
 
   /* -------------------- COLUMNS -------------------- */
   const columns = [
@@ -191,6 +264,12 @@ const [previewImage, setPreviewImage] = useState(null);
         rows={paginatedOrders}
         loading={loading}
         actions={actions}
+         filtersConfig={filtersConfig}
+  filters={filters}
+  onFiltersChange={(newFilters) => {
+    setFilters(newFilters);
+    setPage(0); // filter change pe page reset
+  }}
         onRefresh={fetchOrders} 
         serverPagination
         page={page}
