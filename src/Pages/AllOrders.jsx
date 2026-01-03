@@ -125,7 +125,7 @@ const [previewImage, setPreviewImage] = useState(null);
           onChange={(e) =>
             updateOrderStatus(row.id, e.target.value)
           }
-          sx={{ minWidth: 140 }}
+          sx={{ minWidth: 120 }}
         >
           <MenuItem value="pending">Pending</MenuItem>
           <MenuItem value="confirmed">Confirmed</MenuItem>
