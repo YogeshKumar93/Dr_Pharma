@@ -228,7 +228,7 @@ const handleAddToCart = (product, index) => {
           px: { xs: 2, md: 2 },
           textAlign: "center",
 
-           backgroundImage: "url('src/assets/ChristmasBanner2.png')",
+           backgroundImage: "url('src/assets/ChristmasBanner4.png')",
     backgroundSize: "cover",
     backgroundPosition: "center",
     backgroundRepeat: "no-repeat",
