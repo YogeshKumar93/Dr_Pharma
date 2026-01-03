@@ -57,6 +57,9 @@ import {
 
 import { apiCall } from "../api/api";
 import ApiEndpoints from "../api/ApiEndpoints";
+import TaskAltIcon from "@mui/icons-material/TaskAlt";
+import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
+
 
 // ================= DASHBOARD =================
 const Dashboard = () => {
@@ -735,98 +738,326 @@ const Dashboard = () => {
         </Grid>
 
         {/* Row 3: Performance Metrics */}
-        <Grid container spacing={3}>
-          <Grid item xs={12}>
-            <Card sx={{
+       <Grid container spacing={3}>
+  <Grid item xs={12}>
+    <Card sx={{
+      borderRadius: 3,
+      boxShadow: '0 20px 40px rgba(103, 58, 183, 0.15)',
+      background: 'linear-gradient(135deg, #2245cdff 0%, #a4bda9ff 100%)',
+      border: 'none',
+      position: 'relative',
+      width:'1140px',
+      height:'400px',
+      overflow: 'hidden',
+      '&::before': {
+        content: '""',
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        height: '4px',
+        background: 'linear-gradient(90deg, #4CAF50 0%, #2196F3 50%, #9C27B0 100%)',
+      }
+    }}>
+      <CardContent sx={{ p: 2 }}>
+        <Box sx={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          mb: 4,
+          color: 'white'
+        }}>
+          <Box>
+            <Typography variant="h5" fontWeight={800} gutterBottom>
+              Performance Analytics
+            </Typography>
+            <Typography variant="body2" sx={{ opacity: 0.9 }}>
+              Real-time insights into your store's performance
+            </Typography>
+          </Box>
+          <Chip
+            label="Live"
+            sx={{
+              bgcolor: 'rgba(255, 255, 255, 0.2)',
+              color: 'white',
+              fontWeight: 700,
+              backdropFilter: 'blur(10px)',
+              border: '1px solid rgba(255, 255, 255, 0.3)'
+            }}
+          />
+        </Box>
+        
+        <Grid container spacing={6}>
+          {/* Order Completion Rate */}
+          <Grid item xs={12} md={4}>
+            <Box sx={{ 
+              p: 2, 
+              bgcolor: 'rgba(244, 247, 243, 0.1)',
               borderRadius: 3,
-              boxShadow: '0 10px 30px rgba(233, 30, 99, 0.1)',
-              background: 'linear-gradient(135deg, #ffffff 0%, #fff0f5 100%)',
-              border: '1px solid #e2e8f0',
-              width:'1130px'
+              border: '1px solid rgba(255, 255, 255, 0.2)',
+              height: '200px',
+              backdropFilter: 'blur(10px)',
+              transition: 'all 0.3s ease',
+              '&:hover': {
+                bgcolor: 'rgba(255, 255, 255, 0.15)',
+                transform: 'translateY(-4px)',
+                boxShadow: '0 10px 20px rgba(0,0,0,0.1)'
+              }
             }}>
-              <CardContent sx={{ p: 3 }}>
-                <Typography variant="h6" fontWeight={700} mb={3} color="#2d3748">
-                  Performance Metrics
+              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                <Box sx={{
+                  width: 10,
+                  height: 10,
+                  borderRadius: 2,
+                  bgcolor: 'rgba(76, 175, 80, 0.2)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  mr: 2
+                }}>
+                  <TaskAltIcon  sx={{ color: '#4CAF50' }} />
+                </Box>
+                <Typography variant="body2" fontWeight={600} color="rgba(255, 255, 255, 0.9)">
+                  Order Completion Rate
                 </Typography>
-                <Grid container spacing={3}>
-                  <Grid item xs={12} md={4}>
-                    <Box sx={{ 
-                      p: 2, 
-                      bgcolor: 'white',
-                      borderRadius: 2,
-                      border: '1px solid #e2e8f0',
-                      height: '100%'
-                    }}>
-                      <Typography variant="body2" color="#718096" gutterBottom>
-                        Order Completion Rate
-                      </Typography>
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                        <Box sx={{ flexGrow: 1 }}>
-                          <LinearProgress
-                            variant="determinate"
-                            value={(completedOrders / totalOrders) * 100 || 0}
-                            sx={{ 
-                              height: 10, 
-                              borderRadius: 5,
-                              bgcolor: 'rgba(76, 175, 80, 0.1)',
-                              '& .MuiLinearProgress-bar': {
-                                borderRadius: 5,
-                                background: 'linear-gradient(90deg, #4CAF50 0%, #8BC34A 100%)'
-                              }
-                            }}
-                          />
-                        </Box>
-                        <Typography variant="h6" fontWeight={700} color="#4CAF50">
-                          {totalOrders > 0 ? ((completedOrders / totalOrders) * 100).toFixed(1) : 0}%
-                        </Typography>
-                      </Box>
-                    </Box>
-                  </Grid>
-                  <Grid item xs={12} md={4}>
-                    <Box sx={{ 
-                      p: 2, 
-                      bgcolor: 'white',
-                      borderRadius: 2,
-                      border: '1px solid #e2e8f0',
-                      height: '100%'
-                    }}>
-                      <Typography variant="body2" color="#718096" gutterBottom>
-                        Average Order Value
-                      </Typography>
-                      <Typography variant="h4" fontWeight={700} color="#673AB7">
-                        ₹{totalOrders > 0 ? (totalRevenue / totalOrders).toFixed(2) : '0.00'}
-                      </Typography>
-                    </Box>
-                  </Grid>
-                  <Grid item xs={12} md={4}>
-                    <Box sx={{ 
-                      p: 2, 
-                      bgcolor: 'white',
-                      borderRadius: 2,
-                      border: '1px solid #e2e8f0',
-                      height: '100%'
-                    }}>
-                      <Typography variant="body2" color="#718096" gutterBottom>
-                        Daily Sales Trend
-                      </Typography>
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                        <TrendingUpIcon sx={{ color: '#4CAF50', fontSize: 32 }} />
-                        <Box>
-                          <Typography variant="h4" fontWeight={700} color="#4CAF50">
-                            +15.2%
-                          </Typography>
-                          <Typography variant="caption" color="#718096">
-                            Compared to last week
-                          </Typography>
-                        </Box>
-                      </Box>
-                    </Box>
-                  </Grid>
-                </Grid>
-              </CardContent>
-            </Card>
+              </Box>
+              
+              <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                <Box sx={{ flexGrow: 1, mr: 2 }}>
+                  <LinearProgress
+                    variant="determinate"
+                    value={(completedOrders / totalOrders) * 100 || 0}
+                    sx={{ 
+                      height: 12, 
+                      borderRadius: 6,
+                      bgcolor: 'rgba(255, 255, 255, 0.1)',
+                      '& .MuiLinearProgress-bar': {
+                        borderRadius: 6,
+                        background: 'linear-gradient(90deg, #4CAF50 0%, #8BC34A 100%)',
+                        boxShadow: '0 2px 8px rgba(76, 175, 80, 0.4)'
+                      }
+                    }}
+                  />
+                </Box>
+                <Typography variant="h4" fontWeight={800} color="#4CAF50">
+                  {totalOrders > 0 ? ((completedOrders / totalOrders) * 100).toFixed(1) : 0}%
+                </Typography>
+              </Box>
+              
+              <Typography variant="caption" sx={{ color: 'rgba(255, 255, 255, 0.7)', display: 'block', textAlign: 'right' }}>
+                {completedOrders} of {totalOrders} orders completed
+              </Typography>
+            </Box>
+          </Grid>
+
+          {/* Average Order Value */}
+          <Grid item xs={12} md={4}>
+            <Box sx={{ 
+              p: 2, 
+              bgcolor: 'rgba(255, 255, 255, 0.1)',
+              borderRadius: 3,
+              border: '1px solid rgba(255, 255, 255, 0.2)',
+              height: '200px',
+              backdropFilter: 'blur(10px)',
+              transition: 'all 0.3s ease',
+              '&:hover': {
+                bgcolor: 'rgba(255, 255, 255, 0.15)',
+                transform: 'translateY(-4px)',
+                boxShadow: '0 10px 20px rgba(0,0,0,0.1)'
+              }
+            }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                <Box sx={{
+                  width: 10,
+                  height: 10,
+                  borderRadius: 2,
+                  bgcolor: 'rgba(103, 58, 183, 0.2)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  mr: 2
+                }}>
+                  <AttachMoneyIcon  sx={{ color: '#673AB7' }} />
+                </Box>
+                <Typography variant="body2" fontWeight={600} color="rgba(255, 255, 255, 0.9)">
+                  Average Order Value
+                </Typography>
+              </Box>
+              
+              <Box sx={{ display: 'flex', alignItems: 'baseline', mb: 1 }}>
+                <Typography variant="h4" fontWeight={800} color="#fff" sx={{ mr: 1 }}>
+                  ₹
+                </Typography>
+                <Typography variant="h3" fontWeight={800} color="#fff">
+                  {totalOrders > 0 ? (totalRevenue / totalOrders).toFixed(0) : '0'}
+                </Typography>
+                <Typography variant="h6" color="rgba(255, 255, 255, 0.7)" sx={{ ml: 1 }}>
+                  .{totalOrders > 0 ? (totalRevenue / totalOrders).toFixed(2).split('.')[1] : '00'}
+                </Typography>
+              </Box>
+              
+              <Box sx={{ display: 'flex', alignItems: 'center', mt: 2 }}>
+                <Box sx={{ 
+                  display: 'flex', 
+                  alignItems: 'center',
+                  px: 1.5,
+                  py: 0.5,
+                  borderRadius: 2,
+                  bgcolor: 'rgba(255, 255, 255, 0.1)',
+                  mr: 2
+                }}>
+                  <TrendingUpIcon sx={{ color: '#4CAF50', fontSize: 16, mr: 0.5 }} />
+                  <Typography variant="caption" sx={{ color: '#4CAF50', fontWeight: 600 }}>
+                    +8.5%
+                  </Typography>
+                </Box>
+                <Typography variant="caption" sx={{ color: 'rgba(255, 255, 255, 0.7)' }}>
+                  from last month
+                </Typography>
+              </Box>
+            </Box>
+          </Grid>
+
+          {/* Daily Sales Trend */}
+          <Grid item xs={12} md={4}>
+            <Box sx={{ 
+              p: 2, 
+              bgcolor: 'rgba(255, 255, 255, 0.1)',
+              borderRadius: 3,
+              border: '1px solid rgba(255, 255, 255, 0.2)',
+              height: '200px',
+             
+              backdropFilter: 'blur(10px)',
+              transition: 'all 0.3s ease',
+              '&:hover': {
+                bgcolor: 'rgba(255, 255, 255, 0.15)',
+                transform: 'translateY(-4px)',
+                boxShadow: '0 10px 20px rgba(0,0,0,0.1)'
+              }
+            }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                <Box sx={{
+                  width: 5,
+                  height: 5,
+                  
+                  borderRadius: 2,
+                  bgcolor: 'rgba(255, 193, 7, 0.2)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  mr: 2
+                }}>
+                  <TrendingUpIcon sx={{ color: '#FFC107' }} />
+                </Box>
+                <Typography variant="body2" fontWeight={600} color="rgba(255, 255, 255, 0.9)">
+                  Daily Sales Trend
+                </Typography>
+              </Box>
+              
+              <Box sx={{ display: 'flex', alignItems: 'baseline', mb: 2 }}>
+                <Typography variant="h3" fontWeight={800} color="#FFC107">
+                  +15.2%
+                </Typography>
+              </Box>
+              
+              <Box sx={{ 
+                height: 60,
+                width: '100%',
+                position: 'relative',
+                mt: 2
+              }}>
+                {/* Mini chart visualization */}
+                <Box sx={{
+                  position: 'absolute',
+                  bottom: 0,
+                  left: 0,
+                  right: 0,
+                  display: 'flex',
+                  alignItems: 'flex-end',
+                  justifyContent: 'space-between',
+                  height: '100%'
+                }}>
+                  {[30, 45, 60, 55, 75, 85, 90].map((height, index) => (
+                    <Box
+                      key={index}
+                      sx={{
+                        width: '12%',
+                        height: `${height}%`,
+                        bgcolor: `rgba(255, 193, 7, ${0.3 + (index * 0.1)})`,
+                        borderRadius: '4px 4px 0 0',
+                        transition: 'all 0.3s ease',
+                        '&:hover': {
+                          bgcolor: `rgba(255, 193, 7, ${0.6 + (index * 0.1)})`,
+                          transform: 'scaleY(1.1)'
+                        }
+                      }}
+                    />
+                  ))}
+                </Box>
+              </Box>
+              
+              <Typography variant="caption" sx={{ color: 'rgba(255, 255, 255, 0.7)', display: 'block', textAlign: 'center', mt: 2 }}>
+                Weekly growth trend
+              </Typography>
+            </Box>
           </Grid>
         </Grid>
+        
+        {/* Additional metrics bar */}
+        <Box sx={{ 
+          mt: 2,
+          pt: 2,
+         
+          borderTop: '1px solid rgba(255, 255, 255, 0.1)',
+          display: 'flex',
+          justifyContent: 'space-around',
+          flexWrap: 'wrap',
+          gap: 2
+        }}>
+          {[
+            { label: 'Active Users', value: '1.2K', change: '+12%', color: '#2196F3' },
+            { label: 'Conversion Rate', value: '4.8%', change: '+3.2%', color: '#4CAF50' },
+            { label: 'Bounce Rate', value: '26.4%', change: '-2.1%', color: '#F44336' },
+            { label: 'Avg. Session', value: '4m 30s', change: '+45s', color: '#FF9800' }
+          ].map((metric, index) => (
+            <Box key={index} sx={{ 
+              display: 'flex', 
+              alignItems: 'center',
+              px: 2,
+              py: 1,
+              borderRadius: 2,
+              bgcolor: 'rgba(255, 255, 255, 0.05)'
+            }}>
+              <Box sx={{ 
+                width: 8, 
+                height: 8, 
+                borderRadius: '50%', 
+                bgcolor: metric.color,
+                mr: 1.5
+              }} />
+              <Box>
+                <Typography variant="caption" sx={{ color: 'rgba(255, 255, 255, 0.7)', display: 'block' }}>
+                  {metric.label}
+                </Typography>
+                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                  <Typography variant="body2" fontWeight={600} sx={{ color: 'white', mr: 1 }}>
+                    {metric.value}
+                  </Typography>
+                  <Typography variant="caption" sx={{ 
+                    color: metric.change.startsWith('+') ? '#4CAF50' : '#F44336',
+                    fontWeight: 600
+                  }}>
+                    {metric.change}
+                  </Typography>
+                </Box>
+              </Box>
+            </Box>
+          ))}
+        </Box>
+      </CardContent>
+    </Card>
+  </Grid>
+</Grid>
       </Container>
     </Box>
   );
