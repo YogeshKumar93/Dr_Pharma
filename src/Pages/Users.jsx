@@ -22,6 +22,12 @@ const [selectedUser, setSelectedUser] = useState(null);
 const [addOpen, setAddOpen] = useState(false);
 
 
+// 🔹 FILTER STATE
+const [filters, setFilters] = useState({
+  name: "",
+  email: "",
+  status: "",
+});
 
   // Pagination
   const [page, setPage] = useState(0);
@@ -94,12 +100,69 @@ const handleModalClose = () => {
     }
   };
 
+
+  /* -------------------- FILTER CONFIG -------------------- */
+const filtersConfig = [
+  {
+    type: "text",
+    name: "name",
+    label: "Search Name",
+  },
+  {
+    type: "text",
+    name: "email",
+    label: "Search Email",
+  },
+  {
+    type: "dropdown",
+    name: "status",
+    label: "Status",
+    options: [
+      { label: "Active", value: "1" },
+      { label: "Inactive", value: "0" },
+    ],
+  },
+];
+
+/* -------------------- FILTERED DATA -------------------- */
+const filteredUsers = useMemo(() => {
+  return users.filter((user) => {
+
+    // Name filter
+    if (
+      filters.name &&
+      !user.name?.toLowerCase().includes(filters.name.toLowerCase())
+    ) {
+      return false;
+    }
+
+    // Email filter
+    if (
+      filters.email &&
+      !user.email?.toLowerCase().includes(filters.email.toLowerCase())
+    ) {
+      return false;
+    }
+
+    // Status filter
+    if (filters.status !== "") {
+      const statusValue = user.status ? "1" : "0";
+      if (statusValue !== filters.status) {
+        return false;
+      }
+    }
+
+    return true;
+  });
+}, [users, filters]);
+
   /* -------------------- PAGINATED DATA -------------------- */
-  const paginatedUsers = useMemo(() => {
-    const start = page * rowsPerPage;
-    const end = start + rowsPerPage;
-    return users.slice(start, end);
-  }, [users, page, rowsPerPage]);
+ const paginatedUsers = useMemo(() => {
+  const start = page * rowsPerPage;
+  const end = start + rowsPerPage;
+  return filteredUsers.slice(start, end);
+}, [filteredUsers, page, rowsPerPage]);
+
 
   /* -------------------- COLUMNS -------------------- */
   const columns = useMemo(
@@ -201,6 +264,12 @@ const handleModalClose = () => {
         rows={paginatedUsers}
         loading={loading}
         actions={actions}
+          filtersConfig={filtersConfig}
+  filters={filters}
+  onFiltersChange={(newFilters) => {
+    setFilters(newFilters);
+    setPage(0); // filter change pe page reset
+  }}
         serverPagination
         page={page}
         onRefresh={fetchUsers} 

@@ -25,6 +25,22 @@ const AllProducts = () => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
+  // 🔹 FILTER STATE
+const [filters, setFilters] = useState({
+  title: "",
+  category: "",
+  stock:"",
+});
+
+const categoryOptions = [
+  { label: "Medicines", value: "medicines" },
+  { label: "Medical Instruments", value: "medical instruments" },
+  { label: "Syrups", value: "syrups" },
+  { label: "Kits", value: "kits" },
+  { label: "Supplements", value: "supplements" },
+];
+
+
   const [editOpen, setEditOpen] = useState(false);
 // const [selectedProduct, setSelectedProduct] = useState(null);
 
@@ -88,14 +104,47 @@ const handleDelete = async (row) => {
   }
 };
 
+/* -------------------- FILTER CONFIG -------------------- */
+const filtersConfig = [
+  {
+    type: "text",
+    name: "title",
+    label: "Search Title",
+  },
+  {
+    type: "dropdown",
+    name: "category",
+    label: "Category",
+     options: categoryOptions,
+  },
+ 
+];
+
+/* -------------------- FILTERED DATA -------------------- */
+const filteredProducts = useMemo(() => {
+  return products.filter((product) => {
+    // Title filter
+    if (filters.title && !product.title?.toLowerCase().includes(filters.title.toLowerCase())) {
+      return false;
+    }
+
+    // Category filter
+    if (filters.category && product.category?.toLowerCase() !== filters.category.toLowerCase()) {
+      return false;
+    } 
+
+    return true;
+  });
+}, [products, filters]);
 
 
   /* -------------------- PAGINATED DATA -------------------- */
-  const paginatedProducts = useMemo(() => {
-    const start = page * rowsPerPage;
-    const end = start + rowsPerPage;
-    return products.slice(start, end);
-  }, [products, page, rowsPerPage]);
+ const paginatedProducts = useMemo(() => {
+  const start = page * rowsPerPage;
+  const end = start + rowsPerPage;
+  return filteredProducts.slice(start, end);
+}, [filteredProducts, page, rowsPerPage]);
+
 
   /* -------------------- COLUMNS -------------------- */
   const columns = useMemo(
@@ -196,6 +245,12 @@ const handleDelete = async (row) => {
         rows={paginatedProducts}
         loading={loading}
         actions={actions}
+     filtersConfig={filtersConfig}
+  filters={filters}
+  onFiltersChange={(newFilters) => {
+    setFilters(newFilters);
+    setPage(0); // filter change pe page reset
+  }}
         serverPagination
         page={page}
         rowsPerPage={rowsPerPage}
