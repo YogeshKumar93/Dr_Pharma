@@ -225,6 +225,7 @@ const filteredPayments = useMemo(() => {
         label={row?.order?.status}
         color={row?.order?.status === "confirmed" ? "success" : "default"}
         size="small"
+        sx={{width:"150px"}}
       />
     ),
   },

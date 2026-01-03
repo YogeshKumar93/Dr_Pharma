@@ -29,7 +29,7 @@ const Footer = () => {
           {/* Company Info - Left */}
           <Grid item xs={12} md={3}>
             <Typography variant="h6" sx={{ mb: 2, fontWeight: 'bold', fontSize: '1.1rem' }}>
-              Dr. Pharma
+            Pharma Guru
             </Typography>
             <Box sx={{ display: 'flex', alignItems: 'flex-start', mb: 1 }}>
               <LocationOnIcon sx={{ fontSize: '1rem', mr: 1, mt: 0.3, flexShrink: 0 }} />
@@ -46,7 +46,7 @@ const Footer = () => {
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
               <EmailIcon sx={{ fontSize: '1rem', mr: 1, flexShrink: 0 }} />
               <Typography variant="body2" sx={{ fontSize: "0.85rem" }}>
-                support@drpharma.com
+                support@pharmaguru.com
               </Typography>
             </Box>
           </Grid>
@@ -228,11 +228,11 @@ const Footer = () => {
           }}
         >
           <Typography variant="body2" sx={{ fontSize: "0.8rem" }}>
-            © {new Date().getFullYear()} Dr. Pharma. All rights reserved.
+            © {new Date().getFullYear()}  Pharma Guru. All rights reserved.
           </Typography>
 
           <Typography variant="body2" sx={{ fontSize: "0.8rem" }}>
-            support@drpharma.com | 09240250346
+            support@pharmaguru.com | 09240250346
           </Typography>
 
           <Box>

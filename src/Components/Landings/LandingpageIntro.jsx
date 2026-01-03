@@ -228,7 +228,7 @@ const handleAddToCart = (product, index) => {
           px: { xs: 2, md: 2 },
           textAlign: "center",
 
-           backgroundImage: "url('src/assets/ChristmasBanner4.png')",
+           backgroundImage: "url('src/assets/ChristmasBanner5.jpg')",
     backgroundSize: "cover",
     backgroundPosition: "center",
     backgroundRepeat: "no-repeat",
@@ -236,14 +236,14 @@ const handleAddToCart = (product, index) => {
           
         }}
       >
-        <Typography variant="h3" gutterBottom sx={{color:"#b54b1bff", fontWeight:"bold"}}>
+        <Typography variant="h3" gutterBottom sx={{color:"#070745ff", fontWeight:"bold"}}>
           Welcome to Pharma Guru
         </Typography>
         
-        <Typography variant="h6" gutterBottom sx={{color:"white"}}>
+        <Typography variant="h6" gutterBottom sx={{color:"#4e7134ff"}}>
           Say GoodBye to high medicine prices! save up to 75% on medicines with Pharma Guru.
         </Typography>
-        <Typography  gutterBottom sx={{color:"white"}}>
+        <Typography  gutterBottom sx={{color:"#ebae7cff"}}>
           Your trusted online pharmacy for all healthcare needs
         </Typography>
 
@@ -841,7 +841,7 @@ const handleAddToCart = (product, index) => {
   {/* Header */}
   <Box sx={{ textAlign: "center", mb: 6 }}>
     <Typography variant="h4" sx={{ fontWeight: 700, color: "#1a5276", mb: 1 }}>
-      Why Choose Dr. Pharma?
+      Why Choose  Pharma Guru?
     </Typography>
     <Typography sx={{ color: "#5d6d7e", maxWidth: 600, mx: "auto" }}>
       Trusted healthcare partner delivering quality, speed, and expert support
