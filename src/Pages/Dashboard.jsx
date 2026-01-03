@@ -169,14 +169,20 @@ const Dashboard = () => {
   ], [pendingOrders, completedOrders]);
 
   // Recent orders data (last 5 orders)
-  const recentOrders = useMemo(() => {
-    return orders.slice(-5).reverse();
-  }, [orders]);
+ const recentOrders = useMemo(() => {
+  return [...orders]
+    .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+    .slice(0, 5);
+}, [orders]);
+
 
   // Recent payments data (last 5 payments)
   const recentPayments = useMemo(() => {
-    return payments.slice(-5).reverse();
-  }, [payments]);
+  return [...payments]
+    .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+    .slice(0, 5);
+}, [payments]);
+
 
   // Revenue trend data (last 7 days simulation)
   const revenueTrendData = useMemo(() => {
@@ -198,18 +204,18 @@ const Dashboard = () => {
     return Object.entries(methods).map(([name, value]) => ({
       name,
       value,
-      color: name === 'Credit Card' ? '#2196F3' : 
-             name === 'PayPal' ? '#FF9800' : 
-             name === 'Cash' ? '#4CAF50' : '#9C27B0'
+      color: name === 'Credit Card' ? '#2196F3' :
+        name === 'PayPal' ? '#FF9800' :
+          name === 'Cash' ? '#4CAF50' : '#9C27B0'
     }));
   }, [payments]);
 
   if (loading) {
     return (
-      <Box sx={{ 
-        minHeight: "70vh", 
-        display: "flex", 
-        justifyContent: "center", 
+      <Box sx={{
+        minHeight: "70vh",
+        display: "flex",
+        justifyContent: "center",
         alignItems: "center",
         flexDirection: 'column',
         gap: 2
@@ -222,83 +228,83 @@ const Dashboard = () => {
 
   // Enhanced dashboard cards
   const dashboardCards = [
-    { 
-      title: "Total Users", 
-      value: usersCount, 
-      icon: <PeopleIcon />, 
+    {
+      title: "Total Users",
+      value: usersCount,
+      icon: <PeopleIcon />,
       color: "#2196F3",
       trend: "+12%",
-      trendUp: true 
+      trendUp: true
     },
-    { 
-      title: "Products", 
-      value: productsCount, 
-      icon: <InventoryIcon />, 
+    {
+      title: "Products",
+      value: productsCount,
+      icon: <InventoryIcon />,
       color: "#4CAF50",
       trend: "+5%",
-      trendUp: true 
+      trendUp: true
     },
-    { 
-      title: "Total Orders", 
-      value: totalOrders, 
-      icon: <ShoppingCartIcon />, 
+    {
+      title: "Total Orders",
+      value: totalOrders,
+      icon: <ShoppingCartIcon />,
       color: "#FF9800",
       trend: "+23%",
-      trendUp: true 
+      trendUp: true
     },
-    { 
-      title: "Pending Orders", 
-      value: pendingOrders, 
-      icon: <PendingIcon />, 
+    {
+      title: "Pending Orders",
+      value: pendingOrders,
+      icon: <PendingIcon />,
       color: "#F44336",
       trend: pendingOrders > 10 ? "High" : "Low",
-      trendUp: false 
+      trendUp: false
     },
-    { 
-      title: "Completed", 
-      value: completedOrders, 
-      icon: <CompletedIcon />, 
+    {
+      title: "Completed",
+      value: completedOrders,
+      icon: <CompletedIcon />,
       color: "#009688",
       trend: "+18%",
-      trendUp: true 
+      trendUp: true
     },
-    { 
-      title: "Total Revenue", 
-      value: `₹${totalRevenue.toLocaleString()}`, 
-      icon: <RevenueIcon />, 
+    {
+      title: "Total Revenue",
+      value: `₹${totalRevenue.toLocaleString()}`,
+      icon: <RevenueIcon />,
       color: "#673AB7",
       trend: "+32%",
-      trendUp: true 
+      trendUp: true
     },
-    { 
-      title: "Active Offers", 
-      value: offersCount, 
-      icon: <OfferIcon />, 
+    {
+      title: "Active Offers",
+      value: offersCount,
+      icon: <OfferIcon />,
       color: "#E91E63",
       trend: "Active",
-      trendUp: true 
+      trendUp: true
     },
-    { 
-      title: "Service Areas", 
-      value: pincodesCount, 
-      icon: <LocationIcon />, 
+    {
+      title: "Service Areas",
+      value: pincodesCount,
+      icon: <LocationIcon />,
       color: "#3F51B5",
       trend: "Covered",
-      trendUp: true 
+      trendUp: true
     },
   ];
 
   return (
-    <Box sx={{ 
-      minHeight: "100vh", 
+    <Box sx={{
+      minHeight: "100vh",
       bgcolor: "background.default",
       pb: 4
     }}>
       <Container maxWidth="xl" sx={{ py: 3 }}>
         {/* HEADER */}
-        <Box sx={{ 
-          display: 'flex', 
-          justifyContent: 'space-between', 
+        <Box sx={{
+          display: 'flex',
+          justifyContent: 'space-between',
           alignItems: 'center',
           mb: 4
         }}>
@@ -310,9 +316,9 @@ const Dashboard = () => {
               Welcome back! Here's what's happening with your store today.
             </Typography>
           </Box>
-          <Chip 
-            icon={<AccessTimeIcon />} 
-            label={`Last updated: ${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`}
+          <Chip
+            icon={<AccessTimeIcon />}
+            label={`Last updated: ${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`}
             variant="outlined"
           />
         </Box>
@@ -330,17 +336,17 @@ const Dashboard = () => {
         <Grid container spacing={3} sx={{ mb: 4 }}>
           {/* Revenue Trend Chart */}
           <Grid item xs={12} md={8}>
-            <Card sx={{ 
+            <Card sx={{
               borderRadius: 2,
               boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
               height: '100%'
             }}>
               <CardContent>
-                <Box sx={{ 
-                  display: 'flex', 
+                <Box sx={{
+                  display: 'flex',
                   justifyContent: 'space-between',
                   alignItems: 'center',
-                  mb: 3 
+                  mb: 3
                 }}>
                   <Box>
                     <Typography variant="h6" fontWeight={600}>
@@ -350,8 +356,8 @@ const Dashboard = () => {
                       Last 7 days performance
                     </Typography>
                   </Box>
-                  <Chip 
-                    label="This Week" 
+                  <Chip
+                    label="This Week"
                     size="small"
                     variant="outlined"
                   />
@@ -362,21 +368,21 @@ const Dashboard = () => {
                       <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
                       <XAxis dataKey="day" />
                       <YAxis />
-                      <RechartsTooltip 
+                      <RechartsTooltip
                         formatter={(value) => [`₹${value}`, 'Revenue']}
                         labelFormatter={(label) => `Day: ${label}`}
                       />
-                      <Area 
-                        type="monotone" 
-                        dataKey="revenue" 
-                        stroke="#673AB7" 
+                      <Area
+                        type="monotone"
+                        dataKey="revenue"
+                        stroke="#673AB7"
                         fill="url(#colorRevenue)"
                         fillOpacity={0.3}
                       />
                       <defs>
                         <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor="#673AB7" stopOpacity={0.8}/>
-                          <stop offset="95%" stopColor="#673AB7" stopOpacity={0}/>
+                          <stop offset="5%" stopColor="#673AB7" stopOpacity={0.8} />
+                          <stop offset="95%" stopColor="#673AB7" stopOpacity={0} />
                         </linearGradient>
                       </defs>
                     </AreaChart>
@@ -388,7 +394,7 @@ const Dashboard = () => {
 
           {/* Order Status Distribution */}
           <Grid item xs={12} md={4}>
-            <Card sx={{ 
+            <Card sx={{
               borderRadius: 2,
               boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
               height: '100%'
@@ -431,17 +437,17 @@ const Dashboard = () => {
         <Grid container spacing={3}>
           {/* Recent Orders Table */}
           <Grid item xs={12} md={6}>
-            <Card sx={{ 
+            <Card sx={{
               borderRadius: 2,
               boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
               height: '100%'
             }}>
               <CardContent>
-                <Box sx={{ 
-                  display: 'flex', 
+                <Box sx={{
+                  display: 'flex',
                   justifyContent: 'space-between',
                   alignItems: 'center',
-                  mb: 3 
+                  mb: 3
                 }}>
                   <Typography variant="h6" fontWeight={600}>
                     Recent Orders
@@ -467,12 +473,20 @@ const Dashboard = () => {
                         <TableRow key={index} hover>
                           <TableCell>
                             <Typography variant="body2" fontWeight={500}>
-                              #{order.order_id || `ORD${1000 + index}`}
+                              #{order.order_number || order.id}
                             </Typography>
                           </TableCell>
                           <TableCell>
-                            <Chip 
-                              label={order.order_status || 'Pending'}
+                            <Chip
+                              label={order.order_status}
+                              color={
+                                order.order_status === "completed"
+                                  ? "success"
+                                  : order.order_status === "cancelled"
+                                    ? "error"
+                                    : "warning"
+                              }
+
                               size="small"
                               color={order.order_status === 'completed' ? 'success' : 'warning'}
                               variant="outlined"
@@ -480,12 +494,14 @@ const Dashboard = () => {
                           </TableCell>
                           <TableCell align="right">
                             <Typography variant="body2" fontWeight={500}>
-                              ₹{order.amount || (Math.random() * 5000 + 100).toFixed(2)}
+                              ₹{Number(order.total_amount || 0).toLocaleString()}
                             </Typography>
                           </TableCell>
                           <TableCell>
                             <Typography variant="body2" color="text.secondary">
-                              {new Date().toLocaleDateString()}
+                              {order.created_at
+                                ? new Date(order.created_at).toLocaleDateString()
+                                : "N/A"}
                             </Typography>
                           </TableCell>
                         </TableRow>
@@ -507,7 +523,7 @@ const Dashboard = () => {
             <Grid container spacing={2}>
               {/* Recent Payments Table */}
               <Grid item xs={12}>
-                <Card sx={{ 
+                <Card sx={{
                   borderRadius: 2,
                   boxShadow: '0 4px 12px rgba(0,0,0,0.05)'
                 }}>
@@ -533,7 +549,7 @@ const Dashboard = () => {
                                 </Typography>
                               </TableCell>
                               <TableCell>
-                                <Chip 
+                                <Chip
                                   label={payment.payment_method || 'Credit Card'}
                                   size="small"
                                   variant="outlined"
@@ -555,7 +571,7 @@ const Dashboard = () => {
 
               {/* Payment Methods Distribution */}
               <Grid item xs={12}>
-                <Card sx={{ 
+                <Card sx={{
                   borderRadius: 2,
                   boxShadow: '0 4px 12px rgba(0,0,0,0.05)'
                 }}>
@@ -570,8 +586,8 @@ const Dashboard = () => {
                           <XAxis dataKey="name" />
                           <YAxis />
                           <RechartsTooltip />
-                          <Bar 
-                            dataKey="value" 
+                          <Bar
+                            dataKey="value"
                             radius={[4, 4, 0, 0]}
                             fill="#8884d8"
                           >
@@ -592,7 +608,7 @@ const Dashboard = () => {
         {/* ===== PERFORMANCE METRICS ===== */}
         <Grid container spacing={3} sx={{ mt: 2 }}>
           <Grid item xs={12}>
-            <Card sx={{ 
+            <Card sx={{
               borderRadius: 2,
               boxShadow: '0 4px 12px rgba(0,0,0,0.05)'
             }}>
@@ -608,9 +624,9 @@ const Dashboard = () => {
                       </Typography>
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                         <Box sx={{ flexGrow: 1 }}>
-                          <LinearProgress 
-                            variant="determinate" 
-                            value={(completedOrders / totalOrders) * 100 || 0} 
+                          <LinearProgress
+                            variant="determinate"
+                            value={(completedOrders / totalOrders) * 100 || 0}
                             sx={{ height: 8, borderRadius: 4 }}
                             color="success"
                           />
@@ -692,9 +708,9 @@ const EnhancedDashboardCard = ({ title, value, icon, color, trend, trendUp }) =>
             ) : (
               <ArrowDownwardIcon sx={{ fontSize: 16, color: '#F44336' }} />
             )}
-            <Typography 
-              variant="caption" 
-              sx={{ 
+            <Typography
+              variant="caption"
+              sx={{
                 color: trendUp ? '#4CAF50' : '#F44336',
                 fontWeight: 600
               }}
